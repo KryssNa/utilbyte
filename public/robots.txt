@@ -1,0 +1,16 @@
+# Robots.txt for UtilByte - Free Online Tools
+# This static robots.txt will be overridden by the dynamic one in src/app/robots.ts
+# when the Next.js app is running.
+
+User-agent: *
+Allow: /
+
+# Block access to sensitive areas (if any in future)
+# Disallow: /admin/
+# Disallow: /api/private/
+
+# Sitemap location (will be handled by Next.js dynamic routes)
+# Sitemap: https://utilbyte.com/sitemap.xml
+
+# Crawl delay (optional - helps with server load)
+Crawl-delay: 1
