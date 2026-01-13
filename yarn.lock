@@ -1905,7 +1905,7 @@
   resolved "https://registry.yarnpkg.com/@sentry/core/-/core-10.33.0.tgz#ea4964fbec290503b419ccaf1a313924d30ad1c8"
   integrity sha512-ehH1VSUclIHZKEZVdv+klofsFIh8FFzqA6AAV23RtLepptzA8wqQzUGraEuSN25sYcNmYJ0jti5U0Ys+WZv5Dw==
 
-"@sentry/nextjs@^10":
+"@sentry/nextjs@^10.33.0":
   version "10.33.0"
   resolved "https://registry.yarnpkg.com/@sentry/nextjs/-/nextjs-10.33.0.tgz#d9eec380b0aadea9e982a707fb713d604318926c"
   integrity sha512-0+lMa2GqLGIbH/JJvGnT2FWpUce/n7/QxRYSVdELct99Qpr1/kQXKyjcUBI77+VKAh4a9IGhxlXNmRwBHgDCHw==
