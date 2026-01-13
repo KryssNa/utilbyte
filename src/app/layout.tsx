@@ -2,10 +2,10 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -148,6 +148,12 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
+      <link rel="icon" type="image/svg+xml" href="/logo.svg?v=1" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1" />
+      <link rel="apple-touch-icon" href="/logo.svg?v=1" />
+      <link rel="shortcut icon" href="/favicon.ico?v=1" />
+      <meta name="msapplication-TileColor" content="#000000" />
+      <meta name="theme-color" content="#000000" />
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"

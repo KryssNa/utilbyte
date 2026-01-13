@@ -72,7 +72,7 @@ export const metadata: Metadata = {
         "@type": "Organization",
         "name": "UtilByte",
         "url": "https://utilbyte.app",
-        "logo": "https://utilbyte.app/images/logo.png",
+        "logo": "https://utilbyte.app/logo.svg",
         "description": "Free online tools for image, PDF, text, and developer work. Privacy-first, no uploads required.",
         "foundingDate": "2024",
         "sameAs": [

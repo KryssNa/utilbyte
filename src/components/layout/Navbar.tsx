@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Command, Menu, Search, X, Zap } from "lucide-react";
+import { Command, Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -39,12 +39,11 @@ export default function Navbar() {
           <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl blur-md opacity-50 group-hover:opacity-70 transition-opacity" />
-                <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg">
-                  <Zap className="h-5 w-5" />
-                </div>
-              </div>
+              <img
+                src="/logo_small.png"
+                alt="UtilByte Logo"
+                className="h-8 w-auto transition-transform group-hover:scale-105"
+              />
               <span className="font-display text-xl font-bold tracking-tight">
                 Util
                 <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
