@@ -77,11 +77,11 @@ export function NavDropdown({ category }: NavDropdownProps) {
 
   // Handle mouse leave
   const handleMouseLeave = useCallback((e: React.MouseEvent) => {
-    const relatedTarget = e.relatedTarget as Node;
+    const relatedTarget = e.relatedTarget;
 
-    // Check if moving to trigger or content
-    const isMovingToTrigger = triggerRef.current?.contains(relatedTarget);
-    const isMovingToContent = contentRef.current?.contains(relatedTarget);
+    // Check if moving to trigger or content - only if relatedTarget is a Node
+    const isMovingToTrigger = relatedTarget && triggerRef.current?.contains(relatedTarget as Node);
+    const isMovingToContent = relatedTarget && contentRef.current?.contains(relatedTarget as Node);
 
     if (!isMovingToTrigger && !isMovingToContent) {
       timeoutRef.current = setTimeout(() => {
