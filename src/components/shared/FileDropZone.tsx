@@ -90,6 +90,55 @@ export default function FileDropZone({
     [files, multiple, maxFiles, validateFiles, onFilesSelected]
   );
 
+  // Handle paste events for images and other clipboard content
+  const handlePaste = useCallback(
+    async (e: ClipboardEvent) => {
+      // Only handle paste if we're accepting images or all files
+      if (accept !== "*" && !accept.includes("image/") && !accept.includes("image")) {
+        return;
+      }
+
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      const pastedFiles: File[] = [];
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+
+        // Handle pasted images
+        if (item.type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const blob = item.getAsFile();
+          if (blob) {
+            // Create a filename for the pasted image
+            const timestamp = Date.now();
+            const extension = item.type.split('/')[1] || 'png';
+            const filename = `pasted-image-${timestamp}.${extension}`;
+
+            // Create a new File with the desired name
+            // File constructor may not be available in all environments, so we try different approaches
+            let file: File;
+            try {
+              // Try modern File constructor
+              file = new (window as any).File([blob], filename, { type: blob.type });
+            } catch (error) {
+              // Fallback: create a Blob and use it as-is (name will be auto-generated)
+              console.warn('File constructor not available, using blob as-is');
+              file = blob as File;
+            }
+            pastedFiles.push(file);
+          }
+        }
+      }
+
+      if (pastedFiles.length > 0) {
+        processDroppedFiles(pastedFiles);
+      }
+    },
+    [accept, processDroppedFiles]
+  );
+
   // Global page drag detection and drop handling
   useEffect(() => {
     const handleDragEnter = (e: globalThis.DragEvent) => {
@@ -136,15 +185,17 @@ export default function FileDropZone({
     document.addEventListener("dragleave", handleDragLeave);
     document.addEventListener("drop", handleGlobalDrop);
     document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("paste", handlePaste);
 
     return () => {
       document.removeEventListener("dragenter", handleDragEnter);
       document.removeEventListener("dragleave", handleDragLeave);
       document.removeEventListener("drop", handleGlobalDrop);
       document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("paste", handlePaste);
       document.body.classList.remove("is-dragging-file");
     };
-  }, [processDroppedFiles]);
+  }, [processDroppedFiles, handlePaste]);
 
   const handleDrag = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -258,7 +309,7 @@ export default function FileDropZone({
                 <p className="text-base font-medium">
                   {isDragActive || isPageDrag ? "Drop files here" : "Drag & drop files here"}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">or click to browse</p>
+                <p className="mt-1 text-sm text-muted-foreground">or click to browse • paste images (Ctrl+V)</p>
                 <p className="mt-3 text-xs text-muted-foreground">
                   {multiple ? `Up to ${maxFiles} files, ` : ""}
                   max {Math.round(maxSize / 1024 / 1024)}MB each
@@ -282,7 +333,7 @@ export default function FileDropZone({
                   {files.length} file{files.length !== 1 ? "s" : ""} selected
                 </p>
                 <p className="text-center text-xs text-muted-foreground">
-                  Click or drag to add more files
+                  Click, drag, or paste (Ctrl+V) to add more files
                 </p>
               </motion.div>
             )}

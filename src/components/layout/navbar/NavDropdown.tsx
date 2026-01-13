@@ -80,8 +80,8 @@ export function NavDropdown({ category }: NavDropdownProps) {
     const relatedTarget = e.relatedTarget;
 
     // Check if moving to trigger or content - only if relatedTarget is a Node
-    const isMovingToTrigger = relatedTarget && triggerRef.current?.contains(relatedTarget as Node);
-    const isMovingToContent = relatedTarget && contentRef.current?.contains(relatedTarget as Node);
+    const isMovingToTrigger = relatedTarget instanceof Node && triggerRef.current?.contains(relatedTarget);
+    const isMovingToContent = relatedTarget instanceof Node && contentRef.current?.contains(relatedTarget);
 
     if (!isMovingToTrigger && !isMovingToContent) {
       timeoutRef.current = setTimeout(() => {
@@ -229,7 +229,7 @@ export function NavDropdown({ category }: NavDropdownProps) {
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-3 border-t border-white/10 bg-white/[0.02]">
+            <div className="px-4 py-3 border-t border-white/10 bg-white/2">
               <Link
                 href={category.href}
                 className={cn(
