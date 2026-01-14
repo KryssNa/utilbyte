@@ -154,6 +154,7 @@ export default function RootLayout({
       <link rel="shortcut icon" href="/favicon.ico?v=1" />
       <meta name="msapplication-TileColor" content="#000000" />
       <meta name="theme-color" content="#000000" />
+      <meta name="google-adsense-account" content="ca-pub-4931770581801597"></meta>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
