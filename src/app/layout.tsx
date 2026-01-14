@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -154,12 +155,13 @@ export default function RootLayout({
       <link rel="shortcut icon" href="/favicon.ico?v=1" />
       <meta name="msapplication-TileColor" content="#000000" />
       <meta name="theme-color" content="#000000" />
-      <meta name="google-adsense-account" content="ca-pub-4931770581801597"></meta>
-      <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
-          crossOrigin="anonymous">
-        </script>
-      </head>
+      <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
+        crossOrigin="anonymous"
+        strategy="afterInteractive"
+      />
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
