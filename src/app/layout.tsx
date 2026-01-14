@@ -155,6 +155,9 @@ export default function RootLayout({
       <meta name="msapplication-TileColor" content="#000000" />
       <meta name="theme-color" content="#000000" />
       <meta name="google-adsense-account" content="ca-pub-4931770581801597"></meta>
+      <head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
+        crossOrigin="anonymous"></script>
+      </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
