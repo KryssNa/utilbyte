@@ -162,6 +162,15 @@ export default function RootLayout({
         crossOrigin="anonymous"
         strategy="afterInteractive"
       />
+      <Script async src="https://www.googletagmanager.com/gtag/js?id=G-5RLNPB28DW" />
+      <Script>
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-5RLNPB28DW');
+        `}
+      </Script>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
