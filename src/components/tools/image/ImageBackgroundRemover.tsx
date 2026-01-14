@@ -99,7 +99,7 @@ export default function ImageBackgroundRemover() {
     try {
       // Create a temporary canvas to get pixel data
       const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { alpha: true });
       if (!ctx) {
         toast.error('Canvas not supported for color picking');
         return;
@@ -151,7 +151,7 @@ export default function ImageBackgroundRemover() {
         canvas.width = img.width;
         canvas.height = img.height;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { alpha: true });
         if (!ctx) {
           toast.error("Canvas not supported in this browser");
           setIsProcessing(false);

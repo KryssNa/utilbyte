@@ -84,7 +84,7 @@ export default function ImageCompressor() {
       canvas.width = img.width;
       canvas.height = img.height;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { alpha: true });
       if (!ctx) {
         setIsEstimating(false);
         return;
@@ -122,7 +122,7 @@ export default function ImageCompressor() {
         canvas.width = img.width;
         canvas.height = img.height;
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: true });
         if (!ctx) {
           toast.error("Failed to compress image");
           setIsProcessing(false);

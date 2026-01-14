@@ -77,8 +77,13 @@ export default function BlurImage() {
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
 
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      const ctx = canvas.getContext("2d", { alpha: true });
+      if (!ctx) {
+        toast.error("Failed to process image");
+        setIsProcessing(false);
+        return;
+      }
+
 
       if (blurMode === "gaussian") {
         ctx.filter = `blur(${blurAmount * scale}px)`;
@@ -123,7 +128,7 @@ export default function BlurImage() {
         canvas.width = img.width;
         canvas.height = img.height;
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: true });
         if (!ctx) {
           toast.error("Failed to process image");
           setIsProcessing(false);
@@ -139,7 +144,7 @@ export default function BlurImage() {
           const size = Math.max(1, pixelSize);
 
           const tempCanvas = document.createElement("canvas");
-          const tempCtx = tempCanvas.getContext("2d");
+          const tempCtx = tempCanvas.getContext("2d", { alpha: true });
           if (!tempCtx) {
             toast.error("Failed to process image");
             setIsProcessing(false);

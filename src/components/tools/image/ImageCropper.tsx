@@ -373,7 +373,7 @@ export default function ImageCropper() {
       canvas.width = previewW;
       canvas.height = previewH;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { alpha: true });
       if (!ctx) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -405,9 +405,10 @@ export default function ImageCropper() {
       canvas.width = cropArea.width;
       canvas.height = cropArea.height;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { alpha: true });
       if (!ctx) return;
 
+      // Clear canvas with transparent background
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.save();
