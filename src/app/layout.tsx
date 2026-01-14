@@ -162,8 +162,12 @@ export default function RootLayout({
         crossOrigin="anonymous"
         strategy="afterInteractive"
       />
-      <Script async src="https://www.googletagmanager.com/gtag/js?id=G-5RLNPB28DW" />
-      <Script>
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-5RLNPB28DW"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
