@@ -333,7 +333,7 @@ export default function FormatConverter() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl mx-auto"
+            className="max-w-5xl mx-auto"
           >
             <FileDropZone accept="image/*" onFilesSelected={handleFileSelect} maxSize={20 * 1024 * 1024} />
 

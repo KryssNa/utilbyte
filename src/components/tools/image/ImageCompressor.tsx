@@ -1,8 +1,6 @@
 "use client";
 
-import ContentCluster from "@/components/shared/ContentCluster";
 import FileDropZone from "@/components/shared/FileDropZone";
-import RelatedTools from "@/components/shared/RelatedTools";
 import ToolLayout from "@/components/shared/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -280,7 +278,7 @@ export default function ImageCompressor() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl mx-auto"
+            className="max-w-5xl mx-auto"
           >
             <FileDropZone
               accept="image/*"
@@ -634,79 +632,6 @@ export default function ImageCompressor() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <ContentCluster
-        category="image"
-        title="Complete Image Processing Suite"
-        description="Everything you need to optimize, edit, and transform your images. From compression to advanced editing, our image tools handle all your visual content needs."
-        mainTool={{
-          title: "Advanced Image Compressor",
-          href: "/image-tools/compress-image",
-          description: "Reduce image file sizes by up to 90% while maintaining quality. Perfect for web optimization and faster loading times."
-        }}
-        topics={[
-          {
-            title: "Image Resizer",
-            description: "Change image dimensions and aspect ratios with precision",
-            href: "/image-tools/resize-image",
-            type: "tool",
-            category: "Image Tools"
-          },
-          {
-            title: "Format Converter",
-            description: "Convert between JPG, PNG, WebP, GIF formats instantly",
-            href: "/image-tools/format-converter",
-            type: "tool",
-            category: "Image Tools"
-          },
-          {
-            title: "Image Cropper",
-            description: "Crop images to perfect dimensions with precision tools",
-            href: "/image-tools/crop-image",
-            type: "tool",
-            category: "Image Tools"
-          },
-          {
-            title: "Background Remover",
-            description: "Remove image backgrounds automatically with AI technology",
-            href: "/image-tools/remove-background",
-            type: "tool",
-            category: "Image Tools"
-          },
-          {
-            title: "Image Blur Tool",
-            description: "Apply gaussian blur, motion blur, and pixelate effects",
-            href: "/image-tools/blur-image",
-            type: "tool",
-            category: "Image Tools"
-          },
-          {
-            title: "OCR - Image to Text",
-            description: "Extract text from images using advanced OCR technology",
-            href: "/image-tools/ocr",
-            type: "tool",
-            category: "Image Tools"
-          }
-        ]}
-      />
-
-      <RelatedTools
-        currentTool="Image Compressor"
-        tools={[
-          {
-            title: "Compress PDF",
-            description: "Reduce PDF file sizes efficiently",
-            href: "/pdf-tools/compress-pdf",
-            category: "PDF Tools"
-          },
-          {
-            title: "JSON Formatter",
-            description: "Format and validate JSON data",
-            href: "/dev-tools/json-formatter",
-            category: "Developer Tools"
-          }
-        ]}
-      />
     </ToolLayout>
   );
 }

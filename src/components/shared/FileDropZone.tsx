@@ -293,7 +293,7 @@ export default function FileDropZone({
               >
                 <motion.div
                   className={cn(
-                    "mb-4 p-4 rounded-2xl transition-colors duration-200",
+                    "mb-8 p-6 rounded-2xl transition-colors duration-200",
                     isDragActive || isPageDrag ? "bg-primary/10" : "bg-muted"
                   )}
                   animate={isDragActive || isPageDrag ? { scale: [1, 1.1, 1] } : {}}
@@ -301,16 +301,17 @@ export default function FileDropZone({
                 >
                   <Upload
                     className={cn(
-                      "h-8 w-8 transition-colors duration-200",
+                      "h-14 w-14 sm:h-16 sm:w-16 transition-colors duration-200",
                       isDragActive || isPageDrag ? "text-primary" : "text-muted-foreground"
                     )}
+                    strokeWidth={1.5}
                   />
                 </motion.div>
-                <p className="text-base font-medium">
+                <p className="text-2xl sm:text-3xl font-semibold mb-3">
                   {isDragActive || isPageDrag ? "Drop files here" : "Drag & drop files here"}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">or click to browse • paste images (Ctrl+V)</p>
-                <p className="mt-3 text-xs text-muted-foreground">
+                <p className="text-lg text-muted-foreground mb-5">or click to browse • paste images (Ctrl+V)</p>
+                <p className="text-base text-muted-foreground">
                   {multiple ? `Up to ${maxFiles} files, ` : ""}
                   max {Math.round(maxSize / 1024 / 1024)}MB each
                 </p>

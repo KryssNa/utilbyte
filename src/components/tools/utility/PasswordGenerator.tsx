@@ -109,7 +109,7 @@ export default function PasswordGenerator() {
         { title: "Color Converter", description: "Convert colors", href: "/utility-tools/color-converter", icon: Key, category: "utility" },
       ]}
     >
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto space-y-8">
         {/* Password Display */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
