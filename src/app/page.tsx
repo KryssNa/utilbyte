@@ -3,9 +3,9 @@ import HomePageClient from "./HomePageClient";
 
 // Fix: "other" should be an object, not an array of object(s) and string key
 export const metadata: Metadata = {
-  title: "UtilByte - Free Online Tools for Everyday Work",
+  title: "UtilByte - Free Online Tools for Images, PDFs & Developers",
   description:
-    "Free online tools for images, PDFs, text & code. No login, no uploads. 100% browser-based for complete privacy.",
+    "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "UtilByte - Free Online Tools for Everyday Work",
-        "description": "Free online tools for images, PDFs, text & code. No login, no uploads. 100% browser-based for complete privacy.",
+        "description": "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
         "url": "https://utilbyte.app",
         "isPartOf": {
           "@type": "WebSite",

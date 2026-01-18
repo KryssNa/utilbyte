@@ -29,11 +29,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "UtilByte - Free Online Tools for Everyday Work",
+    default: "UtilByte - Free Online Tools for Images, PDFs & Developers",
     template: "%s | UtilByte",
   },
   description:
-    "Free online tools for images, PDFs, text & code. No login, no uploads. 100% browser-based for complete privacy.",
+    "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -120,29 +120,31 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html
       lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-      <link rel="apple-touch-icon" href="/logo_small.png" />
-      <meta name="msapplication-TileColor" content="#000000" />
-      <meta name="theme-color" content="#000000" />
-      <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
-      <Script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
-        crossOrigin="anonymous"
-        strategy="beforeInteractive"
-      />
-      {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
-      {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
+      <head>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/logo_small.png" />
+        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
+      </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+        {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
+        {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -155,7 +157,6 @@ export default function RootLayout({
           <Toaster position="bottom-right" richColors />
         </ThemeProvider>
         <Analytics />
-
       </body>
     </html>
   );
