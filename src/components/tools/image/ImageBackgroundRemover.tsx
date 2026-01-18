@@ -19,6 +19,7 @@ import {
   Sparkles,
   TrendingDown,
   Type,
+  Wand2,
   Zap,
   ZoomIn
 } from "lucide-react";
@@ -37,42 +38,12 @@ export default function ImageBackgroundRemover() {
 
   // Background removal settings
   const [bgColor, setBgColor] = useState("#ffffff");
-  const [tolerance, setTolerance] = useState(50); // Increased default tolerance
+  const [tolerance, setTolerance] = useState(30);
+  const [feathering, setFeathering] = useState(2);
   const [isPickingColor, setIsPickingColor] = useState(false);
+  const [useFloodFill, setUseFloodFill] = useState(true);
 
   const imageRef = useRef<HTMLImageElement>(null);
-
-  // Debug function to test basic canvas operations
-  const testCanvas = useCallback(() => {
-    console.log('Testing canvas operations...');
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 100;
-    canvas.height = 100;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      console.error('Canvas context not available');
-      return;
-    }
-
-    // Fill with red
-    ctx.fillStyle = 'red';
-    ctx.fillRect(0, 0, 50, 50);
-
-    // Fill with blue
-    ctx.fillStyle = 'blue';
-    ctx.fillRect(50, 50, 50, 50);
-
-    // Get image data
-    const imageData = ctx.getImageData(0, 0, 100, 100);
-    console.log('Canvas test successful, image data length:', imageData.data.length);
-
-    const dataUrl = canvas.toDataURL('image/png');
-    console.log('Data URL generated, length:', dataUrl.length);
-
-    toast.success('Canvas test completed successfully!');
-  }, []);
 
   const handleFileSelect = useCallback((files: File[]) => {
     if (files.length > 0) {
@@ -84,9 +55,36 @@ export default function ImageBackgroundRemover() {
       setProcessedImage(null);
       setProcessedSize(0);
 
+      // Auto-detect background color from corners
       const img = new window.Image();
       img.onload = () => {
         setImageDimensions({ width: img.width, height: img.height });
+
+        // Sample corners to detect background color
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+
+          // Sample from all 4 corners
+          const corners = [
+            ctx.getImageData(0, 0, 1, 1).data,
+            ctx.getImageData(img.width - 1, 0, 1, 1).data,
+            ctx.getImageData(0, img.height - 1, 1, 1).data,
+            ctx.getImageData(img.width - 1, img.height - 1, 1, 1).data,
+          ];
+
+          // Find the most common corner color (likely background)
+          const avgR = Math.round(corners.reduce((sum, c) => sum + c[0], 0) / 4);
+          const avgG = Math.round(corners.reduce((sum, c) => sum + c[1], 0) / 4);
+          const avgB = Math.round(corners.reduce((sum, c) => sum + c[2], 0) / 4);
+
+          const detectedColor = `#${avgR.toString(16).padStart(2, '0')}${avgG.toString(16).padStart(2, '0')}${avgB.toString(16).padStart(2, '0')}`;
+          setBgColor(detectedColor);
+          toast.info(`Background color auto-detected: ${detectedColor.toUpperCase()}`);
+        }
       };
       img.src = url;
     }
@@ -97,7 +95,6 @@ export default function ImageBackgroundRemover() {
     if (!isPickingColor || !imageRef.current) return;
 
     try {
-      // Create a temporary canvas to get pixel data
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d', { alpha: true });
       if (!ctx) {
@@ -110,7 +107,6 @@ export default function ImageBackgroundRemover() {
       canvas.height = img.naturalHeight;
       ctx.drawImage(img, 0, 0);
 
-      // Calculate click position relative to image
       const rect = img.getBoundingClientRect();
       const scaleX = img.naturalWidth / rect.width;
       const scaleY = img.naturalHeight / rect.height;
@@ -118,7 +114,6 @@ export default function ImageBackgroundRemover() {
       const x = Math.floor((event.clientX - rect.left) * scaleX);
       const y = Math.floor((event.clientY - rect.top) * scaleY);
 
-      // Ensure coordinates are within bounds
       if (x < 0 || x >= img.naturalWidth || y < 0 || y >= img.naturalHeight) {
         toast.error('Clicked outside image bounds');
         return;
@@ -141,7 +136,7 @@ export default function ImageBackgroundRemover() {
     setIsProcessing(true);
 
     try {
-      toast.info("Analyzing image for background removal...");
+      toast.info("Removing background...");
 
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -158,10 +153,7 @@ export default function ImageBackgroundRemover() {
           return;
         }
 
-        // Draw the image
         ctx.drawImage(img, 0, 0);
-
-        // Get image data
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
         const width = canvas.width;
@@ -172,74 +164,137 @@ export default function ImageBackgroundRemover() {
         const bgG = parseInt(bgColor.slice(3, 5), 16);
         const bgB = parseInt(bgColor.slice(5, 7), 16);
 
-        // Create a mask for background pixels
-        const backgroundMask = new Uint8Array(width * height);
-        const threshold = (tolerance / 100) * 255;
+        const threshold = (tolerance / 100) * 441.67; // Max distance is sqrt(255^2 * 3) ≈ 441.67
 
-        // First pass: identify background pixels
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const index = (y * width + x) * 4;
-            const r = data[index];
-            const g = data[index + 1];
-            const b = data[index + 2];
+        // Create mask for background pixels
+        const mask = new Float32Array(width * height);
 
-            // Calculate color distance
-            const distance = Math.sqrt(
-              Math.pow(r - bgR, 2) +
-              Math.pow(g - bgG, 2) +
-              Math.pow(b - bgB, 2)
-            );
+        // Calculate color distance for each pixel
+        for (let i = 0; i < width * height; i++) {
+          const idx = i * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
 
-            backgroundMask[y * width + x] = distance <= threshold ? 1 : 0;
+          const distance = Math.sqrt(
+            Math.pow(r - bgR, 2) +
+            Math.pow(g - bgG, 2) +
+            Math.pow(b - bgB, 2)
+          );
+
+          // Soft edge based on distance
+          if (distance <= threshold) {
+            mask[i] = 1 - (distance / threshold) * 0.5; // 1 = fully background, 0.5 = edge
+          } else {
+            mask[i] = 0; // Not background
           }
         }
 
-        // Second pass: apply morphological operations to clean up the mask
-        const cleanedMask = new Uint8Array(width * height);
+        // Flood fill from corners if enabled
+        if (useFloodFill) {
+          const visited = new Uint8Array(width * height);
+          const queue: number[] = [];
 
-        // Simple noise reduction: if a pixel is surrounded by background, keep it
-        for (let y = 1; y < height - 1; y++) {
-          for (let x = 1; x < width - 1; x++) {
+          // Start from all 4 corners
+          const startPoints = [
+            0,
+            width - 1,
+            (height - 1) * width,
+            (height - 1) * width + (width - 1)
+          ];
+
+          // Add edge pixels as starting points
+          for (let x = 0; x < width; x++) {
+            startPoints.push(x); // Top edge
+            startPoints.push((height - 1) * width + x); // Bottom edge
+          }
+          for (let y = 0; y < height; y++) {
+            startPoints.push(y * width); // Left edge
+            startPoints.push(y * width + (width - 1)); // Right edge
+          }
+
+          startPoints.forEach(idx => {
+            if (mask[idx] > 0 && !visited[idx]) {
+              queue.push(idx);
+              visited[idx] = 1;
+            }
+          });
+
+          // BFS flood fill
+          while (queue.length > 0) {
+            const idx = queue.shift()!;
+            const x = idx % width;
+            const y = Math.floor(idx / width);
+
+            // Check 4 neighbors
             const neighbors = [
-              backgroundMask[(y - 1) * width + (x - 1)],
-              backgroundMask[(y - 1) * width + x],
-              backgroundMask[(y - 1) * width + (x + 1)],
-              backgroundMask[y * width + (x - 1)],
-              backgroundMask[y * width + (x + 1)],
-              backgroundMask[(y + 1) * width + (x - 1)],
-              backgroundMask[(y + 1) * width + x],
-              backgroundMask[(y + 1) * width + (x + 1)]
+              y > 0 ? idx - width : -1,
+              y < height - 1 ? idx + width : -1,
+              x > 0 ? idx - 1 : -1,
+              x < width - 1 ? idx + 1 : -1,
             ];
 
-            const backgroundNeighbors = neighbors.reduce((sum, val) => sum + val, 0);
+            for (const nIdx of neighbors) {
+              if (nIdx >= 0 && !visited[nIdx] && mask[nIdx] > 0) {
+                visited[nIdx] = 1;
+                queue.push(nIdx);
+              }
+            }
+          }
 
-            // If most neighbors are background and current pixel is background, keep it
-            if (backgroundMask[y * width + x] === 1 && backgroundNeighbors >= 5) {
-              cleanedMask[y * width + x] = 1;
-            } else if (backgroundMask[y * width + x] === 0 && backgroundNeighbors <= 2) {
-              // If few neighbors are background but current is foreground, keep foreground
-              cleanedMask[y * width + x] = 0;
-            } else {
-              cleanedMask[y * width + x] = backgroundMask[y * width + x];
+          // Only keep background pixels that are connected to edges
+          for (let i = 0; i < mask.length; i++) {
+            if (!visited[i]) {
+              mask[i] = 0;
             }
           }
         }
 
-        // Apply the mask to create transparency
-        let pixelsModified = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          const pixelIndex = Math.floor(i / 4);
-          if (cleanedMask[pixelIndex] === 1) {
-            data[i + 3] = 0; // Set alpha to 0 (transparent)
-            pixelsModified++;
+        // Apply feathering (blur the mask edges)
+        if (feathering > 0) {
+          const blurredMask = new Float32Array(width * height);
+          const radius = feathering;
+
+          for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+              let sum = 0;
+              let count = 0;
+
+              for (let dy = -radius; dy <= radius; dy++) {
+                for (let dx = -radius; dx <= radius; dx++) {
+                  const nx = x + dx;
+                  const ny = y + dy;
+                  if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    sum += mask[ny * width + nx];
+                    count++;
+                  }
+                }
+              }
+
+              blurredMask[y * width + x] = sum / count;
+            }
+          }
+
+          // Apply blurred mask
+          for (let i = 0; i < mask.length; i++) {
+            mask[i] = blurredMask[i];
           }
         }
 
-        // Put the modified data back
-        ctx.putImageData(imageData, 0, 0);
+        // Apply mask to create transparency
+        let pixelsModified = 0;
+        for (let i = 0; i < width * height; i++) {
+          if (mask[i] > 0) {
+            const idx = i * 4;
+            const newAlpha = Math.round((1 - mask[i]) * 255);
+            if (newAlpha < data[idx + 3]) {
+              data[idx + 3] = newAlpha;
+              pixelsModified++;
+            }
+          }
+        }
 
-        // Generate result
+        ctx.putImageData(imageData, 0, 0);
         const resultUrl = canvas.toDataURL('image/png');
 
         setProcessedImage(resultUrl);
@@ -248,9 +303,9 @@ export default function ImageBackgroundRemover() {
         setProcessedSize(fileSizeBytes);
 
         if (pixelsModified > 0) {
-          toast.success(`Success! Removed background from ${pixelsModified.toLocaleString()} pixels.`);
+          toast.success(`Background removed from ${pixelsModified.toLocaleString()} pixels`);
         } else {
-          toast.warning("No background pixels found. Try adjusting the color or tolerance, or click on the image to sample a background color.");
+          toast.warning("No matching background found. Try adjusting the color or tolerance.");
         }
 
         setIsProcessing(false);
@@ -268,7 +323,7 @@ export default function ImageBackgroundRemover() {
       toast.error("An error occurred during processing. Please try again.");
       setIsProcessing(false);
     }
-  }, [imageUrl, bgColor, tolerance]);
+  }, [imageUrl, bgColor, tolerance, feathering, useFloodFill]);
 
   const handleDownload = useCallback(() => {
     if (!processedImage) return;
@@ -288,20 +343,21 @@ export default function ImageBackgroundRemover() {
     setProcessedSize(0);
     setOriginalSize(0);
     setHoverPreview({ url: "", show: false });
+    setBgColor("#ffffff");
   }, []);
 
   const faqs = [
     {
       question: "How does background removal work?",
-      answer: "Our tool removes pixels that match your selected background color within a specified tolerance range. It's perfect for images with solid color backgrounds.",
+      answer: "Our tool automatically detects the background color from image corners and removes connected pixels matching that color. It uses flood-fill to only remove the actual background, not similar colors inside the subject.",
     },
     {
       question: "What types of images work best?",
-      answer: "Images with solid, uniform background colors work best. White, black, or colored backgrounds on products, logos, and simple objects produce the best results.",
+      answer: "Images with solid, uniform background colors work best. White, black, green screen, or any solid colored backgrounds on products, logos, and portraits produce excellent results.",
     },
     {
-      question: "How do I pick the right color?",
-      answer: "Use the color picker or click directly on the image to sample the background color. Adjust the tolerance slider to include more or less similar colors.",
+      question: "How do I get better results?",
+      answer: "1) Use the pipette to pick the exact background color. 2) Adjust tolerance for more/less aggressive removal. 3) Enable 'Connected Only' to preserve similar colors inside the subject. 4) Increase feathering for smoother edges.",
     },
     {
       question: "Is my image uploaded to a server?",
@@ -312,7 +368,7 @@ export default function ImageBackgroundRemover() {
   return (
     <ToolLayout
       title="Background Remover"
-      description="Remove solid color backgrounds from images using intelligent color matching and edge detection."
+      description="Remove solid color backgrounds from images with automatic detection and smart edge handling."
       category="image"
       categoryLabel="Image Tools"
       icon={Sparkles}
@@ -403,7 +459,7 @@ export default function ImageBackgroundRemover() {
             {/* Quick tips */}
             <div className="mt-8 grid grid-cols-3 gap-4">
               {[
-                { icon: Palette, label: "Color Picker", desc: "Pick background color" },
+                { icon: Wand2, label: "Auto Detect", desc: "Smart color detection" },
                 { icon: Zap, label: "Instant", desc: "No upload needed" },
                 { icon: TrendingDown, label: "Transparent", desc: "PNG with alpha" },
               ].map((item) => (
@@ -452,24 +508,23 @@ export default function ImageBackgroundRemover() {
               <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
                 {/* Image Preview */}
                 <div className="space-y-4">
-                  {/* Gradient border wrapper */}
                   <div className="p-px rounded-2xl bg-gradient-to-br from-indigo-500/30 via-transparent to-violet-500/30">
                     <div
                       className="relative rounded-2xl overflow-hidden bg-neutral-950 flex items-center justify-center min-h-[350px] p-6 group cursor-zoom-in"
-                      onMouseEnter={() => imageUrl && setHoverPreview({ url: imageUrl, show: true })}
+                      style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'10\' height=\'10\' fill=\'%23333\'/%3E%3Crect x=\'10\' y=\'10\' width=\'10\' height=\'10\' fill=\'%23333\'/%3E%3C/svg%3E")' }}
+                      onMouseEnter={() => imageUrl && setHoverPreview({ url: processedImage || imageUrl, show: true })}
                       onMouseLeave={() => setHoverPreview(prev => ({ ...prev, show: false }))}
                     >
                       <img
                         ref={imageRef}
-                        src={imageUrl}
-                        alt="Original"
+                        src={processedImage || imageUrl}
+                        alt="Preview"
                         className={cn(
                           "max-w-full max-h-[320px] object-contain rounded-lg transition-transform group-hover:scale-[1.02]",
                           isPickingColor ? "cursor-crosshair" : ""
                         )}
                         onClick={pickColorFromImage}
                       />
-                      {/* Hover indicator */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <div className="p-3 rounded-full bg-black/60 backdrop-blur-sm border border-white/20">
                           <ZoomIn className="h-5 w-5 text-white" />
@@ -492,7 +547,6 @@ export default function ImageBackgroundRemover() {
                   <div className="p-4 rounded-2xl bg-card border border-border space-y-4">
                     <Label className="text-sm font-semibold">Background Color</Label>
 
-                    {/* Color Input */}
                     <div className="flex items-center gap-3">
                       <input
                         type="color"
@@ -517,7 +571,6 @@ export default function ImageBackgroundRemover() {
                       </Button>
                     </div>
 
-                    {/* Color Picker Instructions */}
                     {isPickingColor && (
                       <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-200">
                         <strong>Click on the image</strong> to pick a background color
@@ -528,39 +581,48 @@ export default function ImageBackgroundRemover() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">Tolerance</span>
-                        <span className="text-xs font-mono">{tolerance}</span>
+                        <span className="text-xs font-mono">{tolerance}%</span>
                       </div>
                       <Slider
                         value={[tolerance]}
                         onValueChange={([v]) => setTolerance(v)}
-                        min={1}
-                        max={100}
+                        min={5}
+                        max={60}
                         step={1}
                         className="py-1"
                       />
-                      <div className="flex justify-between text-[10px] text-muted-foreground">
-                        <span>Exact match</span>
-                        <span>Loose match</span>
+                    </div>
+
+                    {/* Feathering Slider */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">Edge Smoothing</span>
+                        <span className="text-xs font-mono">{feathering}px</span>
                       </div>
+                      <Slider
+                        value={[feathering]}
+                        onValueChange={([v]) => setFeathering(v)}
+                        min={0}
+                        max={5}
+                        step={1}
+                        className="py-1"
+                      />
                     </div>
-                  </div>
 
-                  {/* Info */}
-                  <div className="p-4 rounded-2xl bg-card border border-border space-y-3">
-                    <Label className="text-sm font-semibold">How to Use</Label>
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <p>1. Upload your image</p>
-                      <p>2. Click the pipette button, then click on the background color in your image</p>
-                      <p>3. Adjust tolerance if needed</p>
-                      <p>4. Click "Remove Background"</p>
-                    </div>
-                    <div className="pt-2 border-t border-border">
-                      <p className="text-xs text-amber-600 dark:text-amber-400">
-                        💡 Best results with solid color backgrounds
-                      </p>
-                    </div>
+                    {/* Flood Fill Toggle */}
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={useFloodFill}
+                        onChange={(e) => setUseFloodFill(e.target.checked)}
+                        className="w-4 h-4 rounded border-border"
+                      />
+                      <div>
+                        <span className="text-sm font-medium">Connected Only</span>
+                        <p className="text-xs text-muted-foreground">Only remove background connected to edges</p>
+                      </div>
+                    </label>
                   </div>
-
 
                   {/* Remove Background Button */}
                   <Button
@@ -596,11 +658,9 @@ export default function ImageBackgroundRemover() {
                   className="max-w-4xl mx-auto"
                 >
                   <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-purple-500/10 border border-indigo-500/30 shadow-xl shadow-indigo-500/5">
-                    {/* Success banner */}
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-violet-400 to-purple-500" />
 
                     <div className="p-6 sm:p-8">
-                      {/* Success Header */}
                       <div className="flex items-center gap-4 mb-6">
                         <motion.div
                           initial={{ scale: 0 }}
@@ -617,55 +677,6 @@ export default function ImageBackgroundRemover() {
                           <p className="text-sm text-muted-foreground">
                             Your image is ready for download
                           </p>
-                        </div>
-                      </div>
-
-                      {/* Before/After Comparison */}
-                      <div className="grid grid-cols-2 gap-6 mb-6">
-                        <div className="space-y-2">
-                          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                            Before
-                          </div>
-                          <div
-                            className="rounded-xl border border-border overflow-hidden bg-neutral-950/30 p-4 flex items-center justify-center min-h-[160px] group cursor-zoom-in transition-all hover:border-white/20"
-                            onMouseEnter={() => imageUrl && setHoverPreview({ url: imageUrl, show: true })}
-                            onMouseLeave={() => setHoverPreview(prev => ({ ...prev, show: false }))}
-                          >
-                            <img
-                              src={imageUrl}
-                              alt="Original"
-                              className="max-w-full max-h-[140px] object-contain rounded-lg transition-transform group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                              <div className="p-2 rounded-full bg-black/60 backdrop-blur-sm">
-                                <ZoomIn className="h-4 w-4 text-white" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="text-xs font-medium text-indigo-500 uppercase tracking-wider flex items-center gap-2">
-                            After
-                            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-[10px]">
-                              No Background
-                            </span>
-                          </div>
-                          <div
-                            className="rounded-xl border border-indigo-500/30 overflow-hidden bg-neutral-950/30 p-4 flex items-center justify-center min-h-[160px] group cursor-zoom-in transition-all hover:border-indigo-500/50"
-                            onMouseEnter={() => processedImage && setHoverPreview({ url: processedImage, show: true })}
-                            onMouseLeave={() => setHoverPreview(prev => ({ ...prev, show: false }))}
-                          >
-                            <img
-                              src={processedImage}
-                              alt="Background Removed"
-                              className="max-w-full max-h-[140px] object-contain rounded-lg transition-transform group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                              <div className="p-2 rounded-full bg-black/60 backdrop-blur-sm">
-                                <ZoomIn className="h-4 w-4 text-white" />
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       </div>
 

@@ -646,27 +646,6 @@ export default function ImageCompressor() {
         }}
         topics={[
           {
-            title: "How to Compress Images for Web",
-            description: "Complete guide to image compression techniques, formats, and tools for optimal web performance.",
-            href: "/guides/image-compression-web-guide",
-            type: "guide",
-            category: "Web Optimization"
-          },
-          {
-            title: "Image Format Comparison: JPG vs PNG vs WebP",
-            description: "Detailed comparison of image formats with real examples and performance benchmarks.",
-            href: "/guides/image-formats-comparison",
-            type: "comparison",
-            category: "Technical Guide"
-          },
-          {
-            title: "Batch Image Processing Tutorial",
-            description: "Learn how to process multiple images efficiently using our advanced tools.",
-            href: "/guides/batch-image-processing",
-            type: "tutorial",
-            category: "Productivity"
-          },
-          {
             title: "Image Resizer",
             description: "Change image dimensions and aspect ratios with precision",
             href: "/image-tools/resize-image",

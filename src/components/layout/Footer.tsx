@@ -1,12 +1,14 @@
-import { Code2, FileText, Heart, Image, Shield, Sparkles, Type, Wrench, Zap } from "lucide-react";
+import { Code2, FileText, Heart, Image, Shield, Sparkles, Type, Video, Wrench, Zap } from "lucide-react";
 import Link from "next/link";
 
 const footerLinks = {
   "Image Tools": [
-    { title: "Image Cropper", href: "/image-tools/crop-image" },
     { title: "Image Compressor", href: "/image-tools/compress-image" },
+    { title: "Image Cropper", href: "/image-tools/crop-image" },
+    { title: "Resize Image", href: "/image-tools/resize-image" },
     { title: "Format Converter", href: "/image-tools/format-converter" },
     { title: "Background Remover", href: "/image-tools/remove-background" },
+    { title: "Blur Image", href: "/image-tools/blur-image" },
     { title: "Image to Text (OCR)", href: "/image-tools/ocr" },
   ],
   "PDF Tools": [
@@ -15,10 +17,12 @@ const footerLinks = {
     { title: "Compress PDF", href: "/pdf-tools/compress-pdf" },
     { title: "PDF to Image", href: "/pdf-tools/pdf-to-image" },
     { title: "Image to PDF", href: "/pdf-tools/image-to-pdf" },
+    { title: "Rotate PDF", href: "/pdf-tools/rotate-pdf" },
   ],
   "Text Tools": [
     { title: "Word Counter", href: "/text-tools/word-counter" },
     { title: "Case Converter", href: "/text-tools/case-converter" },
+    { title: "Text Formatter", href: "/text-tools/text-formatter" },
     { title: "Remove Duplicates", href: "/text-tools/remove-duplicates" },
     { title: "Lorem Ipsum", href: "/text-tools/lorem-ipsum" },
   ],
@@ -28,6 +32,24 @@ const footerLinks = {
     { title: "UUID Generator", href: "/dev-tools/uuid-generator" },
     { title: "JWT Decoder", href: "/dev-tools/jwt-decoder" },
     { title: "Hash Generator", href: "/dev-tools/hash-generator" },
+    { title: "Regex Tester", href: "/dev-tools/regex-tester" },
+    { title: "URL Encoder", href: "/dev-tools/url-encoder" },
+    { title: "Cron Parser", href: "/dev-tools/cron-parser" },
+    { title: "Markdown Renderer", href: "/dev-tools/markdown-renderer" },
+  ],
+  "Utilities": [
+    { title: "QR Code Generator", href: "/utility-tools/qr-code" },
+    { title: "Barcode Generator", href: "/utility-tools/barcode" },
+    { title: "Password Generator", href: "/utility-tools/password-generator" },
+    { title: "Color Converter", href: "/utility-tools/color-converter" },
+    { title: "Unit Converter", href: "/utility-tools/unit-converter" },
+    { title: "Timestamp Converter", href: "/utility-tools/timestamp" },
+    { title: "Countdown Timer", href: "/utility-tools/countdown" },
+  ],
+  "Video Tools": [
+    { title: "Compress Video", href: "/video-tools/compress-video" },
+    { title: "Video to Audio", href: "/video-tools/video-to-audio" },
+    { title: "Video to GIF", href: "/video-tools/video-to-gif" },
   ],
 };
 
@@ -37,6 +59,7 @@ const categoryIcons: Record<string, React.ElementType> = {
   "Text Tools": Type,
   "Dev Tools": Code2,
   "Utilities": Wrench,
+  "Video Tools": Video,
 };
 
 export default function Footer() {

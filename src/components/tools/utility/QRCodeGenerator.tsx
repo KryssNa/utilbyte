@@ -730,34 +730,6 @@ export default function QRCodeGenerator() {
         }}
         topics={[
           {
-            title: "QR Code Marketing Guide",
-            description: "Complete guide to using QR codes for marketing campaigns, lead generation, and customer engagement.",
-            href: "/guides/qr-code-marketing-guide",
-            type: "guide",
-            category: "Marketing"
-          },
-          {
-            title: "QR Code vs Barcodes: Complete Comparison",
-            description: "Detailed comparison of QR codes, barcodes, and other identification systems with use cases and benefits.",
-            href: "/guides/qr-codes-vs-barcodes",
-            type: "comparison",
-            category: "Technical Guide"
-          },
-          {
-            title: "Business Card QR Codes Tutorial",
-            description: "Learn how to create digital business cards with QR codes for easy contact sharing.",
-            href: "/guides/business-card-qr-codes",
-            type: "tutorial",
-            category: "Business"
-          },
-          {
-            title: "WiFi QR Code Setup Guide",
-            description: "Generate QR codes for WiFi sharing - perfect for cafes, offices, and events.",
-            href: "/guides/wifi-qr-code-setup",
-            type: "guide",
-            category: "Productivity"
-          },
-          {
             title: "Barcode Generator",
             description: "Generate EAN13, CODE128, UPC, and other barcode formats",
             href: "/utility-tools/barcode",

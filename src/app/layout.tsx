@@ -29,11 +29,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "UtilByte - Free Online Tools for Image, PDF, Text & Developer Work",
+    default: "UtilByte - Free Online Tools for Everyday Work",
     template: "%s | UtilByte",
   },
   description:
-    "Free online tools for image compression, PDF merging, text formatting, JSON validation, and more. No sign-up required. No uploads. Everything runs in your browser for complete privacy.",
+    "Free online tools for images, PDFs, text & code. No login, no uploads. 100% browser-based for complete privacy.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -62,23 +62,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://utilbyte.app"),
   alternates: {
     canonical: "https://utilbyte.app",
-    languages: {
-      'en-US': 'https://utilbyte.app',
-      'en-GB': 'https://utilbyte.app',
-      'en-CA': 'https://utilbyte.app',
-      'en-AU': 'https://utilbyte.app',
-      'en-IN': 'https://utilbyte.app',
-      'es-ES': 'https://utilbyte.app/es',
-      'fr-FR': 'https://utilbyte.app/fr',
-      'de-DE': 'https://utilbyte.app/de',
-      'it-IT': 'https://utilbyte.app/it',
-      'pt-BR': 'https://utilbyte.app/pt',
-      'ja-JP': 'https://utilbyte.app/ja',
-      'ko-KR': 'https://utilbyte.app/ko',
-      'zh-CN': 'https://utilbyte.app/zh',
-      'ru-RU': 'https://utilbyte.app/ru',
-      'ar-SA': 'https://utilbyte.app/ar',
-    },
   },
   openGraph: {
     type: "website",
@@ -117,13 +100,9 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "your-google-site-verification-code",
+    google: "8OcRIrEyD5iBYI160jUjGdviKx59wPO8mG9MGzQxLN0",
   },
-  // Advanced SEO for world-class ranking
   other: {
-    "google-site-verification": "your-google-site-verification-code",
-    "msvalidate.01": "your-bing-verification-code",
-    "yandex-verification": "your-yandex-verification-code",
     // Performance and SEO hints
     "format-detection": "telephone=no",
     "theme-color": "#000000",
@@ -150,10 +129,8 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <link rel="icon" type="image/svg+xml" href="/logo.svg?v=1" />
-      <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1" />
-      <link rel="apple-touch-icon" href="/logo.svg?v=1" />
-      <link rel="shortcut icon" href="/favicon.ico?v=1" />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+      <link rel="apple-touch-icon" href="/logo_small.png" />
       <meta name="msapplication-TileColor" content="#000000" />
       <meta name="theme-color" content="#000000" />
       <meta name="google-adsense-account" content="ca-pub-4931770581801597" />

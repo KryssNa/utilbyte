@@ -172,27 +172,6 @@ export default function JSONFormatter() {
         }}
         topics={[
           {
-            title: "JSON Best Practices Guide",
-            description: "Complete guide to JSON formatting, validation, and optimization techniques for developers.",
-            href: "/guides/json-best-practices",
-            type: "guide",
-            category: "Development"
-          },
-          {
-            title: "API Development with JSON",
-            description: "Learn how to work with JSON APIs, handle responses, and debug API calls effectively.",
-            href: "/guides/api-development-json",
-            type: "tutorial",
-            category: "Backend Development"
-          },
-          {
-            title: "JSON vs XML vs YAML Comparison",
-            description: "Detailed comparison of data formats with use cases, performance benchmarks, and migration guides.",
-            href: "/guides/json-xml-yaml-comparison",
-            type: "comparison",
-            category: "Technical Guide"
-          },
-          {
             title: "Base64 Encoder/Decoder",
             description: "Encode and decode Base64 strings for data transmission and storage",
             href: "/dev-tools/base64",

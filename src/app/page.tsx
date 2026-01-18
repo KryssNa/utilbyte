@@ -3,9 +3,9 @@ import HomePageClient from "./HomePageClient";
 
 // Fix: "other" should be an object, not an array of object(s) and string key
 export const metadata: Metadata = {
-  title: "UtilByte - Free Online Tools for Image, PDF, Text & Developer Work",
+  title: "UtilByte - Free Online Tools for Everyday Work",
   description:
-    "Free online tools for image compression, PDF merging, text formatting, JSON validation, and more. No sign-up required. No uploads. Everything runs in your browser for complete privacy.",
+    "Free online tools for images, PDFs, text & code. No login, no uploads. 100% browser-based for complete privacy.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "UtilByte - Free Online Tools for Everyday Work",
-        "description": "Free online tools for image compression, PDF merging, text formatting, JSON validation, and more. No sign-up required. No uploads. Everything runs in your browser for complete privacy.",
+        "description": "Free online tools for images, PDFs, text & code. No login, no uploads. 100% browser-based for complete privacy.",
         "url": "https://utilbyte.app",
         "isPartOf": {
           "@type": "WebSite",
@@ -143,29 +143,21 @@ export const metadata: Metadata = {
           "@type": "Organization",
           "name": "UtilByte"
         },
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://utilbyte.app/search?q={search_term_string}"
-          },
-          "query-input": "required name=search_term_string"
-        },
         "mainEntity": [
           {
             "@type": "SiteNavigationElement",
             "name": "Image Tools",
-            "url": "https://utilbyte.app#image-tools"
+            "url": "https://utilbyte.app/#image-tools"
           },
           {
             "@type": "SiteNavigationElement",
             "name": "PDF Tools",
-            "url": "https://utilbyte.app#pdf-tools"
+            "url": "https://utilbyte.app/#pdf-tools"
           },
           {
             "@type": "SiteNavigationElement",
             "name": "Developer Tools",
-            "url": "https://utilbyte.app#dev-tools"
+            "url": "https://utilbyte.app/#dev-tools"
           }
         ]
       },
