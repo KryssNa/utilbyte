@@ -134,6 +134,12 @@ export default function Footer() {
             © {new Date().getFullYear()} UtilByte. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
+            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+              About
+            </Link>
+            <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+              Contact
+            </Link>
             <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               Privacy
             </Link>

@@ -1,8 +1,1 @@
-# ads.txt file for UtilByte
-# This file authorizes Google to sell ads on this website
-
-# Google AdSense
 google.com, pub-4931770581801597, DIRECT, f08c47fec0942fa0
-
-# Additional authorized sellers can be added here in the future
-# Format: domain.com, publisher-id, relationship-type, verification-tag

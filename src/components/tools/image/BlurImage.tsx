@@ -62,6 +62,13 @@ export default function BlurImage() {
     }
   }, []);
 
+  // Clear hover preview when image is removed
+  useEffect(() => {
+    if (!imageUrl) {
+      setHoverPreview({ url: "", show: false });
+    }
+  }, [imageUrl]);
+
   // Generate live preview
   useEffect(() => {
     if (!imageUrl || !imageDimensions) return;
@@ -240,13 +247,14 @@ export default function BlurImage() {
 
       {/* Hover Preview Modal */}
       <AnimatePresence>
-        {hoverPreview.show && hoverPreview.url && (
+        {hoverPreview.show && hoverPreview.url && imageUrl && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            onMouseMove={() => setHoverPreview({ url: "", show: false })}
           >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div
@@ -329,7 +337,7 @@ export default function BlurImage() {
                     <div
                       className="relative rounded-2xl overflow-hidden bg-neutral-950 flex items-center justify-center min-h-[380px] p-6 group cursor-zoom-in"
                       onMouseEnter={() => previewUrl && setHoverPreview({ url: previewUrl, show: true })}
-                      onMouseLeave={() => setHoverPreview(prev => ({ ...prev, show: false }))}
+                      onMouseLeave={() => setHoverPreview({ url: "", show: false })}
                     >
                       {previewUrl ? (
                         <img
@@ -505,7 +513,7 @@ export default function BlurImage() {
                         <div
                           className="relative group cursor-zoom-in"
                           onMouseEnter={() => setHoverPreview({ url: processedImage, show: true })}
-                          onMouseLeave={() => setHoverPreview(prev => ({ ...prev, show: false }))}
+                          onMouseLeave={() => setHoverPreview({ url: "", show: false })}
                         >
                           <div className="rounded-xl border border-white/10 overflow-hidden bg-neutral-950/50 p-3 transition-all group-hover:border-emerald-500/40">
                             <img src={processedImage} alt="Processed" className="max-w-[220px] max-h-[160px] object-contain rounded-lg transition-transform group-hover:scale-[1.02]" />
