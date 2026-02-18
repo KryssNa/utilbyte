@@ -96,50 +96,50 @@ export default function ToolLayout({
             transition={{ duration: 0.3 }}
             className="border-b border-[rgb(var(--border))]"
           >
-            <div className="container mx-auto px-4 py-8 lg:px-8 lg:py-10">
+            <div className="container mx-auto px-4 py-4 lg:px-8 lg:py-5">
               {/* Breadcrumb */}
-              <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 cursor-pointer">
-                <ArrowLeft className="h-4 w-4" />
+              <Link href="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3 cursor-pointer">
+                <ArrowLeft className="h-3.5 w-3.5" />
                 <span>All Tools</span>
               </Link>
 
               {/* Title Area */}
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div className="flex-1 max-w-2xl">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex-1">
                   {/* Category + Title */}
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
                     {Icon && (
-                      <div className={cn("p-2 rounded-lg", colors.badge)}>
-                        <Icon className={cn("h-5 w-5", colors.icon)} />
+                      <div className={cn("p-1.5 rounded-md", colors.badge)}>
+                        <Icon className={cn("h-4 w-4", colors.icon)} />
                       </div>
                     )}
                     {categoryLabel && (
-                      <span className={cn("text-xs font-medium uppercase tracking-wide", colors.icon)}>
+                      <span className={cn("text-[10px] font-medium uppercase tracking-wide", colors.icon)}>
                         {categoryLabel}
                       </span>
                     )}
                   </div>
 
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+                  <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
                     {title}
                   </h1>
-                  <p className="mt-2 text-muted-foreground text-sm sm:text-base">
+                  <p className="mt-1 text-muted-foreground text-xs sm:text-sm">
                     {description}
                   </p>
                 </div>
 
                 {/* Trust Indicators - Minimal */}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <Shield className="h-3.5 w-3.5 text-emerald-500" />
+                <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Shield className="h-3 w-3 text-emerald-500" />
                     <span>Private</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="h-3.5 w-3.5 text-amber-500" />
+                  <div className="flex items-center gap-1">
+                    <Zap className="h-3 w-3 text-amber-500" />
                     <span>Instant</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5" />
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
                     <span>No signup</span>
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export default function ToolLayout({
       </AnimatePresence>
 
       {/* Main Tool Area */}
-      <section className="container mx-auto px-4 py-8 lg:px-8 lg:py-12">
+      <section className="container mx-auto px-4 py-6 lg:px-8 lg:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

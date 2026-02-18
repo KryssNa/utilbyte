@@ -4,7 +4,9 @@ import ContentCluster from "@/components/shared/ContentCluster";
 import ToolLayout from "@/components/shared/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, Braces, Check, CheckCircle, Copy, RotateCcw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Braces, Check, CheckCircle, Copy, RotateCcw, Minimize2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,23 +14,46 @@ export default function JSONFormatter() {
   const [input, setInput] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
-  const { formatted, error, isValid } = useMemo(() => {
+  const [indentSize, setIndentSize] = useState<number>(2);
+
+  const { formatted, error, isValid, stats } = useMemo(() => {
     if (!input.trim()) {
-      return { formatted: "", error: null, isValid: true };
+      return { formatted: "", error: null, isValid: true, stats: { keys: 0, depth: 0, size: 0 } };
     }
 
     try {
       const parsed = JSON.parse(input);
-      const formatted = JSON.stringify(parsed, null, 2);
-      return { formatted, error: null, isValid: true };
+      const formatted = JSON.stringify(parsed, null, indentSize);
+
+      const calculateDepth = (obj: any, currentDepth = 0): number => {
+        if (typeof obj !== 'object' || obj === null) return currentDepth;
+        return Math.max(
+          currentDepth,
+          ...Object.values(obj).map(val => calculateDepth(val, currentDepth + 1))
+        );
+      };
+
+      const countKeys = (obj: any): number => {
+        if (typeof obj !== 'object' || obj === null) return 0;
+        return Object.keys(obj).length + Object.values(obj).reduce((sum: number, val) => sum + countKeys(val), 0);
+      };
+
+      const stats = {
+        keys: countKeys(parsed),
+        depth: calculateDepth(parsed),
+        size: formatted.length
+      };
+
+      return { formatted, error: null, isValid: true, stats };
     } catch (err) {
       return {
         formatted: "",
         error: err instanceof Error ? err.message : "Invalid JSON",
-        isValid: false
+        isValid: false,
+        stats: { keys: 0, depth: 0, size: 0 }
       };
     }
-  }, [input]);
+  }, [input, indentSize]);
 
   const handleCopy = useCallback(async () => {
     if (!formatted) return;
@@ -56,6 +81,17 @@ export default function JSONFormatter() {
       active: true
     };
     setInput(JSON.stringify(sample));
+  };
+
+  const handleMinify = () => {
+    if (!formatted) return;
+    try {
+      const parsed = JSON.parse(formatted);
+      setInput(JSON.stringify(parsed));
+      toast.success("JSON minified!");
+    } catch (err) {
+      toast.error("Cannot minify invalid JSON");
+    }
   };
 
   const faqs = [
@@ -90,9 +126,19 @@ export default function JSONFormatter() {
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Input Area */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className="text-sm font-medium">Input JSON</h3>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <Select value={indentSize.toString()} onValueChange={(v) => setIndentSize(Number(v))}>
+                <SelectTrigger className="w-[100px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2">2 spaces</SelectItem>
+                  <SelectItem value="4">4 spaces</SelectItem>
+                  <SelectItem value="8">Tab</SelectItem>
+                </SelectContent>
+              </Select>
               <Button variant="outline" size="sm" onClick={handleSample}>
                 Sample
               </Button>
@@ -130,18 +176,45 @@ export default function JSONFormatter() {
 
         {/* Output Area */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">Formatted JSON</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopy}
-              disabled={!formatted}
-              className="gap-2"
-            >
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              Copy
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium">Formatted JSON</h3>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleMinify}
+                  disabled={!formatted}
+                  className="gap-2"
+                >
+                  <Minimize2 className="h-3.5 w-3.5" />
+                  Minify
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopy}
+                  disabled={!formatted}
+                  className="gap-2"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  Copy
+                </Button>
+              </div>
+            </div>
+            {isValid && stats.keys > 0 && (
+              <div className="flex gap-2 flex-wrap">
+                <Badge variant="secondary" className="text-xs">
+                  {stats.keys} keys
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {stats.depth} depth
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {stats.size} bytes
+                </Badge>
+              </div>
+            )}
           </div>
 
           <div className="relative">
