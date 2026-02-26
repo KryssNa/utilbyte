@@ -13,8 +13,6 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -41,10 +39,10 @@ export default function Navbar() {
 
   const startClose = useCallback(() => {
     clearPendingClose();
-    closeTimer.current = setTimeout(() => setMegaOpen(false), 250);
+    closeTimer.current = setTimeout(() => setMegaOpen(false), 300);
   }, [clearPendingClose]);
 
-  const open = useCallback(() => {
+  const keepOpen = useCallback(() => {
     clearPendingClose();
     setMegaOpen(true);
   }, [clearPendingClose]);
@@ -58,7 +56,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full">
+      <header className={cn("sticky top-0 w-full", megaOpen ? "z-[70]" : "z-50")}>
         <div className="h-[2px] bg-gradient-to-r from-sky-500 via-teal-500 to-emerald-500" />
 
         <nav className="relative border-b border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150">
@@ -79,9 +77,8 @@ export default function Navbar() {
 
             <div className="hidden lg:flex lg:items-center lg:gap-1">
               <button
-                ref={triggerRef}
                 onClick={() => setMegaOpen((v) => !v)}
-                onMouseEnter={open}
+                onMouseEnter={keepOpen}
                 onMouseLeave={startClose}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
@@ -141,45 +138,61 @@ export default function Navbar() {
           </div>
         </nav>
 
-        {/* Mega menu - positioned directly under nav, inside header for seamless hover */}
-        {megaOpen && (
+        <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      </header>
+
+      {megaOpen && (
+        <>
           <div
-            ref={panelRef}
-            onMouseEnter={open}
+            className="fixed inset-0 z-[60] bg-black/25 dark:bg-black/50 animate-fade-in"
+            onClick={closeMega}
+            aria-hidden
+          />
+
+          <div
+            onMouseEnter={keepOpen}
             onMouseLeave={startClose}
-            className="hidden lg:block absolute left-0 right-0 z-40 animate-fade-in"
+            className="fixed left-0 right-0 top-[66px] z-[70] hidden lg:block animate-fade-in"
           >
-            <div className="bg-background border-b border-border shadow-2xl shadow-black/8 dark:shadow-black/25">
-              <div className="container mx-auto px-4 lg:px-6 py-8">
-                <div className="grid grid-cols-6 gap-8">
+            <div className="bg-card border-b border-border shadow-2xl">
+              <div className="container mx-auto px-6 py-8">
+                <div className="grid grid-cols-6 gap-6">
                   {toolCategories.map((cat) => (
-                    <div key={cat.title}>
-                      <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-border">
-                        <div className={cn("p-2 rounded-xl", cat.bgColor)}>
-                          <cat.icon className={cn("h-4 w-4", cat.color)} />
+                    <div key={cat.title} className="flex flex-col">
+                      <div className="flex items-center gap-2.5 mb-3 pb-3 border-b border-border/50">
+                        <div className={cn(
+                          "flex items-center justify-center w-9 h-9 rounded-xl shrink-0",
+                          cat.bgColor
+                        )}>
+                          <cat.icon className={cn("h-[18px] w-[18px]", cat.color)} />
                         </div>
                         <div>
-                          <span className="text-sm font-bold text-foreground">{cat.title}</span>
-                          <span className="text-[10px] text-muted-foreground ml-1.5">{cat.tools.length}</span>
+                          <span className="text-[13px] font-bold text-foreground tracking-tight">
+                            {cat.title}
+                          </span>
+                          <span className="block text-[10px] text-muted-foreground leading-none mt-0.5">
+                            {cat.tools.length} tools
+                          </span>
                         </div>
                       </div>
-                      <ul className="space-y-0.5">
+
+                      <ul className="space-y-px flex-1">
                         {cat.tools.map((tool) => (
                           <li key={tool.href}>
                             <Link
                               href={tool.href}
                               onClick={closeMega}
-                              className="group/item flex items-center gap-2 px-2.5 py-2 rounded-lg transition-all duration-150 hover:bg-muted"
+                              className="group/item flex items-center gap-2 px-2.5 py-[7px] rounded-lg transition-all duration-150 hover:bg-muted/80"
                             >
                               <div className="flex-1 min-w-0">
-                                <span className="block text-sm font-medium text-foreground/90 group-hover/item:text-foreground transition-colors">
+                                <span className="block text-[13px] font-medium text-foreground/85 group-hover/item:text-foreground transition-colors leading-snug">
                                   {tool.title}
                                 </span>
-                                <span className="block text-[11px] text-muted-foreground leading-tight mt-0.5">
+                                <span className="block text-[11px] text-muted-foreground/70 group-hover/item:text-muted-foreground leading-none mt-0.5 transition-colors">
                                   {tool.desc}
                                 </span>
                               </div>
-                              <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all shrink-0" />
+                              <ArrowRight className="h-3 w-3 text-muted-foreground/50 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-200 shrink-0" />
                             </Link>
                           </li>
                         ))}
@@ -188,10 +201,10 @@ export default function Navbar() {
                   ))}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-border flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
+                <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground/70">
                     {totalTools} free browser-based tools &middot; No sign-up required
-                  </span>
+                  </p>
                   <button
                     onClick={() => { setSearchOpen(true); closeMega(); }}
                     className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -206,18 +219,7 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-        )}
-
-        <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-      </header>
-
-      {/* Backdrop overlay */}
-      {megaOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/15 dark:bg-black/35"
-          onClick={closeMega}
-          aria-hidden
-        />
+        </>
       )}
 
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
