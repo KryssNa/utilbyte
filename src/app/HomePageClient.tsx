@@ -7,6 +7,7 @@ import { toolCategories } from "@/components/layout/navbar";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  ChevronDown,
   Clock,
   Search,
   Shield,
@@ -16,7 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { toolIcons } from "@/components/layout/navbar/data";
 
 const features = [
@@ -52,9 +53,21 @@ function getCategoryMeta(catTitle: string) {
   return { color: cat?.color ?? "text-muted-foreground", bg: cat?.bgColor ?? "bg-muted" };
 }
 
+const TOOLS_VISIBLE_DEFAULT = 10;
+
 export default function HomePageClient() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [toolSearch, setToolSearch] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+
+  const toggleCategory = useCallback((catTitle: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(catTitle)) next.delete(catTitle);
+      else next.add(catTitle);
+      return next;
+    });
+  }, []);
 
   const filteredCategories = useMemo(() => {
     if (!toolSearch.trim() && !activeCategory) return toolCategories;
@@ -202,7 +215,7 @@ export default function HomePageClient() {
             </div>
             <div className="flex flex-wrap gap-1.5">
               <button
-                onClick={() => setActiveCategory(null)}
+                onClick={() => { setActiveCategory(null); setExpandedCategories(new Set()); }}
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
                   !activeCategory ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"
@@ -213,7 +226,7 @@ export default function HomePageClient() {
               {toolCategories.map((cat) => (
                 <button
                   key={cat.title}
-                  onClick={() => setActiveCategory(activeCategory === cat.title ? null : cat.title)}
+                  onClick={() => { setActiveCategory(activeCategory === cat.title ? null : cat.title); setExpandedCategories(new Set()); }}
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer",
                     activeCategory === cat.title ? "bg-foreground text-background" : "bg-muted text-muted-foreground hover:text-foreground"
@@ -247,27 +260,47 @@ export default function HomePageClient() {
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {category.tools.map((tool) => {
-                    const Icon = toolIcons[tool.title] ?? Wrench;
-                    return (
-                      <Link key={tool.href} href={tool.href} className="group block">
-                        <div className="relative rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
-                          <div className="flex items-start gap-3">
-                            <div className={cn("p-2 rounded-lg shrink-0 transition-transform group-hover:scale-110", category.bgColor)}>
-                              <Icon className={cn("h-4 w-4", category.color)} />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{tool.title}</h4>
-                              <p className="text-xs text-muted-foreground mt-0.5">{tool.desc}</p>
-                            </div>
-                            <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0 shrink-0 mt-1" />
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
+                {(() => {
+                  const isExpanded = expandedCategories.has(category.title) || !!toolSearch.trim();
+                  const visibleTools = isExpanded ? category.tools : category.tools.slice(0, TOOLS_VISIBLE_DEFAULT);
+                  const hasMore = category.tools.length > TOOLS_VISIBLE_DEFAULT;
+                  return (
+                    <>
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {visibleTools.map((tool) => {
+                          const Icon = toolIcons[tool.title] ?? Wrench;
+                          return (
+                            <Link key={tool.href} href={tool.href} className="group block">
+                              <div className="relative rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+                                <div className="flex items-start gap-3">
+                                  <div className={cn("p-2 rounded-lg shrink-0 transition-transform group-hover:scale-110", category.bgColor)}>
+                                    <Icon className={cn("h-4 w-4", category.color)} />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{tool.title}</h4>
+                                    <p className="text-xs text-muted-foreground mt-0.5">{tool.desc}</p>
+                                  </div>
+                                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0 shrink-0 mt-1" />
+                                </div>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                      {hasMore && !toolSearch.trim() && (
+                        <button
+                          onClick={() => toggleCategory(category.title)}
+                          className="mt-3 flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer group/showmore"
+                        >
+                          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isExpanded && "rotate-180")} />
+                          {isExpanded
+                            ? "Show less"
+                            : `Show ${category.tools.length - TOOLS_VISIBLE_DEFAULT} more`}
+                        </button>
+                      )}
+                    </>
+                  );
+                })()}
               </motion.div>
             ))}
           </div>
@@ -277,7 +310,7 @@ export default function HomePageClient() {
               <Search className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
               <p className="text-lg font-medium">No tools match your search</p>
               <p className="text-sm text-muted-foreground mt-1">Try a different keyword or clear filters</p>
-              <Button variant="outline" size="sm" className="mt-4" onClick={() => { setToolSearch(""); setActiveCategory(null); }}>
+              <Button variant="outline" size="sm" className="mt-4" onClick={() => { setToolSearch(""); setActiveCategory(null); setExpandedCategories(new Set()); }}>
                 Clear filters
               </Button>
             </div>
