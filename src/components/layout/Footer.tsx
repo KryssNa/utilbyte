@@ -64,9 +64,9 @@ const categoryIcons: Record<string, React.ElementType> = {
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-border bg-gradient-to-b from-transparent to-violet-50/50 dark:to-violet-950/20">
+    <footer className="relative border-t border-border bg-gradient-to-b from-transparent to-sky-50/50 dark:to-sky-950/20">
       {/* Gradient line at top */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent" />
 
       <div className="container mx-auto px-4 py-16 lg:px-8">
         {/* Main Footer Content */}
@@ -75,13 +75,13 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group cursor-pointer">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl blur-md opacity-50 group-hover:opacity-70 transition-opacity" />
-                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-teal-600 rounded-xl blur-md opacity-50 group-hover:opacity-70 transition-opacity" />
+                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 text-white shadow-lg">
                   <Zap className="h-5 w-5" />
                 </div>
               </div>
               <span className="font-display text-2xl font-bold tracking-tight">
-                Util<span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">Byte</span>
+                Util<span className="bg-gradient-to-r from-sky-600 to-teal-600 dark:from-sky-400 dark:to-teal-400 bg-clip-text text-transparent">Byte</span>
               </span>
             </Link>
             <p className="mt-5 text-sm text-muted-foreground max-w-xs leading-relaxed">
@@ -95,7 +95,7 @@ export default function Footer() {
                 <Shield className="h-4 w-4" />
                 100% Private
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 border border-violet-500/20 px-4 py-2 text-sm font-medium text-violet-600 dark:text-violet-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 border border-sky-500/20 px-4 py-2 text-sm font-medium text-sky-600 dark:text-sky-400">
                 <Sparkles className="h-4 w-4" />
                 No Sign-up
               </div>
