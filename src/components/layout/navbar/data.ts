@@ -1,12 +1,71 @@
 import {
+  Binary,
+  Braces,
+  Clock,
   Code2,
+  Crop,
+  FileDown,
+  FileImage,
   FileText,
+  Hash,
   Image,
+  Key,
+  Merge,
+  PenLine,
+  Play,
+  QrCode,
+  RefreshCw,
+  Sparkles,
   Type,
   Video,
   Wrench,
 } from "lucide-react";
 import { FlattenedTool, ToolCategory } from "./types";
+
+export const toolIcons: Record<string, React.ElementType> = {
+  "Image Cropper": Crop,
+  "Image Compressor": FileDown,
+  "Format Converter": RefreshCw,
+  "Background Remover": Image,
+  "Image to Text (OCR)": Type,
+  "Image Resizer": Image,
+  "Blur Image": Image,
+  "Merge PDF": Merge,
+  "Compress PDF": FileDown,
+  "PDF to Image": FileImage,
+  "Image to PDF": FileText,
+  "Split PDF": FileText,
+  "Rotate PDF": RefreshCw,
+  "PDF Editor": PenLine,
+  "JSON Formatter": Braces,
+  "Code Beautifier": Code2,
+  "SQL Formatter": Code2,
+  "Base64": Binary,
+  "UUID Generator": Hash,
+  "JWT Decoder": Key,
+  "Hash Generator": Hash,
+  "Regex Tester": Code2,
+  "URL Encoder": Code2,
+  "Cron Parser": Clock,
+  "Markdown Renderer": FileText,
+  "Diff Checker": Code2,
+  "Online Compiler": Play,
+  "Word Counter": Hash,
+  "Case Converter": Type,
+  "Remove Duplicates": Type,
+  "Text Formatter": Type,
+  "Lorem Ipsum": Type,
+  "Password Generator": Key,
+  "QR Code": QrCode,
+  "Barcode Generator": Hash,
+  "Unit Converter": RefreshCw,
+  "Color Converter": Sparkles,
+  "Timestamp Converter": Clock,
+  "Countdown Timer": Clock,
+  "Video to Audio": Video,
+  "Video Compressor": FileDown,
+  "Video to GIF": Video,
+};
 
 export const toolCategories: ToolCategory[] = [
   {
@@ -34,6 +93,7 @@ export const toolCategories: ToolCategory[] = [
     bgColor: "bg-rose-500/10",
     hoverBg: "hover:bg-rose-500/10",
     tools: [
+      { title: "PDF Editor", href: "/pdf-tools/edit-pdf", desc: "Edit any PDF" },
       { title: "Merge PDF", href: "/pdf-tools/merge-pdf", desc: "Combine files" },
       { title: "Split PDF", href: "/pdf-tools/split-pdf", desc: "Separate pages" },
       { title: "Compress PDF", href: "/pdf-tools/compress-pdf", desc: "Reduce size" },
@@ -65,6 +125,7 @@ export const toolCategories: ToolCategory[] = [
     bgColor: "bg-amber-500/10",
     hoverBg: "hover:bg-amber-500/10",
     tools: [
+      { title: "Online Compiler", href: "/dev-tools/online-compiler", desc: "Run code live" },
       { title: "JSON Formatter", href: "/dev-tools/json-formatter", desc: "Format & validate JSON" },
       { title: "Code Beautifier", href: "/dev-tools/code-beautifier", desc: "Format HTML/CSS/JS" },
       { title: "SQL Formatter", href: "/dev-tools/sql-formatter", desc: "Beautify SQL queries" },
@@ -111,7 +172,6 @@ export const toolCategories: ToolCategory[] = [
   },
 ];
 
-// Flatten all tools for search
 export const allTools: FlattenedTool[] = toolCategories.flatMap((cat) =>
   cat.tools.map((tool) => ({
     ...tool,
@@ -120,4 +180,3 @@ export const allTools: FlattenedTool[] = toolCategories.flatMap((cat) =>
     bgColor: cat.bgColor
   }))
 );
-
