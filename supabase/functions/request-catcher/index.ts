@@ -8,6 +8,62 @@ const corsHeaders = {
     "Content-Type, Authorization, X-Client-Info, Apikey, X-Bin-Id",
 };
 
+function jsonResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+async function forwardRequest(
+  targetBase: string,
+  method: string,
+  subPath: string,
+  queryParams: Record<string, string>,
+  headers: Record<string, string>,
+  body: string
+): Promise<{ status: number; response: string; error: string | null }> {
+  try {
+    const forwardUrl = new URL(targetBase.replace(/\/$/, "") + (subPath || "/"));
+    Object.entries(queryParams).forEach(([k, v]) => forwardUrl.searchParams.set(k, v));
+
+    const forwardHeaders: Record<string, string> = {};
+    const skipHeaders = new Set([
+      "host", "connection", "transfer-encoding", "content-length",
+      "authorization", "x-forwarded-for", "cf-connecting-ip",
+      "x-real-ip", "cf-ray", "cf-ipcountry",
+    ]);
+    Object.entries(headers).forEach(([k, v]) => {
+      if (!skipHeaders.has(k.toLowerCase())) forwardHeaders[k] = v;
+    });
+    forwardHeaders["X-Forwarded-By"] = "UtilByte-RequestCatcher";
+
+    const init: RequestInit = {
+      method,
+      headers: forwardHeaders,
+      signal: AbortSignal.timeout(15000),
+    };
+
+    if (method !== "GET" && method !== "HEAD" && body) {
+      init.body = body;
+    }
+
+    const res = await fetch(forwardUrl.toString(), init);
+    let responseText = "";
+    try {
+      responseText = await res.text();
+      if (responseText.length > 10000) responseText = responseText.slice(0, 10000) + "...[truncated]";
+    } catch {
+      responseText = "";
+    }
+
+    return { status: res.status, response: responseText, error: null };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { status: 0, response: "", error: msg };
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -21,10 +77,7 @@ Deno.serve(async (req: Request) => {
     const binId = fnIndex >= 0 ? pathParts[fnIndex + 1] : (url.searchParams.get("bin") || "");
 
     if (!binId) {
-      return new Response(
-        JSON.stringify({ error: "Missing bin_id. Use /request-catcher/{bin_id}" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Missing bin_id. Use /request-catcher/{bin_id}" }, 400);
     }
 
     const supabase = createClient(
@@ -36,22 +89,25 @@ Deno.serve(async (req: Request) => {
 
     if (action === "list") {
       const limit = Math.min(parseInt(url.searchParams.get("limit") || "100", 10), 200);
-      const { data, error } = await supabase
-        .from("caught_requests")
-        .select("*")
-        .eq("bin_id", binId)
-        .order("created_at", { ascending: false })
-        .limit(limit);
+      const [reqResult, binResult] = await Promise.all([
+        supabase
+          .from("caught_requests")
+          .select("*")
+          .eq("bin_id", binId)
+          .order("created_at", { ascending: false })
+          .limit(limit),
+        supabase
+          .from("request_catcher_bins")
+          .select("*")
+          .eq("bin_id", binId)
+          .maybeSingle(),
+      ]);
 
-      if (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      if (reqResult.error) return jsonResponse({ error: reqResult.error.message }, 500);
 
-      return new Response(JSON.stringify({ requests: data || [] }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return jsonResponse({
+        requests: reqResult.data || [],
+        bin: binResult.data || null,
       });
     }
 
@@ -61,24 +117,54 @@ Deno.serve(async (req: Request) => {
         .delete()
         .eq("bin_id", binId);
 
-      if (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      if (error) return jsonResponse({ error: error.message }, 500);
+      return jsonResponse({ cleared: true });
+    }
+
+    if (action === "get-config") {
+      const { data, error } = await supabase
+        .from("request_catcher_bins")
+        .select("*")
+        .eq("bin_id", binId)
+        .maybeSingle();
+
+      if (error) return jsonResponse({ error: error.message }, 500);
+      return jsonResponse({ bin: data || null });
+    }
+
+    if (action === "set-config" && req.method === "POST") {
+      let payload: { forward_url?: string; forward_enabled?: boolean } = {};
+      try { payload = await req.json(); } catch { /* empty */ }
+
+      const forwardUrl = (payload.forward_url ?? "").trim();
+      const forwardEnabled = payload.forward_enabled ?? (forwardUrl.length > 0);
+
+      const { data: existing } = await supabase
+        .from("request_catcher_bins")
+        .select("bin_id")
+        .eq("bin_id", binId)
+        .maybeSingle();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("request_catcher_bins")
+          .update({ forward_url: forwardUrl, forward_enabled: forwardEnabled, updated_at: new Date().toISOString() })
+          .eq("bin_id", binId);
+        if (error) return jsonResponse({ error: error.message }, 500);
+      } else {
+        const { error } = await supabase
+          .from("request_catcher_bins")
+          .insert({ bin_id: binId, forward_url: forwardUrl, forward_enabled: forwardEnabled });
+        if (error) return jsonResponse({ error: error.message }, 500);
       }
 
-      return new Response(JSON.stringify({ cleared: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ saved: true, forward_url: forwardUrl, forward_enabled: forwardEnabled });
     }
 
     const headers: Record<string, string> = {};
     req.headers.forEach((value, key) => {
       const lower = key.toLowerCase();
-      if (lower !== "authorization") {
-        headers[lower] = value;
-      }
+      if (lower !== "authorization") headers[lower] = value;
     });
 
     const queryParams: Record<string, string> = {};
@@ -97,11 +183,20 @@ Deno.serve(async (req: Request) => {
 
     const subPathIndex = fnIndex >= 0 ? fnIndex + 2 : 2;
     const subPath = pathParts.slice(subPathIndex).join("/");
+    const requestPath = subPath ? `/${subPath}` : "/";
 
-    const { error: insertError } = await supabase.from("caught_requests").insert({
+    const binConfigResult = await supabase
+      .from("request_catcher_bins")
+      .select("forward_url, forward_enabled")
+      .eq("bin_id", binId)
+      .maybeSingle();
+
+    const binData = binConfigResult.data;
+
+    const insertPayload: Record<string, unknown> = {
       bin_id: binId,
       method: req.method,
-      path: subPath ? `/${subPath}` : "/",
+      path: requestPath,
       headers,
       query_params: queryParams,
       body,
@@ -110,23 +205,43 @@ Deno.serve(async (req: Request) => {
         req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
         req.headers.get("cf-connecting-ip") ||
         "",
-    });
+    };
 
-    if (insertError) {
-      return new Response(JSON.stringify({ error: insertError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (binData?.forward_enabled && binData?.forward_url) {
+      const fwd = await forwardRequest(
+        binData.forward_url,
+        req.method,
+        requestPath,
+        queryParams,
+        headers,
+        body
+      );
+      insertPayload.forward_status = fwd.status || null;
+      insertPayload.forward_error = fwd.error || null;
+      insertPayload.forward_response = fwd.response || null;
+      insertPayload.forwarded_at = new Date().toISOString();
     }
 
-    return new Response(
-      JSON.stringify({ captured: true, bin_id: binId, method: req.method }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    const { error: insertError } = await supabase
+      .from("caught_requests")
+      .insert(insertPayload);
+
+    if (insertError) return jsonResponse({ error: insertError.message }, 500);
+
+    const resp: Record<string, unknown> = {
+      captured: true,
+      bin_id: binId,
+      method: req.method,
+    };
+
+    if (insertPayload.forward_status !== undefined) {
+      resp.forwarded = true;
+      resp.forward_status = insertPayload.forward_status;
+      if (insertPayload.forward_error) resp.forward_error = insertPayload.forward_error;
+    }
+
+    return jsonResponse(resp);
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ error: err instanceof Error ? err.message : "Unknown error" }, 500);
   }
 });

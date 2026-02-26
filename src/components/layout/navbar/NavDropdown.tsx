@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { ToolCategory } from "./types";
 
@@ -12,12 +12,15 @@ interface NavDropdownProps {
   category: ToolCategory;
 }
 
+const NAV_TOOLS_LIMIT = 6;
+
 export function NavDropdown({ category }: NavDropdownProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [mounted, setMounted] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -101,6 +104,17 @@ export function NavDropdown({ category }: NavDropdownProps) {
     };
   }, []);
 
+  // Reset show all when dropdown closes
+  useEffect(() => {
+    if (!isOpen) setShowAll(false);
+  }, [isOpen]);
+
+  const visibleTools = useMemo(
+    () => (showAll ? category.tools : category.tools.slice(0, NAV_TOOLS_LIMIT)),
+    [showAll, category.tools]
+  );
+  const hasMore = category.tools.length > NAV_TOOLS_LIMIT;
+
   // Update position on scroll (keep dropdown aligned with trigger)
   useEffect(() => {
     if (!isOpen) return;
@@ -177,8 +191,8 @@ export function NavDropdown({ category }: NavDropdownProps) {
             </div>
 
             {/* Items */}
-            <div className="p-2 max-h-80 overflow-y-auto custom-scrollbar">
-              {category.tools.map((tool, index) => (
+            <div className="p-2">
+              {visibleTools.map((tool) => (
                 <Link
                   key={tool.href}
                   href={tool.href}
@@ -200,7 +214,6 @@ export function NavDropdown({ category }: NavDropdownProps) {
                         pathname === tool.href ? "text-primary" : category.color
                       )}
                     />
-                    {/* Glow effect */}
                     <div
                       className={cn(
                         "absolute inset-0 rounded-xl blur-md opacity-0 group-hover/item:opacity-60 transition-opacity",
@@ -226,6 +239,15 @@ export function NavDropdown({ category }: NavDropdownProps) {
                   </div>
                 </Link>
               ))}
+              {hasMore && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowAll((v) => !v); }}
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all cursor-pointer"
+                >
+                  <ChevronDown className={cn("h-3 w-3 transition-transform", showAll && "rotate-180")} />
+                  {showAll ? "Show less" : `${category.tools.length - NAV_TOOLS_LIMIT} more tools`}
+                </button>
+              )}
             </div>
 
             {/* Footer */}
