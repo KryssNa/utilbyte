@@ -1,27 +1,27 @@
 import {
-  Binary,
-  Braces,
-  Clock,
-  Code2,
-  Crop,
-  FileDown,
-  FileImage,
-  FileText,
-  Globe,
-  Hash,
-  Image,
-  Key,
-  Merge,
-  PenLine,
-  Play,
-  PlugZap,
-  QrCode,
-  RefreshCw,
-  Send,
-  Sparkles,
-  Type,
-  Video,
-  Wrench,
+    Binary,
+    Braces,
+    Clock,
+    Code2,
+    Crop,
+    FileDown,
+    FileImage,
+    FileText,
+    Globe,
+    Hash,
+    Image,
+    Key,
+    Merge,
+    PenLine,
+    Play,
+    PlugZap,
+    QrCode,
+    RefreshCw,
+    Send,
+    Sparkles,
+    Type,
+    Video,
+    Wrench,
 } from "lucide-react";
 import { FlattenedTool, ToolCategory } from "./types";
 
@@ -191,3 +191,17 @@ export const allTools: FlattenedTool[] = toolCategories.flatMap((cat) =>
     bgColor: cat.bgColor
   }))
 );
+
+/** Top 10 most popular tools shown in the navbar mega menu */
+export const top10Tools = [
+  { title: "PDF Editor", href: "/pdf-tools/edit-pdf", desc: "Edit text, images & annotations", category: "PDF" },
+  { title: "Image Compressor", href: "/image-tools/compress-image", desc: "Reduce file size without quality loss", category: "Image" },
+  { title: "Online Compiler", href: "/dev-tools/online-compiler", desc: "Write & run code in 10+ languages", category: "Dev" },
+  { title: "Merge PDF", href: "/pdf-tools/merge-pdf", desc: "Combine multiple PDFs into one", category: "PDF" },
+  { title: "Background Remover", href: "/image-tools/remove-background", desc: "AI-powered background removal", category: "Image" },
+  { title: "JSON Formatter", href: "/dev-tools/json-formatter", desc: "Format & validate JSON", category: "Dev" },
+  { title: "QR Code", href: "/utility-tools/qr-code", desc: "Create QR codes instantly", category: "Utility" },
+  { title: "Password Generator", href: "/utility-tools/password-generator", desc: "Generate secure passwords", category: "Utility" },
+  { title: "Video to GIF", href: "/video-tools/video-to-gif", desc: "Convert video clips to GIFs", category: "Video" },
+  { title: "Word Counter", href: "/text-tools/word-counter", desc: "Count words, characters & more", category: "Text" },
+];
