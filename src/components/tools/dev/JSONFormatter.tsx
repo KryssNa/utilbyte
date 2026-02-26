@@ -498,10 +498,10 @@ export default function JSONFormatter() {
         {/* Main Content Area */}
         <div className="rounded-xl border border-border overflow-hidden bg-muted/20">
           {activeTab === "formatted" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border">
+            <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border" style={{ minHeight: 480 }}>
               {/* Input */}
-              <div className="flex flex-col">
-                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30">
+              <div className="flex flex-col min-h-0">
+                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30 shrink-0">
                   <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Input
                   </span>
@@ -511,13 +511,13 @@ export default function JSONFormatter() {
                     </span>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-h-0 overflow-auto">
                   <textarea
                     ref={inputRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={'Paste your JSON here...\n\n{\n  "key": "value"\n}'}
-                    className="w-full min-h-[400px] font-mono text-sm bg-transparent resize-none p-4 outline-none placeholder:text-muted-foreground/50 leading-relaxed"
+                    className="w-full h-full min-h-[450px] font-mono text-sm bg-transparent resize-none p-4 outline-none placeholder:text-muted-foreground/50 leading-relaxed"
                     spellCheck={false}
                     onKeyDown={(e) => {
                       if (e.key === "Tab") {
@@ -538,8 +538,8 @@ export default function JSONFormatter() {
               </div>
 
               {/* Output */}
-              <div className="flex flex-col">
-                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30">
+              <div className="flex flex-col min-h-0">
+                <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30 shrink-0">
                   <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Formatted Output
                   </span>
@@ -555,7 +555,7 @@ export default function JSONFormatter() {
                     </Button>
                   )}
                 </div>
-                <div className="flex-1 overflow-auto min-h-[400px]">
+                <div className="flex-1 min-h-0 overflow-auto">
                   {highlightedOutput ? (
                     <div className="font-mono text-sm py-2">
                       {highlightedOutput}
