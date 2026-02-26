@@ -7,31 +7,17 @@ import { toolCategories } from "@/components/layout/navbar";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Binary,
-  Braces,
   Clock,
-  Code2,
-  Crop,
-  FileDown,
-  FileImage,
-  FileText,
-  Hash,
-  Image,
-  Key,
-  Merge,
-  QrCode,
-  RefreshCw,
   Search,
   Shield,
   Sparkles,
   Star,
-  Type,
-  Video,
   Wrench,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { toolIcons } from "@/components/layout/navbar/data";
 
 const features = [
   { icon: Shield, title: "100% Private", color: "text-emerald-500 dark:text-emerald-400" },
@@ -40,58 +26,15 @@ const features = [
   { icon: Sparkles, title: "Always Free", color: "text-teal-500 dark:text-teal-400" },
 ];
 
-const toolIcons: Record<string, React.ElementType> = {
-  "Image Cropper": Crop,
-  "Image Compressor": FileDown,
-  "Format Converter": RefreshCw,
-  "Background Remover": Image,
-  "Image to Text (OCR)": Type,
-  "Merge PDF": Merge,
-  "Compress PDF": FileDown,
-  "PDF to Image": FileImage,
-  "Image to PDF": FileText,
-  "Split PDF": FileText,
-  "Rotate PDF": RefreshCw,
-  "JSON Formatter": Braces,
-  "Code Beautifier": Code2,
-  "SQL Formatter": Code2,
-  "Base64": Binary,
-  "UUID Generator": Hash,
-  "JWT Decoder": Key,
-  "Hash Generator": Hash,
-  "Regex Tester": Code2,
-  "URL Encoder": Code2,
-  "Cron Parser": Clock,
-  "Markdown Renderer": FileText,
-  "Diff Checker": Code2,
-  "Word Counter": Hash,
-  "Case Converter": Type,
-  "Remove Duplicates": Type,
-  "Text Formatter": Type,
-  "Lorem Ipsum": Type,
-  "Password Generator": Key,
-  "QR Code": QrCode,
-  "Barcode Generator": Hash,
-  "Unit Converter": RefreshCw,
-  "Color Converter": Sparkles,
-  "Timestamp Converter": Clock,
-  "Countdown Timer": Clock,
-  "Video to Audio": Video,
-  "Video Compressor": FileDown,
-  "Video to GIF": Video,
-  "Image Resizer": Image,
-  "Blur Image": Image,
-};
-
 const popularTools = [
+  { title: "PDF Editor", href: "/pdf-tools/edit-pdf", desc: "Edit text, images, and annotations in any PDF", category: "PDF" },
   { title: "Image Compressor", href: "/image-tools/compress-image", desc: "Reduce file size without quality loss", category: "Image" },
-  { title: "Background Remover", href: "/image-tools/remove-background", desc: "AI-powered background removal", category: "Image" },
+  { title: "Online Compiler", href: "/dev-tools/online-compiler", desc: "Write and run code in 10+ languages", category: "Dev" },
   { title: "Merge PDF", href: "/pdf-tools/merge-pdf", desc: "Combine multiple PDFs into one", category: "PDF" },
+  { title: "Background Remover", href: "/image-tools/remove-background", desc: "AI-powered background removal", category: "Image" },
   { title: "JSON Formatter", href: "/dev-tools/json-formatter", desc: "Format and validate JSON", category: "Dev" },
   { title: "QR Code", href: "/utility-tools/qr-code", desc: "Create QR codes instantly", category: "Utility" },
   { title: "Password Generator", href: "/utility-tools/password-generator", desc: "Generate secure passwords", category: "Utility" },
-  { title: "Format Converter", href: "/image-tools/format-converter", desc: "PNG, JPG, WebP conversion", category: "Image" },
-  { title: "Base64", href: "/dev-tools/base64", desc: "Encode and decode Base64", category: "Dev" },
 ];
 
 const containerVariants = {

@@ -3,61 +3,61 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Command, Grid3X3, Menu, Search, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Command, Grid3X3, Menu, Search, Shield, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MobileMenu, SearchModal, toolCategories } from "./navbar";
+import { toolIcons } from "./navbar/data";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
-  const [megaVisible, setMegaVisible] = useState(false);
-  const megaTimeout = useRef<NodeJS.Timeout | null>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const megaRef = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleGlobalKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      setSearchOpen(true);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === "Escape") setMegaOpen(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
+  useEffect(() => {
+    return () => { if (closeTimer.current) clearTimeout(closeTimer.current); };
+  }, []);
+
+  const clearPendingClose = useCallback(() => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
     }
   }, []);
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleGlobalKeyDown);
-    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [handleGlobalKeyDown]);
+  const startClose = useCallback(() => {
+    clearPendingClose();
+    closeTimer.current = setTimeout(() => setMegaOpen(false), 300);
+  }, [clearPendingClose]);
 
-  const openMega = useCallback(() => {
-    if (megaTimeout.current) clearTimeout(megaTimeout.current);
+  const keepOpen = useCallback(() => {
+    clearPendingClose();
     setMegaOpen(true);
-    requestAnimationFrame(() => setMegaVisible(true));
-  }, []);
+  }, [clearPendingClose]);
 
   const closeMega = useCallback(() => {
-    megaTimeout.current = setTimeout(() => {
-      setMegaVisible(false);
-      setTimeout(() => setMegaOpen(false), 200);
-    }, 120);
-  }, []);
-
-  const handleMegaLeave = useCallback((e: React.MouseEvent) => {
-    const related = e.relatedTarget;
-    const isInTrigger = related instanceof Node && triggerRef.current?.contains(related);
-    const isInMega = related instanceof Node && megaRef.current?.contains(related);
-    if (!isInTrigger && !isInMega) closeMega();
-  }, [closeMega]);
-
-  useEffect(() => {
-    return () => { if (megaTimeout.current) clearTimeout(megaTimeout.current); };
-  }, []);
+    clearPendingClose();
+    setMegaOpen(false);
+  }, [clearPendingClose]);
 
   const totalTools = toolCategories.reduce((sum, c) => sum + c.tools.length, 0);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full">
+      <header className={cn("sticky top-0 w-full", megaOpen ? "z-[70]" : "z-50")}>
         <div className="h-[2px] bg-gradient-to-r from-sky-500 via-teal-500 to-emerald-500" />
 
         <nav className="relative border-b border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150">
@@ -78,9 +78,9 @@ export default function Navbar() {
 
             <div className="hidden lg:flex lg:items-center lg:gap-1">
               <button
-                ref={triggerRef}
-                onMouseEnter={openMega}
-                onMouseLeave={handleMegaLeave}
+                onClick={() => setMegaOpen((v) => !v)}
+                onMouseEnter={keepOpen}
+                onMouseLeave={startClose}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
                   "text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -137,65 +137,108 @@ export default function Navbar() {
               </Button>
             </div>
           </div>
-
-          {megaOpen && (
-            <div
-              ref={megaRef}
-              onMouseEnter={openMega}
-              onMouseLeave={handleMegaLeave}
-              className={cn(
-                "absolute left-0 right-0 top-full z-50 border-b border-border",
-                "transition-[opacity,transform] duration-300 ease-out origin-top",
-                megaVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
-              )}
-            >
-              <div className="bg-background/95 backdrop-blur-xl">
-                <div className="container mx-auto px-4 lg:px-6 py-6">
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                    {toolCategories.map((cat) => (
-                      <div key={cat.title}>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className={cn("p-1.5 rounded-lg", cat.bgColor)}>
-                            <cat.icon className={cn("h-3.5 w-3.5", cat.color)} />
-                          </div>
-                          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                            {cat.title}
-                          </span>
-                        </div>
-                        <ul className="space-y-0.5">
-                          {cat.tools.map((tool) => (
-                            <li key={tool.href}>
-                              <Link
-                                href={tool.href}
-                                onClick={() => { setMegaVisible(false); setTimeout(() => setMegaOpen(false), 200); }}
-                                className="block px-2 py-1.5 rounded-md text-sm text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors"
-                              >
-                                {tool.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{totalTools} free tools, no sign-up required</span>
-                    <button
-                      onClick={() => { setSearchOpen(true); setMegaVisible(false); setTimeout(() => setMegaOpen(false), 200); }}
-                      className="text-xs font-medium text-foreground hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Search className="h-3 w-3" />
-                      Search all tools
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </nav>
 
         <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       </header>
+
+      {megaOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/25 dark:bg-black/50 animate-fade-in"
+            onClick={closeMega}
+            aria-hidden
+          />
+
+          <div
+            onMouseEnter={keepOpen}
+            onMouseLeave={startClose}
+            className="fixed left-0 right-0 top-[66px] z-[70] hidden lg:block animate-fade-in"
+          >
+            <div className="bg-card border-b border-border shadow-2xl">
+              <div className="container mx-auto px-6 py-6">
+                <div className="grid grid-cols-6 gap-x-5 gap-y-0">
+                  {toolCategories.map((cat) => (
+                    <div key={cat.title} className="flex flex-col">
+                      <div className="flex items-center gap-2.5 mb-2.5 pb-2.5 border-b border-border/40">
+                        <div className={cn(
+                          "flex items-center justify-center w-8 h-8 rounded-lg shrink-0",
+                          cat.bgColor
+                        )}>
+                          <cat.icon className={cn("h-4 w-4", cat.color)} />
+                        </div>
+                        <div>
+                          <span className="text-sm font-bold text-foreground tracking-tight">
+                            {cat.title}
+                          </span>
+                          <span className="block text-[10px] text-muted-foreground leading-none mt-px">
+                            {cat.tools.length} tools
+                          </span>
+                        </div>
+                      </div>
+
+                      <ul className="space-y-px flex-1">
+                        {cat.tools.map((tool) => {
+                          const ToolIcon = toolIcons[tool.title] ?? cat.icon;
+                          return (
+                            <li key={tool.href}>
+                              <Link
+                                href={tool.href}
+                                onClick={closeMega}
+                                className="group/item flex items-center gap-2.5 px-2 py-[6px] rounded-lg transition-all duration-150 hover:bg-muted/70"
+                              >
+                                <div className={cn(
+                                  "flex items-center justify-center w-7 h-7 rounded-md shrink-0 transition-colors",
+                                  "bg-muted/50 group-hover/item:bg-muted"
+                                )}>
+                                  <ToolIcon className={cn("h-3.5 w-3.5", cat.color, "opacity-70 group-hover/item:opacity-100 transition-opacity")} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <span className="block text-[13px] font-medium text-foreground/80 group-hover/item:text-foreground transition-colors leading-tight">
+                                    {tool.title}
+                                  </span>
+                                  <span className="block text-[10px] text-muted-foreground/60 group-hover/item:text-muted-foreground leading-none mt-px transition-colors">
+                                    {tool.desc}
+                                  </span>
+                                </div>
+                                <ArrowRight className="h-3 w-3 text-muted-foreground/40 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-200 shrink-0" />
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-[11px] text-muted-foreground/60">
+                    <span>{totalTools} free tools</span>
+                    <span className="flex items-center gap-1">
+                      <Shield className="h-3 w-3 text-emerald-500/70" />
+                      100% Private
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Zap className="h-3 w-3 text-amber-500/70" />
+                      No sign-up
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => { setSearchOpen(true); closeMega(); }}
+                    className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <Search className="h-3.5 w-3.5" />
+                    Quick search
+                    <kbd className="inline-flex h-4 items-center gap-0.5 rounded border border-border bg-muted px-1.5 font-mono text-[9px] text-muted-foreground">
+                      <Command className="h-2.5 w-2.5" />K
+                    </kbd>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
