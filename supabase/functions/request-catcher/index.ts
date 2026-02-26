@@ -16,7 +16,9 @@ Deno.serve(async (req: Request) => {
   try {
     const url = new URL(req.url);
     const pathParts = url.pathname.split("/").filter(Boolean);
-    const binId = pathParts[1] || url.searchParams.get("bin") || "";
+
+    const fnIndex = pathParts.findIndex((p) => p === "request-catcher");
+    const binId = fnIndex >= 0 ? pathParts[fnIndex + 1] : (url.searchParams.get("bin") || "");
 
     if (!binId) {
       return new Response(
@@ -33,7 +35,7 @@ Deno.serve(async (req: Request) => {
     const action = url.searchParams.get("action");
 
     if (action === "list") {
-      const limit = parseInt(url.searchParams.get("limit") || "50", 10);
+      const limit = Math.min(parseInt(url.searchParams.get("limit") || "100", 10), 200);
       const { data, error } = await supabase
         .from("caught_requests")
         .select("*")
@@ -73,24 +75,30 @@ Deno.serve(async (req: Request) => {
 
     const headers: Record<string, string> = {};
     req.headers.forEach((value, key) => {
-      headers[key] = value;
+      const lower = key.toLowerCase();
+      if (lower !== "authorization") {
+        headers[lower] = value;
+      }
     });
 
     const queryParams: Record<string, string> = {};
     url.searchParams.forEach((value, key) => {
-      if (key !== "bin") queryParams[key] = value;
+      if (key !== "bin" && key !== "action") queryParams[key] = value;
     });
 
     let body = "";
     try {
-      body = await req.text();
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        body = await req.text();
+      }
     } catch {
       body = "";
     }
 
-    const subPath = pathParts.slice(2).join("/");
+    const subPathIndex = fnIndex >= 0 ? fnIndex + 2 : 2;
+    const subPath = pathParts.slice(subPathIndex).join("/");
 
-    const { error } = await supabase.from("caught_requests").insert({
+    const { error: insertError } = await supabase.from("caught_requests").insert({
       bin_id: binId,
       method: req.method,
       path: subPath ? `/${subPath}` : "/",
@@ -98,11 +106,14 @@ Deno.serve(async (req: Request) => {
       query_params: queryParams,
       body,
       content_type: req.headers.get("content-type") || "",
-      ip_address: headers["x-forwarded-for"] || headers["cf-connecting-ip"] || "",
+      ip_address:
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        req.headers.get("cf-connecting-ip") ||
+        "",
     });
 
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+    if (insertError) {
+      return new Response(JSON.stringify({ error: insertError.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
