@@ -31,9 +31,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/image-tools/blur-image",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -115,11 +117,17 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function BlurImagePage() {
-  return <BlurImage />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <BlurImage />
+    </>
+  );
 }
 

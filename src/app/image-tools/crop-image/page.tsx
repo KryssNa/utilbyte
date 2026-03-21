@@ -30,9 +30,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/image-tools/crop-image",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -186,10 +188,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function CropImagePage() {
-  return <ImageCropper />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ImageCropper />
+    </>
+  );
 }

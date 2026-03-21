@@ -32,9 +32,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/dev-tools/markdown-renderer",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -95,10 +97,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function MarkdownRendererPage() {
-  return <MarkdownRenderer />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <MarkdownRenderer />
+    </>
+  );
 }

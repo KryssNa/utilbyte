@@ -32,9 +32,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/dev-tools/jwt-decoder",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -96,10 +98,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function JwtDecoderPage() {
-  return <JwtDecoder />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <JwtDecoder />
+    </>
+  );
 }

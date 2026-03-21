@@ -32,9 +32,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/utility-tools/timestamp",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -88,10 +90,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function TimestampConverterPage() {
-  return <TimestampConverter />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <TimestampConverter />
+    </>
+  );
 }

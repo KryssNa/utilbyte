@@ -8,6 +8,15 @@ export const metadata: Metadata = {
     title: "Contact Us | UtilByte",
     description: "Get in touch with the UtilByte team for questions, feedback, and support.",
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Contact Us | UtilByte",
+    description: "Get in touch with the UtilByte team for questions, feedback, and support.",
+  },
+  alternates: {
+    canonical: "/contact",
   },
 };
 

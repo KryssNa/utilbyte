@@ -10,6 +10,15 @@ export const metadata: Metadata = {
     title: "About Us | UtilByte",
     description: "Learn about UtilByte - free, privacy-first online tools for everyday work.",
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | UtilByte",
+    description: "Learn about UtilByte - free, privacy-first online tools for everyday work.",
+  },
+  alternates: {
+    canonical: "/about",
   },
 };
 

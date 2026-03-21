@@ -46,9 +46,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://utilbyte.app",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -315,10 +317,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ]) // <-- only JSON.stringify
-  }
-};
+    ];
 
 export default function HomePage() {
-  return <HomePageClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <HomePageClient />
+    </>
+  );
 }

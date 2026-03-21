@@ -31,9 +31,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/dev-tools/uuid-generator",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -86,10 +88,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function UUIDGeneratorPage() {
-  return <UUIDGenerator />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <UUIDGenerator />
+    </>
+  );
 }
