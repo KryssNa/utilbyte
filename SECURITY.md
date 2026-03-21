@@ -41,7 +41,7 @@ The application sets the following security headers via `next.config.ts`:
 - `X-Frame-Options: DENY`
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Permissions-Policy` (camera, microphone, geolocation disabled)
-- `Content-Security-Policy` (restrictive CSP)
+- `Content-Security-Policy` (CSP configured to balance security and functionality; see \`next.config.ts\` for details)
 
 ### Dependencies
 
