@@ -32,9 +32,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/video-tools/compress-video",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -149,10 +151,16 @@ export const metadata: Metadata = {
           "name": "UtilByte"
         }
       }
-    ])
-  }
-};
+    ];
 
 export default function VideoCompressorPage() {
-  return <VideoCompressor />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <VideoCompressor />
+    </>
+  );
 }

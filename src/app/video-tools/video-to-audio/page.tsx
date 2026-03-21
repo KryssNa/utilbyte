@@ -32,9 +32,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/video-tools/video-to-audio",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -113,10 +115,16 @@ export const metadata: Metadata = {
           "name": "UtilByte"
         }
       }
-    ])
-  }
-};
+    ];
 
 export default function VideoToAudioPage() {
-  return <VideoToAudio />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <VideoToAudio />
+    </>
+  );
 }
