@@ -1,7 +1,30 @@
 {
   "name": "utilbyte",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
+  "description": "Free, privacy-first online tools that run entirely in your browser. 45+ tools for images, PDFs, text, developers, and more.",
+  "author": "UtilByte",
+  "homepage": "https://utilbyte.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KryssNa/utilbyte.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KryssNa/utilbyte/issues"
+  },
+  "keywords": [
+    "online-tools",
+    "image-compressor",
+    "pdf-tools",
+    "developer-tools",
+    "browser-based",
+    "privacy-first",
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
