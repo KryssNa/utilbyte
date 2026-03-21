@@ -1,7 +1,7 @@
 {
   "name": "utilbyte",
   "version": "1.0.0",
-  "private": false,
+  "private": true,
   "license": "MIT",
   "description": "Free, privacy-first online tools that run entirely in your browser. 45+ tools for images, PDFs, text, developers, and more.",
   "author": "UtilByte",
