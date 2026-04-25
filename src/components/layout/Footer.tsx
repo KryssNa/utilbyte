@@ -1,4 +1,4 @@
-import { Code2, FileText, Heart, Image, Shield, Sparkles, Type, Video, Wrench, Zap } from "lucide-react";
+import { Code2, FileText, GitFork, Github, Heart, Image, Shield, Sparkles, Star, Type, Video, Wrench } from "lucide-react";
 import Link from "next/link";
 
 const footerLinks = {
@@ -74,12 +74,11 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 group cursor-pointer">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-teal-600 rounded-xl blur-md opacity-50 group-hover:opacity-70 transition-opacity" />
-                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-teal-600 text-white shadow-lg">
-                  <Zap className="h-5 w-5" />
-                </div>
-              </div>
+              <img
+                src="/logo_small.png"
+                alt="UtilByte Logo"
+                className="h-8 w-auto transition-transform group-hover:scale-105"
+              />
               <span className="font-display text-2xl font-bold tracking-tight">
                 Util<span className="bg-gradient-to-r from-sky-600 to-teal-600 dark:from-sky-400 dark:to-teal-400 bg-clip-text text-transparent">Byte</span>
               </span>
@@ -98,6 +97,37 @@ export default function Footer() {
               <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 border border-sky-500/20 px-4 py-2 text-sm font-medium text-sky-600 dark:text-sky-400">
                 <Sparkles className="h-4 w-4" />
                 No Sign-up
+              </div>
+            </div>
+
+            {/* Open Source */}
+            <div className="mt-8 rounded-xl border border-border bg-muted/30 p-4">
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <Github className="h-4 w-4" />
+                Open Source
+              </h4>
+              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                UtilByte is open source and MIT licensed. Contributions, bug reports, and feature requests are welcome!
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a
+                  href="https://github.com/KryssNa/utilbyte"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-foreground/5 hover:bg-foreground/10 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors"
+                >
+                  <Star className="h-3.5 w-3.5 text-amber-500" />
+                  Star on GitHub
+                </a>
+                <a
+                  href="https://github.com/KryssNa/utilbyte/blob/main/CONTRIBUTING.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-foreground/5 hover:bg-foreground/10 border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors"
+                >
+                  <GitFork className="h-3.5 w-3.5 text-sky-500" />
+                  Contribute
+                </a>
               </div>
             </div>
           </div>
