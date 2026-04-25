@@ -78,7 +78,7 @@ const jsonLd = [
         "description": "Free online tools for image, PDF, text, and developer work. Privacy-first, no uploads required.",
         "foundingDate": "2024",
         "sameAs": [
-          "https://github.com/utilbyte"
+          "https://github.com/KryssNa/utilbyte"
         ],
         "contactPoint": {
           "@type": "ContactPoint",
