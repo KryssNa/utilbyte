@@ -38,7 +38,7 @@ function isBlockedHost(hostname: string): boolean {
   // IPv4 addresses
   const ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (ipv4) {
-    const [, a, b, c] = ipv4.map(Number);
+    const [, a, b] = ipv4.map(Number);
     if (
       a === 127 || // loopback
       a === 10 || // private class A
@@ -46,7 +46,7 @@ function isBlockedHost(hostname: string): boolean {
       (a === 192 && b === 168) || // private class C
       (a === 169 && b === 254) || // link-local
       a === 0 || // "this" network
-      a === 100 && b >= 64 && b <= 127 // carrier-grade NAT
+      (a === 100 && b >= 64 && b <= 127) // carrier-grade NAT (RFC 6598)
     ) {
       return true;
     }
