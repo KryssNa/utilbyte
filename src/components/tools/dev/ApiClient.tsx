@@ -33,7 +33,6 @@ export default function ApiClient() {
   const [response, setResponse] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 
   const buildUrl = useCallback(() => {
     let base = url.trim();
@@ -72,7 +71,7 @@ export default function ApiClient() {
         reqHeaders["Authorization"] = `Basic ${btoa(`${authUser}:${authPass}`)}`;
       }
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/api-proxy`, {
+      const res = await fetch("/api/proxy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,7 +94,7 @@ export default function ApiClient() {
     } finally {
       setLoading(false);
     }
-  }, [buildUrl, method, headers, body, authType, authToken, authUser, authPass, supabaseUrl]);
+  }, [buildUrl, method, headers, body, authType, authToken, authUser, authPass]);
 
   const handleReset = useCallback(() => {
     setUrl("");
