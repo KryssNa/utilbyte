@@ -30,9 +30,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/pdf-tools/compress-pdf",
-  },
-  other: {
-    "application/ld+json": JSON.stringify({
+  }
+};
+
+
+const jsonLd = {
       "@context": "https://schema.org",
       "@graph": [
         {
@@ -127,10 +129,16 @@ export const metadata: Metadata = {
           ]
         }
       ]
-    })
-  }
-};
+    };
 
 export default function CompressPDFPage() {
-  return <PDFCompress />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PDFCompress />
+    </>
+  );
 }

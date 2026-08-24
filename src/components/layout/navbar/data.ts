@@ -78,7 +78,7 @@ export const toolCategories: ToolCategory[] = [
   {
     title: "Image",
     icon: Image,
-    href: "/#image-tools",
+    href: "/image-tools",
     color: "text-sky-600 dark:text-sky-400",
     bgColor: "bg-sky-500/10",
     hoverBg: "hover:bg-sky-500/10",
@@ -95,7 +95,7 @@ export const toolCategories: ToolCategory[] = [
   {
     title: "PDF",
     icon: FileText,
-    href: "/#pdf-tools",
+    href: "/pdf-tools",
     color: "text-rose-600 dark:text-rose-400",
     bgColor: "bg-rose-500/10",
     hoverBg: "hover:bg-rose-500/10",
@@ -112,7 +112,7 @@ export const toolCategories: ToolCategory[] = [
   {
     title: "Text",
     icon: Type,
-    href: "/#text-tools",
+    href: "/text-tools",
     color: "text-emerald-600 dark:text-emerald-400",
     bgColor: "bg-emerald-500/10",
     hoverBg: "hover:bg-emerald-500/10",
@@ -127,7 +127,7 @@ export const toolCategories: ToolCategory[] = [
   {
     title: "Dev",
     icon: Code2,
-    href: "/#dev-tools",
+    href: "/dev-tools",
     color: "text-amber-600 dark:text-amber-400",
     bgColor: "bg-amber-500/10",
     hoverBg: "hover:bg-amber-500/10",
@@ -154,7 +154,7 @@ export const toolCategories: ToolCategory[] = [
   {
     title: "Video",
     icon: Video,
-    href: "/#video-tools",
+    href: "/video-tools",
     color: "text-orange-600 dark:text-orange-400",
     bgColor: "bg-orange-500/10",
     hoverBg: "hover:bg-orange-500/10",
@@ -167,7 +167,7 @@ export const toolCategories: ToolCategory[] = [
   {
     title: "Utility",
     icon: Wrench,
-    href: "/#utility-tools",
+    href: "/utility-tools",
     color: "text-cyan-600 dark:text-cyan-400",
     bgColor: "bg-cyan-500/10",
     hoverBg: "hover:bg-cyan-500/10",

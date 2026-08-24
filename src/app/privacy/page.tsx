@@ -9,6 +9,15 @@ export const metadata: Metadata = {
     title: "Privacy Policy | UtilByte",
     description: "Learn about how UtilByte protects your privacy and handles your data.",
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy | UtilByte",
+    description: "Learn about how UtilByte protects your privacy and handles your data.",
+  },
+  alternates: {
+    canonical: "/privacy",
   },
 };
 

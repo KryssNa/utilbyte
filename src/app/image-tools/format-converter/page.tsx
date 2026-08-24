@@ -30,9 +30,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/image-tools/format-converter",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -86,11 +88,17 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function FormatConverterPage() {
-  return <FormatConverter />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <FormatConverter />
+    </>
+  );
 }
 

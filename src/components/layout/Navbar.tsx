@@ -7,6 +7,7 @@ import {
     ArrowRight,
     ChevronDown,
     Command,
+    Github,
     Grid3X3,
     Menu,
     Search,
@@ -137,6 +138,17 @@ export default function Navbar() {
                   <Command className='h-3 w-3' />K
                 </kbd>
               </button>
+
+              <a
+                href='https://github.com/KryssNa/utilbyte'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-muted/50 hover:bg-muted transition-colors text-sm text-muted-foreground'
+                aria-label='View on GitHub'
+              >
+                <Github className='h-4 w-4' />
+                <span className='hidden md:inline'>GitHub</span>
+              </a>
 
               <ThemeToggle />
 

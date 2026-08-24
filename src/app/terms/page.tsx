@@ -9,6 +9,15 @@ export const metadata: Metadata = {
     title: "Terms of Service | UtilByte",
     description: "Read UtilByte's terms of service and usage guidelines.",
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Terms of Service | UtilByte",
+    description: "Read UtilByte's terms of service and usage guidelines.",
+  },
+  alternates: {
+    canonical: "/terms",
   },
 };
 

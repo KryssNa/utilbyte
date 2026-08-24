@@ -31,9 +31,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/dev-tools/json-formatter",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "Service",
@@ -221,10 +223,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function JSONFormatterPage() {
-  return <JSONFormatter />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <JSONFormatter />
+    </>
+  );
 }

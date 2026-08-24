@@ -31,9 +31,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/dev-tools/base64",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -94,10 +96,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function Base64ToolPage() {
-  return <Base64Tool />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Base64Tool />
+    </>
+  );
 }

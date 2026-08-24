@@ -30,9 +30,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/pdf-tools/pdf-to-image",
-  },
-  other: {
-    "application/ld+json": JSON.stringify([
+  }
+};
+
+
+const jsonLd = [
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -86,10 +88,16 @@ export const metadata: Metadata = {
           }
         ]
       }
-    ])
-  }
-};
+    ];
 
 export default function PDFToImagePage() {
-  return <PDFToImage />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PDFToImage />
+    </>
+  );
 }
