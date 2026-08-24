@@ -127,19 +127,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "1600",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "Background Remover",
-          "description": "Free online background removal tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Remove Background Online Free",
         "description": "Remove image backgrounds online for free using advanced AI technology. Create transparent PNGs with professional quality results.",

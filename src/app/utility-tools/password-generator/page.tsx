@@ -119,19 +119,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "1800",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "Password Generator",
-          "description": "Secure online password generator tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Password Generator Online",
         "description": "Generate strong, secure passwords online for free. Create custom-length passwords with various character combinations for maximum security.",

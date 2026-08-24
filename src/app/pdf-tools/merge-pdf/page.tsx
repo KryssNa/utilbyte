@@ -85,19 +85,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "1250",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "Service",
-          "name": "PDF Merge Tool",
-          "description": "Free online PDF merging tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "PDF Merge Online Free",
         "description": "Merge multiple PDF files into one document online for free. Combine PDFs in any order with our fast, secure PDF merger tool.",

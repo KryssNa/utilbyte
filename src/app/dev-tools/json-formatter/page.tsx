@@ -61,15 +61,7 @@ const jsonLd = [
               }
             }
           ]
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.9",
-          "reviewCount": "1450",
-          "bestRating": "5",
-          "worstRating": "1"
-        }
-      },
+        }      },
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -158,19 +150,6 @@ const jsonLd = [
             }
           }
         ]
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "2100",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "JSON Formatter",
-          "description": "Online JSON formatting and validation tool"
-        }
       },
       {
         "@context": "https://schema.org",

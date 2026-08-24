@@ -119,19 +119,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.7",
-        "reviewCount": "950",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "Word Counter",
-          "description": "Online word counting and text analysis tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Word Counter Online",
         "description": "Count words, characters, and reading time in your text online for free. Perfect for writers, students, and content creators.",

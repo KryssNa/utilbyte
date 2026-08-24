@@ -118,19 +118,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "1400",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "PDF Split Tool",
-          "description": "Free online PDF splitting tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "PDF Split Online Free",
         "description": "Split PDF files online for free. Extract specific pages or divide large PDF documents into smaller files with ease.",

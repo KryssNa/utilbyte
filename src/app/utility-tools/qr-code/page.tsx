@@ -208,19 +208,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "3200",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "QR Code Generator",
-          "description": "Free online QR code generator with customization options"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "QR Code Generator Online",
         "description": "Create fully customizable QR codes online for free. Generate QR codes with colors, logos, and different sizes for websites, text, and more.",

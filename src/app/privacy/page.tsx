@@ -93,8 +93,14 @@ export default function PrivacyPage() {
                   <div>
                     <h4 className="font-semibold text-amber-800 dark:text-amber-200">Cookies</h4>
                     <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                      We use cookies for analytics, functionality, and to improve your experience.
-                      You can control cookie preferences through your browser settings.
+                      We use cookies for analytics, for site functionality, and — on pages
+                      that carry advertising — for ad serving and measurement. Third parties,
+                      including Google, may place and read cookies on your browser, or use web
+                      beacons or your IP address to collect information, as a result of ads
+                      being served on this site. See{" "}
+                      <a href="#advertising" className="underline underline-offset-2">Advertising</a>{" "}
+                      below for the detail and for how to opt out. You can also control cookies
+                      through your browser settings.
                     </p>
                   </div>
                 </div>
@@ -168,9 +174,12 @@ export default function PrivacyPage() {
 
               <div className="space-y-6">
                 <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">We Do NOT Share Your Data</p>
+                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">Your files are never shared, because they never leave your device</p>
                   <p className="text-red-700 dark:text-red-300 text-sm">
-                    We do not sell, trade, or share your personal information with third parties for marketing purposes.
+                    We do not sell or trade your personal information. The files you process
+                    with our tools are handled entirely in your browser and are never uploaded
+                    to us or to anyone else. Analytics and advertising partners do receive
+                    standard technical data about your visit — described below.
                   </p>
                 </div>
 
@@ -185,6 +194,66 @@ export default function PrivacyPage() {
                     <a href="https://policies.google.com/privacy" className="text-violet-600 hover:text-violet-700 ml-1">
                       Google's Privacy Policy
                     </a>.
+                  </p>
+                </div>
+
+                <div id="advertising" className="scroll-mt-24">
+                  <h3 className="font-semibold text-lg text-foreground mb-4">Advertising</h3>
+                  <p className="text-muted-foreground mb-4">
+                    UtilByte is free to use and is supported by advertising on some pages. We
+                    work with Google, which uses the DoubleClick advertising cookie, and may
+                    work with other advertising partners in future. Any additional partner will
+                    be named here before it goes live.
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
+                    <li>
+                      Third party vendors, including Google, use cookies to serve ads based on a
+                      user&apos;s prior visits to this website or other websites.
+                    </li>
+                    <li>
+                      Google&apos;s use of advertising cookies enables it and its partners to serve
+                      ads to you based on your visit to this site and/or other sites on the internet.
+                    </li>
+                    <li>
+                      Advertising partners may also use web beacons, your IP address, or similar
+                      identifiers to collect information as a result of ads being served here.
+                    </li>
+                    <li>
+                      Ad serving never involves the files you process. Those stay in your browser.
+                    </li>
+                  </ul>
+                  <h4 className="font-semibold text-foreground mb-2">How to opt out</h4>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
+                    <li>
+                      Opt out of personalised advertising by Google at{" "}
+                      <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                        Google Ads Settings
+                      </a>.
+                    </li>
+                    <li>
+                      Opt out of a third-party vendor&apos;s use of cookies for personalised
+                      advertising at{" "}
+                      <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                        www.aboutads.info
+                      </a>{" "}
+                      or, in Europe, at{" "}
+                      <a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                        youronlinechoices.eu
+                      </a>.
+                    </li>
+                    <li>
+                      Opting out of personalised advertising does not remove ads. You will still
+                      see ads, they will simply be less relevant to you.
+                    </li>
+                  </ul>
+                  <h4 className="font-semibold text-foreground mb-2">Consent in the EEA, UK and Switzerland</h4>
+                  <p className="text-muted-foreground">
+                    If you are visiting from the European Economic Area, the United Kingdom or
+                    Switzerland, we ask for your consent before any advertising or analytics
+                    cookies are set, through a Google-certified consent management platform
+                    integrated with the IAB Transparency and Consent Framework. You can change
+                    or withdraw that choice at any time using the privacy settings link in the
+                    site footer.
                   </p>
                 </div>
               </div>

@@ -61,15 +61,7 @@ const jsonLd = {
                 }
               }
             ]
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "reviewCount": "980",
-            "bestRating": "5",
-            "worstRating": "1"
-          }
-        },
+          }        },
         {
           "@type": "WebApplication",
           "name": "PDF Compressor Online Free",

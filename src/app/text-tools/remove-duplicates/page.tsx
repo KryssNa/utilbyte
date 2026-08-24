@@ -128,19 +128,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.6",
-        "reviewCount": "780",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "Duplicate Remover",
-          "description": "Free online duplicate text removal tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Remove Duplicates Online Free",
         "description": "Remove duplicate lines and entries from text online for free. Clean up lists, emails, and data with advanced deduplication algorithms.",

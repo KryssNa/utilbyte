@@ -126,19 +126,6 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
-        "@type": "AggregateRating",
-        "ratingValue": "4.7",
-        "reviewCount": "1100",
-        "bestRating": "5",
-        "worstRating": "1",
-        "itemReviewed": {
-          "@type": "SoftwareApplication",
-          "name": "Image Crop Tool",
-          "description": "Free online image cropping tool"
-        }
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Image Crop Online Free",
         "description": "Crop images online for free. Remove unwanted parts of images with precision cropping tools and aspect ratio controls.",
