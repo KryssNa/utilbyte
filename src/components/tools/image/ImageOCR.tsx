@@ -26,6 +26,7 @@ import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { createWorker, Worker } from "tesseract.js";
 
+import { ocrArticle } from "@/content/tools/ocr";
 const SUPPORTED_LANGUAGES = [
   { code: "eng", name: "English", nativeName: "English" },
   { code: "spa", name: "Spanish", nativeName: "Español" },
@@ -277,6 +278,7 @@ export default function ImageOCR() {
 
   return (
     <ToolLayout
+      article={ocrArticle}
       title="Image to Text (OCR)"
       description="Extract text from images using advanced OCR technology. Convert scanned documents and photos to editable text."
       category="image"

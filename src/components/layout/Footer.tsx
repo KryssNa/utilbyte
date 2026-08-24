@@ -1,6 +1,7 @@
 import { Code2, FileText, GitFork, Github, Heart, Image, Shield, Sparkles, Star, Type, Video, Wrench } from "lucide-react";
 import Link from "next/link";
 
+import ConsentSettingsLink from "@/components/shared/ConsentSettingsLink";
 const footerLinks = {
   "Image Tools": [
     { title: "Image Compressor", href: "/image-tools/compress-image" },
@@ -176,6 +177,7 @@ export default function Footer() {
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
               Terms
             </Link>
+            <ConsentSettingsLink className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
             <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
               Made with <Heart className="h-4 w-4 text-rose-500 fill-rose-500 animate-pulse" /> for productivity
             </p>

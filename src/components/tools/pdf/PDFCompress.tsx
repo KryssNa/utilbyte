@@ -29,6 +29,7 @@ import { PDFDocument } from "pdf-lib";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { compressPdfArticle } from "@/content/tools/compress-pdf";
 // Dynamic import for PDF.js to avoid SSR issues
 let pdfjsLib: any = null;
 
@@ -414,6 +415,7 @@ export default function PDFCompress() {
 
   return (
     <ToolLayout
+      article={compressPdfArticle}
       title="Compress PDF"
       description="Reduce PDF file size while maintaining quality. Choose from multiple compression levels for optimal results."
       category="pdf"

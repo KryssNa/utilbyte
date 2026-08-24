@@ -220,7 +220,7 @@ const jsonLd = [
             "name": "What tools do you offer?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "We offer 38+ tools across categories: Image tools (compress, resize, convert), PDF tools (merge, split, compress), Developer tools (JSON formatter, encoders), Text tools, Utility tools (QR codes, passwords), and Video tools."
+              "text": "We offer 46 tools across categories: Image tools (compress, resize, convert), PDF tools (merge, split, compress), Developer tools (JSON formatter, encoders), Text tools, Utility tools (QR codes, passwords), and Video tools."
             }
           },
           {
@@ -228,7 +228,7 @@ const jsonLd = [
             "name": "Why choose UtilByte over other tool websites?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Privacy-first approach (no uploads), lightning-fast performance, comprehensive tool coverage (38+ tools), free forever, no sign-up required, and works perfectly on all devices."
+              "text": "Privacy-first approach (no uploads), lightning-fast performance, comprehensive tool coverage (46 tools), free forever, no sign-up required, and works perfectly on all devices."
             }
           }
         ]

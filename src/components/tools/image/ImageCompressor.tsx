@@ -26,6 +26,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { compressImageArticle } from "@/content/tools/compress-image";
 export default function ImageCompressor() {
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -197,6 +198,7 @@ export default function ImageCompressor() {
 
   return (
     <ToolLayout
+      article={compressImageArticle}
       title="Image Compressor"
       description="Reduce image file size without losing quality. Adjust compression level and download optimized images instantly."
       category="image"

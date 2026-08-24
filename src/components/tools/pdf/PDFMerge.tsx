@@ -23,6 +23,7 @@ import { PDFDocument } from "pdf-lib";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { mergePdfArticle } from "@/content/tools/merge-pdf";
 export default function PDFMerge() {
   const [files, setFiles] = useState<File[]>([]);
   const [pdfPages, setPdfPages] = useState<Array<{ file: File, pageIndex: number, pageData: any; }>>([]);
@@ -244,6 +245,7 @@ export default function PDFMerge() {
 
   return (
     <ToolLayout
+      article={mergePdfArticle}
       title="Merge PDF"
       description="Combine multiple PDF files into a single document. Drag to reorder pages, then merge instantly. No upload required."
       category="pdf"

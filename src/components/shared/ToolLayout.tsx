@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Clock, LucideIcon, Shield, Zap } from "lucide-react";
 import Link from "next/link";
+import AdSlot from "@/components/shared/AdSlot";
+import ToolArticle, { type ToolArticleContent } from "@/components/shared/ToolArticle";
 
 type CategoryType = "image" | "pdf" | "text" | "dev" | "utility" | "video";
 
@@ -68,6 +70,17 @@ interface ToolLayoutProps {
   relatedTools?: RelatedTool[];
   faqs?: FAQ[];
   isWorking?: boolean; // When true, collapses the header
+  /**
+   * Editorial content for this tool. Rendered below the tool surface and above
+   * the FAQ. Required before this page is allowed to carry an ad unit — see
+   * AdSlot for why.
+   */
+  article?: ToolArticleContent;
+  /**
+   * AdSense ad unit ids. Both are ignored unless `article` is present, so a
+   * page can never serve an ad without publisher content of its own.
+   */
+  adSlots?: { inArticle?: string; footer?: string };
 }
 
 export default function ToolLayout({
@@ -80,8 +93,14 @@ export default function ToolLayout({
   relatedTools = [],
   faqs = [],
   isWorking = false,
+  article,
+  adSlots,
 }: ToolLayoutProps) {
   const colors = categoryColors[category] || categoryColors.utility;
+  // No publisher content on the screen means no ad on the screen. Not a style
+  // choice — it is the inventory-value rule, and it is the thing that gets
+  // tool sites rejected.
+  const mayServeAds = Boolean(article);
 
   return (
     <div className="min-h-screen">
@@ -204,6 +223,14 @@ export default function ToolLayout({
         </motion.div>
       </section>
 
+      {article && <ToolArticle content={article} toolName={title} />}
+
+      {mayServeAds && adSlots?.inArticle && (
+        <div className="container mx-auto px-4 lg:px-8">
+          <AdSlot slot={adSlots.inArticle} variant="in-article" />
+        </div>
+      )}
+
       {/* FAQ Section */}
       {faqs.length > 0 && (
         <section className="border-t border-[rgb(var(--border))] bg-[rgb(var(--muted))]/20">
@@ -230,6 +257,12 @@ export default function ToolLayout({
             </motion.div>
           </div>
         </section>
+      )}
+
+      {mayServeAds && adSlots?.footer && (
+        <div className="container mx-auto px-4 lg:px-8">
+          <AdSlot slot={adSlots.footer} variant="footer" />
+        </div>
       )}
 
       {/* Related Tools */}

@@ -252,7 +252,18 @@ export default function ContactPage() {
                   </h3>
                   <p className="text-amber-700 dark:text-amber-300">
                     We aim to respond to all inquiries within <strong>24-48 hours</strong> during business days.
-                    For urgent issues, please include "URGENT" in your message.
+                    For urgent issues, please include &quot;URGENT&quot; in your message.
+                  </p>
+                  <p className="text-amber-700 dark:text-amber-300 mt-3">
+                    If you would rather not use the form, email{" "}
+                    <a
+                      href="mailto:hello@utilbyte.app"
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      hello@utilbyte.app
+                    </a>{" "}
+                    directly. Privacy questions, takedown requests and advertising
+                    enquiries all reach the same inbox.
                   </p>
                 </div>
               </div>

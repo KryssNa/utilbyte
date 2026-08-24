@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { number: "37+", label: "Free Tools", icon: Wrench },
+  { number: "46", label: "Free Tools", icon: Wrench },
   { number: "100%", label: "Browser-Based", icon: Globe },
   { number: "0", label: "Data Uploads", icon: Lock },
   { number: "24/7", label: "Available", icon: Zap },
