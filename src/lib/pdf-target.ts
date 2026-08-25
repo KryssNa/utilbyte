@@ -120,7 +120,7 @@ async function renderPages(
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    await page.render({ canvasContext: context, viewport }).promise;
+    await page.render({ canvasContext: context, viewport, canvas }).promise;
     canvases.push(canvas);
     onProgress?.(pageNumber / doc.numPages);
   }
