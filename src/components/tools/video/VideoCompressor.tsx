@@ -13,6 +13,7 @@ import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Settings, Upload, Zap } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { compressVideoArticle } from "@/content/tools/compress-video";
 
 type VideoFormat = "mp4" | "webm" | "avi";
 type QualityPreset = "low" | "medium" | "high" | "custom";
@@ -382,6 +383,7 @@ export default function VideoCompressor() {
 
   return (
     <ToolLayout
+      article={compressVideoArticle}
       title="Video Compressor"
       description="Compress video files to reduce size while maintaining quality. Support for MP4, WebM, AVI formats with customizable quality settings."
       category="video"

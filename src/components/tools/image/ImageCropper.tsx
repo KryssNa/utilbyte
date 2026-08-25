@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { toast } from "sonner";
+import { cropImageArticle } from "@/content/tools/crop-image";
 
 // Types
 interface CropArea {
@@ -550,6 +551,7 @@ export default function ImageCropper() {
 
   return (
     <ToolLayout
+      article={cropImageArticle}
       title="Image Cropper"
       description="Crop images with precision. Drag handles, use aspect ratios, and see real-time preview."
       category="image"

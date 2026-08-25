@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { pdfToImageArticle } from "@/content/tools/pdf-to-image";
 
 // PDF.js will be imported dynamically on the client side only
 let pdfjsLib: any = null;
@@ -267,6 +268,7 @@ export default function PDFToImage() {
 
   return (
     <ToolLayout
+      article={pdfToImageArticle}
       title="PDF to Image"
       description="Convert PDF pages to high-quality images. Choose format, quality, and scale for optimal results."
       category="pdf"

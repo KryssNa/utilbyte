@@ -34,6 +34,7 @@ import {
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { editPdfArticle } from "@/content/tools/edit-pdf";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let pdfjsLib: any = null;
@@ -614,6 +615,7 @@ export default function PDFEditor() {
 
   return (
     <ToolLayout
+      article={editPdfArticle}
       title="PDF Editor"
       description="Edit any PDF document. Add text, drawings, highlights, images, and annotations directly in your browser."
       category="pdf"

@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { blurImageArticle } from "@/content/tools/blur-image";
 
 type BlurMode = "gaussian" | "pixelate";
 
@@ -228,6 +229,7 @@ export default function BlurImage() {
 
   return (
     <ToolLayout
+      article={blurImageArticle}
       title="Blur Image"
       description="Apply blur or pixelate effects to your images. Perfect for privacy, artistic effects, or background creation."
       category="image"

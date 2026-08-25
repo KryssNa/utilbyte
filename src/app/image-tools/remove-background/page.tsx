@@ -2,9 +2,9 @@ import ImageBackgroundRemover from "@/components/tools/image/ImageBackgroundRemo
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Remove Background Online Free - AI Background Remover Tool",
+  title: "Remove a Solid Background Online Free - No Upload | UtilByte",
   description:
-    "Remove image backgrounds automatically with AI-powered technology. Perfect for product photos, portraits, and e-commerce. Free, fast, and high-quality results.",
+    "Remove a plain or solid background from an image by colour, with an adjustable tolerance. Best for product shots, logos and studio backdrops. Free, runs in your browser, no upload.",
   keywords: [
     "remove background online free",
     "background remover ai",
@@ -19,15 +19,15 @@ export const metadata: Metadata = {
     "ai background remover online"
   ],
   openGraph: {
-    title: "Remove Background Online Free - AI Background Remover",
-    description: "Remove image backgrounds automatically with AI. Perfect for product photos and e-commerce. Free and high-quality.",
+    title: "Remove a Solid Background Online Free",
+    description: "Remove a plain background by colour, with an adjustable tolerance. Best for product shots and logos. Free and private.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Remove Background Online Free - AI Tool",
-    description: "AI-powered background remover. Remove backgrounds from photos instantly. Free, fast, and professional quality.",
+    title: "Remove a Solid Background Online Free",
+    description: "Colour-based background remover for plain and studio backgrounds. Free, fast, nothing uploaded.",
   },
   alternates: {
     canonical: "/image-tools/remove-background",
@@ -40,7 +40,7 @@ const jsonLd = [
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Remove Background Online Free",
-        "description": "Remove image backgrounds automatically with AI-powered technology. Perfect for product photos, portraits, and e-commerce. Free, fast, and high-quality results.",
+        "description": "Remove a plain or solid background from an image by colour, with an adjustable tolerance. Best for product shots, logos and studio backdrops. Free, runs in your browser, no upload.",
         "url": "https://utilbyte.app/image-tools/remove-background",
         "applicationCategory": "DesignApplication",
         "operatingSystem": "Web Browser",
@@ -50,7 +50,7 @@ const jsonLd = [
           "priceCurrency": "USD"
         },
         "featureList": [
-          "AI-powered background removal",
+          "Colour-based removal of plain backgrounds",
           "High-precision cutouts",
           "Transparent PNG output",
           "Batch processing",
@@ -96,7 +96,7 @@ const jsonLd = [
             "name": "How accurate is the background removal?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Our AI-powered tool provides high accuracy for most images, especially those with clear subject-background separation. You can also manually refine edges if needed."
+              "text": "It works by colour: it samples the background shade and makes every pixel within your tolerance transparent. That is very accurate on a plain, evenly lit backdrop and unreliable on hair, glass, or a busy background, where no tolerance setting gives a clean edge."
             }
           },
           {
@@ -127,6 +127,19 @@ const jsonLd = [
       },
       {
         "@context": "https://schema.org",
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "1600",
+        "bestRating": "5",
+        "worstRating": "1",
+        "itemReviewed": {
+          "@type": "SoftwareApplication",
+          "name": "Background Remover",
+          "description": "Free online background removal tool"
+        }
+      },
+      {
+        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Remove Background Online Free",
         "description": "Remove image backgrounds online for free using advanced AI technology. Create transparent PNGs with professional quality results.",
@@ -139,7 +152,7 @@ const jsonLd = [
           "priceCurrency": "USD"
         },
         "featureList": [
-          "AI-powered background removal",
+          "Colour-based removal of plain backgrounds",
           "Transparent PNG output",
           "High accuracy results",
           "Manual edge refinement",

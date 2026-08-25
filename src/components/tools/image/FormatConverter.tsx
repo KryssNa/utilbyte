@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { formatConverterArticle } from "@/content/tools/format-converter";
 
 const OUTPUT_FORMATS = [
   { value: "png", label: "PNG", desc: "Lossless, transparency", mime: "image/png" },
@@ -281,6 +282,7 @@ export default function FormatConverter() {
 
   return (
     <ToolLayout
+      article={formatConverterArticle}
       title="Format Converter"
       description="Convert images between PNG, JPEG, WebP, GIF, and BMP formats. Adjust quality and download instantly."
       category="image"

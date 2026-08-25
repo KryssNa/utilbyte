@@ -87,7 +87,7 @@ export const toolCategories: ToolCategory[] = [
     bgColor: "bg-sky-500/10",
     hoverBg: "hover:bg-sky-500/10",
     tools: [
-      { title: "Background Remover", href: "/image-tools/remove-background", desc: "AI-powered" },
+      { title: "Background Remover", href: "/image-tools/remove-background", desc: "Plain backgrounds" },
       { title: "Blur Image", href: "/image-tools/blur-image", desc: "Blur & pixelate" },
       { title: "Format Converter", href: "/image-tools/format-converter", desc: "PNG, JPG, WebP" },
       { title: "Image Compressor", href: "/image-tools/compress-image", desc: "Reduce file size" },
@@ -204,7 +204,7 @@ export const top10Tools = [
   { title: "Image Compressor", href: "/image-tools/compress-image", desc: "Reduce file size without quality loss", category: "Image" },
   { title: "Online Compiler", href: "/dev-tools/online-compiler", desc: "Write & run code in 10+ languages", category: "Dev" },
   { title: "Merge PDF", href: "/pdf-tools/merge-pdf", desc: "Combine multiple PDFs into one", category: "PDF" },
-  { title: "Background Remover", href: "/image-tools/remove-background", desc: "AI-powered background removal", category: "Image" },
+  { title: "Background Remover", href: "/image-tools/remove-background", desc: "Colour-based removal of plain backgrounds", category: "Image" },
   { title: "JSON Formatter", href: "/dev-tools/json-formatter", desc: "Format & validate JSON", category: "Dev" },
   { title: "QR Code", href: "/utility-tools/qr-code", desc: "Create QR codes instantly", category: "Utility" },
   { title: "Password Generator", href: "/utility-tools/password-generator", desc: "Generate secure passwords", category: "Utility" },

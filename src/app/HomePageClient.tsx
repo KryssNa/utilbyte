@@ -70,7 +70,7 @@ const popularTools = [
   {
     title: "Background Remover",
     href: "/image-tools/remove-background",
-    desc: "AI-powered background removal",
+    desc: "Colour-based removal of plain backgrounds",
     category: "Image",
   },
   {

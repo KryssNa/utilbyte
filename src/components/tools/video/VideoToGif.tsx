@@ -13,6 +13,7 @@ import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Image, Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { videoToGifArticle } from "@/content/tools/video-to-gif";
 
 interface GifSettings {
   startTime: number;
@@ -343,6 +344,7 @@ export default function VideoToGif() {
 
   return (
     <ToolLayout
+      article={videoToGifArticle}
       title="Video to GIF Converter"
       description="Convert video clips to animated GIFs. Extract specific segments with customizable quality, size, and frame rate settings."
       category="video"

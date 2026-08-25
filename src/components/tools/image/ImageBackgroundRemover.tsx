@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { removeBackgroundArticle } from "@/content/tools/remove-background";
 
 export default function ImageBackgroundRemover() {
   const [image, setImage] = useState<File | null>(null);
@@ -367,6 +368,7 @@ export default function ImageBackgroundRemover() {
 
   return (
     <ToolLayout
+      article={removeBackgroundArticle}
       title="Background Remover"
       description="Remove solid color backgrounds from images with automatic detection and smart edge handling."
       category="image"

@@ -22,6 +22,7 @@ import {
 import { PDFDocument, Rotation } from "pdf-lib";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { rotatePdfArticle } from "@/content/tools/rotate-pdf";
 
 type RotationAngle = 90 | 180 | 270;
 type RotationMode = 'all' | 'specific' | 'range';
@@ -173,6 +174,7 @@ export default function PDFRotate() {
 
   return (
     <ToolLayout
+      article={rotatePdfArticle}
       title="Rotate PDF"
       description="Rotate PDF pages by 90°, 180°, or 270°. Choose which pages to rotate and by how much."
       category="pdf"

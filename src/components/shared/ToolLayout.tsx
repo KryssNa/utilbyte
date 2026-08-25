@@ -7,6 +7,8 @@ import { ArrowLeft, Clock, LucideIcon, Shield, Zap } from "lucide-react";
 import Link from "next/link";
 import AdSlot from "@/components/shared/AdSlot";
 import ToolArticle, { type ToolArticleContent } from "@/components/shared/ToolArticle";
+import { getGuidesForTool } from "@/content/guides";
+import { usePathname } from "next/navigation";
 
 type CategoryType = "image" | "pdf" | "text" | "dev" | "utility" | "video";
 
@@ -101,6 +103,12 @@ export default function ToolLayout({
   // choice — it is the inventory-value rule, and it is the thing that gets
   // tool sites rejected.
   const mayServeAds = Boolean(article);
+
+  // Guides are the other half of the internal linking: a tool page should point
+  // at the writing that explains it, and the guide points back. Resolved from
+  // the route so no tool component has to remember to pass anything.
+  const pathname = usePathname();
+  const guides = getGuidesForTool(pathname ?? "");
 
   return (
     <div className="min-h-screen">
@@ -255,6 +263,31 @@ export default function ToolLayout({
                 ))}
               </div>
             </motion.div>
+          </div>
+        </section>
+      )}
+
+      {guides.length > 0 && (
+        <section className="border-t border-[rgb(var(--border))] bg-[rgb(var(--muted))]/10">
+          <div className="container mx-auto px-4 py-12 lg:px-8 lg:py-16">
+            <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl mb-8">
+              Further reading
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {guides.slice(0, 4).map((guide) => (
+                <Link
+                  key={guide.slug}
+                  href={`/guides/${guide.slug}`}
+                  className="group rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-5 transition-all hover:border-[rgb(var(--primary))]/30 hover:shadow-lg"
+                >
+                  <span className="font-medium">{guide.title}</span>
+                  <p className="mt-1.5 text-sm text-muted-foreground">{guide.summary}</p>
+                  <span className="mt-3 inline-block text-xs text-muted-foreground">
+                    {guide.readingMinutes} min read
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       )}

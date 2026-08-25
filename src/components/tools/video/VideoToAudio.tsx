@@ -11,6 +11,7 @@ import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Music, Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { videoToAudioArticle } from "@/content/tools/video-to-audio";
 
 type AudioFormat = "mp3" | "wav" | "aac" | "ogg" | "m4a";
 
@@ -319,6 +320,7 @@ export default function VideoToAudio() {
 
   return (
     <ToolLayout
+      article={videoToAudioArticle}
       title="Video to Audio Converter"
       description="Extract audio tracks from video files. Convert videos to MP3, WAV, AAC, OGG, and M4A formats with high quality audio extraction."
       category="video"

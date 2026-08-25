@@ -1,4 +1,5 @@
 import { toolCategories } from "@/components/layout/navbar/data";
+import { GUIDES } from "@/content/guides";
 import { MetadataRoute } from "next";
 
 const staticRoutes: Array<{
@@ -11,6 +12,7 @@ const staticRoutes: Array<{
   { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/guides", changeFrequency: "weekly", priority: 0.7 },
   { path: "/dev-tools", changeFrequency: "monthly", priority: 0.85 },
   { path: "/image-tools", changeFrequency: "monthly", priority: 0.75 },
   { path: "/pdf-tools", changeFrequency: "monthly", priority: 0.75 },
@@ -31,7 +33,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
-  return [...staticRoutes, ...toolRoutes].map((route) => ({
+  const guideRoutes = GUIDES.map((guide) => ({
+    path: `/guides/${guide.slug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...toolRoutes, ...guideRoutes].map((route) => ({
     url: `${baseUrl}${route.path}`,
     lastModified: now,
     changeFrequency: route.changeFrequency,
