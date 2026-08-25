@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About Us | UtilByte",
-  description: "Learn about UtilByte - free, privacy-first online tools for images, PDFs, text, and developers. No uploads, no sign-ups, 100% browser-based.",
+  description: "Learn about UtilByte - free, privacy-first online tools for images, PDFs, text and developers. No sign-ups, and file processing that happens in your browser rather than on a server.",
   keywords: "about utilbyte, free online tools, privacy first tools, browser based tools",
   openGraph: {
     title: "About Us | UtilByte",
@@ -42,7 +42,7 @@ const values = [
   {
     icon: Shield,
     title: "Privacy First",
-    description: "Your files never leave your device. All processing happens locally in your browser, ensuring complete privacy.",
+    description: "Your files never leave your device. Image, PDF, video, text and code tools all run locally in your browser.",
   },
   {
     icon: Zap,
@@ -80,7 +80,7 @@ export default function AboutPage() {
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
               UtilByte provides free, privacy-focused online tools that work entirely in your browser.
-              No uploads, no accounts, no compromise on your data.
+              No accounts, and no uploading your files to somebody else's server.
             </p>
           </div>
         </div>
@@ -117,10 +117,19 @@ export default function AboutPage() {
                 that respect your privacy. We believe that essential utilities should be accessible to everyone,
                 without the need for expensive software subscriptions or concerns about data security.
               </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Every file tool on UtilByte processes your data directly in your browser. Images, PDFs,
+                video, text and code are handled locally using canvas, pdf-lib, ffmpeg.wasm and
+                tesseract.js, which means your files never leave your device. You do not have to take
+                that on trust: open any of them, disconnect from the network, and they still work.
+              </p>
               <p className="text-muted-foreground leading-relaxed">
-                Every tool on UtilByte processes your data directly in your browser using modern web technologies.
-                This means your files, images, and documents never leave your device — they're processed locally,
-                ensuring maximum privacy and security.
+                Three tools are different, and it is worth saying so plainly. The API Client, the
+                Request Catcher and the Local Proxy all need a server, because a browser cannot call an
+                arbitrary API across origins and a public webhook URL has to exist somewhere. Requests
+                you make with those tools — including any credentials in them — pass through our
+                infrastructure. Each of their pages says so, and the advice there is the same as it is
+                here: use test credentials, not production ones.
               </p>
             </div>
           </section>

@@ -85,15 +85,15 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-5 text-sm text-muted-foreground max-w-xs leading-relaxed">
-              Free online tools for everyday work. No sign-up required. Your files never leave your device.
-              <span className="text-foreground font-medium"> 100% private.</span>
+              Free online tools for everyday work. No sign-up required.
+              <span className="text-foreground font-medium"> Your files never leave your device.</span>
             </p>
 
             {/* Trust Badges */}
             <div className="mt-8 flex flex-wrap gap-3">
               <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
                 <Shield className="h-4 w-4" />
-                100% Private
+                Files stay local
               </div>
               <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 border border-sky-500/20 px-4 py-2 text-sm font-medium text-sky-600 dark:text-sky-400">
                 <Sparkles className="h-4 w-4" />

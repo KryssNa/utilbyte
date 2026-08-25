@@ -22,7 +22,7 @@ import { useMemo, useState } from "react";
 const features = [
   {
     icon: Shield,
-    title: "100% Private",
+    title: "Files stay local",
     color: "text-emerald-500 dark:text-emerald-400",
   },
   {
@@ -166,7 +166,7 @@ export default function HomePageClient() {
             <motion.div variants={itemVariants} className='mb-5'>
               <span className='inline-flex items-center gap-2 rounded-full border border-sky-300 dark:border-sky-500/30 bg-sky-100 dark:bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-700 dark:text-sky-300 backdrop-blur-sm'>
                 <Sparkles className='h-4 w-4' />
-                {totalTools} Free Tools &middot; 100% Private
+                {totalTools} Free Tools &middot; No file uploads
               </span>
             </motion.div>
 

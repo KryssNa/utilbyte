@@ -254,7 +254,7 @@ export default function Navbar() {
                     <span>{totalTools} free tools</span>
                     <span className='flex items-center gap-1'>
                       <Shield className='h-3 w-3 text-emerald-500/70' />
-                      100% Private
+                      Files stay local
                     </span>
                     <span className='flex items-center gap-1'>
                       <Zap className='h-3 w-3 text-amber-500/70' />

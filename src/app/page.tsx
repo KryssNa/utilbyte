@@ -5,7 +5,7 @@ import HomePageClient from "./HomePageClient";
 export const metadata: Metadata = {
   title: "UtilByte - Free Online Tools for Images, PDFs & Developers",
   description:
-    "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
+    "Free online tools for images, PDFs, text and developers. No login. File tools run entirely in your browser, so your files are never uploaded.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
-    description: "Free online tools that respect your privacy. No uploads, no tracking.",
+    description: "Free online tools that respect your privacy. Your files are processed in your browser, not uploaded.",
     images: ["https://utilbyte.app/images/og-image.jpg"],
   },
   alternates: {
@@ -55,7 +55,7 @@ const jsonLd = [
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "UtilByte - Free Online Tools for Everyday Work",
-        "description": "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
+        "description": "Free online tools for images, PDFs, text and developers. No login. File tools run entirely in your browser, so your files are never uploaded.",
         "url": "https://utilbyte.app",
         "isPartOf": {
           "@type": "WebSite",
@@ -75,7 +75,7 @@ const jsonLd = [
         "name": "UtilByte",
         "url": "https://utilbyte.app",
         "logo": "https://utilbyte.app/logo.svg",
-        "description": "Free online tools for image, PDF, text, and developer work. Privacy-first, no uploads required.",
+        "description": "Free online tools for image, PDF, text and developer work. File processing happens in your browser rather than on a server.",
         "foundingDate": "2024",
         "sameAs": [
           "https://github.com/KryssNa/utilbyte"

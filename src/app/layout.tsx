@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | UtilByte",
   },
   description:
-    "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
+    "Free online tools for images, PDFs, text and developers. No login. File tools run entirely in your browser, so your files are never uploaded.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     url: "https://utilbyte.app",
     title: "UtilByte - Free Online Tools for Everyday Work",
     description:
-      "Free image, PDF, text & developer tools. No login. No uploads. 100% private.",
+      "Free image, PDF, text and developer tools. No login. Your files never leave your browser.",
     siteName: "UtilByte",
     images: [
       {
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
-    description: "Free online tools that respect your privacy. No uploads, no tracking.",
+    description: "Free online tools that respect your privacy. Your files are processed in your browser, not uploaded.",
     images: ["/images/og-image.jpg"],
   },
   robots: {
