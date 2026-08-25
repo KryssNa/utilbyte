@@ -22,6 +22,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { onlineCompilerArticle } from "@/content/tools/online-compiler";
 type RunnerType = "js" | "html" | "css" | "python";
 
 interface Language {
@@ -550,6 +551,7 @@ sys.stderr = io.StringIO()
 
   return (
     <ToolLayout
+      article={onlineCompilerArticle}
       title="Online Compiler"
       description="Write and run code instantly in your browser. Supports JavaScript, TypeScript, Python, HTML, CSS, and more. No setup required."
       category="dev"

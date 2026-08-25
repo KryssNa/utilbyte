@@ -23,6 +23,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { requestCatcherArticle } from "@/content/tools/request-catcher";
 interface CaughtRequest {
   id: string;
   bin_id: string;
@@ -264,6 +265,7 @@ export default function RequestCatcher() {
 
   return (
     <ToolLayout
+      article={requestCatcherArticle}
       title="Request Catcher"
       description="Capture and inspect incoming HTTP requests in real-time. Perfect for testing webhooks, API callbacks, and debugging integrations."
       category="dev"

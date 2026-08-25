@@ -7,6 +7,33 @@ import { ArrowLeft, ArrowRight, Binary, Check, Copy } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+
+import { base64Article } from "@/content/tools/base64";
+/**
+ * Base64 that survives non-ASCII text.
+ *
+ * `btoa` operates on Latin-1 and throws on any character above U+00FF, so it
+ * fails outright on Devanagari, CJK, Cyrillic, accented Latin and emoji. Base64
+ * encodes bytes, not characters, so the fix is to convert the string to UTF-8
+ * bytes first and encode those — which is also what every server-side base64
+ * implementation does, so the output round-trips correctly.
+ */
+function encodeBase64(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
+function decodeBase64(encoded: string): string {
+  // Accept the URL-safe alphabet too, and tolerate missing padding.
+  const normalised = encoded.trim().replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalised.padEnd(Math.ceil(normalised.length / 4) * 4, "=");
+  const binary = atob(padded);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+}
+
 type Mode = "encode" | "decode";
 
 export default function Base64Tool() {
@@ -18,13 +45,11 @@ export default function Base64Tool() {
     if (!input.trim()) return "";
 
     try {
-      if (mode === "encode") {
-        return btoa(input);
-      } else {
-        return atob(input);
-      }
+      return mode === "encode" ? encodeBase64(input) : decodeBase64(input);
     } catch (error) {
-      return "Invalid Base64 string";
+      return mode === "encode"
+        ? "Could not encode this input"
+        : "Invalid Base64 string";
     }
   }, [input, mode]);
 
@@ -53,7 +78,7 @@ export default function Base64Tool() {
     if (!input.trim()) return true;
     if (mode === "decode") {
       try {
-        atob(input);
+        decodeBase64(input);
         return true;
       } catch {
         return false;
@@ -79,6 +104,7 @@ export default function Base64Tool() {
 
   return (
     <ToolLayout
+      article={base64Article}
       title="Base64 Encoder/Decoder"
       description="Encode text to Base64 or decode Base64 back to text. Perfect for developers working with APIs, data transmission, and encoding."
       category="dev"

@@ -8,6 +8,7 @@ import { Database, Check, Copy, RotateCcw } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { sqlFormatterArticle } from "@/content/tools/sql-formatter";
 export default function SQLFormatter() {
   const [input, setInput] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
@@ -81,6 +82,7 @@ export default function SQLFormatter() {
 
   return (
     <ToolLayout
+      article={sqlFormatterArticle}
       title="SQL Formatter"
       description="Format and beautify SQL queries online. Make your SQL code readable with proper indentation and line breaks."
       category="dev"

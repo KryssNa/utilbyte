@@ -7,6 +7,7 @@ import { Check, Copy, RotateCcw, Type } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { caseConverterArticle } from "@/content/tools/case-converter";
 type CaseType =
   | "uppercase"
   | "lowercase"
@@ -127,6 +128,7 @@ export default function CaseConverter() {
 
   return (
     <ToolLayout
+      article={caseConverterArticle}
       title="Case Converter"
       description="Convert text between different case styles: uppercase, lowercase, title case, camelCase, PascalCase, snake_case, and more."
       category="text"

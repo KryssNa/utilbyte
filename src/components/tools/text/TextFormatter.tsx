@@ -9,6 +9,7 @@ import { AlertCircle, Check, CheckCircle, Copy, FileText, RotateCcw } from "luci
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { textFormatterArticle } from "@/content/tools/text-formatter";
 type FormatType = "json" | "xml" | "sql" | "css" | "javascript" | "typescript";
 
 export default function TextFormatter() {
@@ -209,6 +210,7 @@ export default function TextFormatter() {
 
   return (
     <ToolLayout
+      article={textFormatterArticle}
       title="Text Formatter"
       description="Format and beautify code in multiple languages. Supports JSON, XML, SQL, CSS, JavaScript, and TypeScript formatting."
       category="text"

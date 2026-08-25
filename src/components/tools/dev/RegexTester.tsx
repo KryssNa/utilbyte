@@ -12,6 +12,7 @@ import { AlertCircle, BookOpen, Copy, RotateCcw, Search } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { regexTesterArticle } from "@/content/tools/regex-tester";
 interface MatchResult {
   match: string;
   index: number;
@@ -207,6 +208,7 @@ export default function RegexTester() {
 
   return (
     <ToolLayout
+      article={regexTesterArticle}
       title="Regex Tester"
       description="Test and debug regular expressions with live matching, highlighting, and replacement. Supports all major regex flags and features."
       category="dev"

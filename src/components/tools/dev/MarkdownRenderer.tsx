@@ -26,6 +26,7 @@ import { toast } from "sonner";
 
 import "highlight.js/styles/github-dark.css";
 
+import { markdownRendererArticle } from "@/content/tools/markdown-renderer";
 type ViewMode = "split" | "editor" | "preview";
 
 export default function MarkdownRenderer() {
@@ -279,6 +280,7 @@ export default function MarkdownRenderer() {
 
   return (
     <ToolLayout
+      article={markdownRendererArticle}
       title="Markdown Renderer"
       description="Advanced markdown editor with live preview, formatting toolbar, syntax highlighting, table of contents, and multiple export formats."
       category="dev"

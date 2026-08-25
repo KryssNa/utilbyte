@@ -17,6 +17,7 @@ import QRCode from "qrcode";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { qrCodeArticle } from "@/content/tools/qr-code";
 type QRType = "text" | "url" | "email" | "phone" | "sms" | "wifi" | "vcard" | "location" | "calendar";
 type ErrorCorrectionLevel = "L" | "M" | "Q" | "H";
 type ExportFormat = "png" | "svg" | "jpeg";
@@ -321,6 +322,7 @@ export default function QRCodeGenerator() {
 
   return (
     <ToolLayout
+      article={qrCodeArticle}
       title="Advanced QR Code Generator"
       description="Create fully customizable QR codes with colors, logos, error correction, and advanced settings. Generate QR codes for URLs, WiFi, vCards, locations, calendar events, and more."
       category="utility"

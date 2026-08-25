@@ -11,6 +11,7 @@ import { Copy, Palette, RotateCcw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { colorConverterArticle } from "@/content/tools/color-converter";
 interface ColorValues {
   hex: string;
   rgb: { r: number; g: number; b: number; };
@@ -211,6 +212,7 @@ export default function ColorConverter() {
 
   return (
     <ToolLayout
+      article={colorConverterArticle}
       title="Color Converter"
       description="Convert between different color formats: HEX, RGB, HSL, HSV, CMYK. Includes color picker and visual preview."
       category="utility"

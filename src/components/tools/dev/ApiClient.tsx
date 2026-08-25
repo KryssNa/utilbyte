@@ -8,6 +8,7 @@ import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import KeyValueEditor from "./api-client/KeyValueEditor";
 import ResponseView from "./api-client/ResponseView";
+import { apiClientArticle } from "@/content/tools/api-client";
 import {
   ApiResponse,
   HTTP_METHODS,
@@ -140,6 +141,7 @@ export default function ApiClient() {
 
   return (
     <ToolLayout
+      article={apiClientArticle}
       title="API Client"
       description="Send HTTP requests to any API endpoint and inspect responses. A browser-based alternative to Postman and cURL."
       category="dev"

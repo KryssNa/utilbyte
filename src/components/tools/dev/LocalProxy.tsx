@@ -20,6 +20,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { localProxyArticle } from "@/content/tools/local-proxy";
 const STORAGE_KEY = "rc_bin_id";
 
 function generateBinId() {
@@ -174,6 +175,7 @@ export default function LocalProxy() {
 
   return (
     <ToolLayout
+      article={localProxyArticle}
       title="Local Proxy"
       description="Forward requests from your public catcher URL to localhost via ngrok or any tunnel. Debug webhooks directly on your local machine."
       category="dev"

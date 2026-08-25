@@ -13,6 +13,7 @@ import { AlertCircle, Barcode, CheckCircle, Copy, Download, RotateCcw } from "lu
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { barcodeArticle } from "@/content/tools/barcode";
 type BarcodeFormat =
   | "CODE128"
   | "CODE39"
@@ -223,6 +224,7 @@ export default function BarcodeGenerator() {
 
   return (
     <ToolLayout
+      article={barcodeArticle}
       title="Barcode Generator"
       description="Generate various barcode formats including EAN13, CODE128, UPC, and more. Download as PNG or copy to clipboard."
       category="utility"

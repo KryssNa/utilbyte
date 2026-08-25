@@ -10,6 +10,7 @@ import { AlertCircle, Check, Copy, FileText, Link, RotateCcw } from "lucide-reac
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { urlEncoderArticle } from "@/content/tools/url-encoder";
 type EncodeType = "url" | "urlComponent" | "formData" | "base64";
 
 export default function UrlEncoder() {
@@ -130,6 +131,7 @@ export default function UrlEncoder() {
 
   return (
     <ToolLayout
+      article={urlEncoderArticle}
       title="URL Encoder/Decoder"
       description="Encode and decode URLs, URL components, form data, and Base64 strings. Perfect for web development and API testing."
       category="dev"

@@ -10,6 +10,7 @@ import { AlertCircle, CheckCircle, Clock, Copy, Key, RotateCcw } from "lucide-re
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { jwtDecoderArticle } from "@/content/tools/jwt-decoder";
 interface JwtParts {
   header: any;
   payload: any;
@@ -116,6 +117,7 @@ export default function JwtDecoder() {
 
   return (
     <ToolLayout
+      article={jwtDecoderArticle}
       title="JWT Decoder"
       description="Decode and inspect JSON Web Tokens. View header, payload, and signature information with expiration validation."
       category="dev"

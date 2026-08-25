@@ -9,6 +9,7 @@ import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
+import { uuidGeneratorArticle } from "@/content/tools/uuid-generator";
 export default function UUIDGenerator() {
   const [uuids, setUuids] = useState<string[]>([uuidv4()]);
   const [count, setCount] = useState<number>(1);
@@ -58,6 +59,7 @@ export default function UUIDGenerator() {
 
   return (
     <ToolLayout
+      article={uuidGeneratorArticle}
       title="UUID Generator"
       description="Generate unique UUIDs (Universally Unique Identifiers) instantly. Perfect for database keys, API tokens, and unique identifiers."
       category="dev"

@@ -12,6 +12,7 @@ import { Bell, BellOff, Pause, Play, RotateCcw, Timer } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { countdownArticle } from "@/content/tools/countdown";
 interface TimerPreset {
   name: string;
   duration: number; // in seconds
@@ -202,6 +203,7 @@ export default function CountdownTimer() {
 
   return (
     <ToolLayout
+      article={countdownArticle}
       title="Countdown Timer"
       description="Set customizable countdown timers with visual progress indicators, sound alerts, and preset durations for productivity and time management."
       category="utility"

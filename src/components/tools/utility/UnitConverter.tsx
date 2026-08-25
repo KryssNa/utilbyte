@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowRight, Calculator, RotateCcw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
+import { unitConverterArticle } from "@/content/tools/unit-converter";
 type UnitType = "length" | "weight" | "temperature" | "area" | "volume" | "time" | "speed" | "pressure" | "energy";
 
 interface UnitDefinition {
@@ -191,6 +192,7 @@ export default function UnitConverter() {
 
   return (
     <ToolLayout
+      article={unitConverterArticle}
       title="Unit Converter"
       description="Convert between different units of measurement. Supports length, weight, temperature, area, volume, time, speed, pressure, and energy."
       category="utility"

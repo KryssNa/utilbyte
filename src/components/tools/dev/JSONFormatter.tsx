@@ -28,6 +28,7 @@ import JsonTreeView from "./json-formatter/JsonTreeView";
 import { SAMPLE_JSON, type ViewTab } from "./json-formatter/types";
 import { useJsonFormatter } from "./json-formatter/useJsonFormatter";
 
+import { jsonFormatterArticle } from "@/content/tools/json-formatter";
 export default function JSONFormatter() {
   const [input, setInput] = useState("");
   const [compareInput, setCompareInput] = useState("");
@@ -206,6 +207,7 @@ export default function JSONFormatter() {
 
   return (
     <ToolLayout
+      article={jsonFormatterArticle}
       title="JSON Formatter"
       description="Format, validate, minify, compare, and explore JSON with syntax highlighting, tree view, and JSON Path queries."
       category="dev"
