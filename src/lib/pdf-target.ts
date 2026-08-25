@@ -54,7 +54,9 @@ const PDF_USER_UNIT = 72; // points per inch
  * Lossless pass: rebuild the document, discarding metadata and anything the
  * page tree no longer references.
  */
-export async function restructurePdf(file: Blob): Promise<{ blob: Blob; pageCount: number }> {
+export async function restructurePdf(
+  file: Blob,
+): Promise<{ blob: Blob; pageCount: number }> {
   const source = await PDFDocument.load(await file.arrayBuffer(), {
     ignoreEncryption: true,
     updateMetadata: false,
@@ -94,7 +96,7 @@ async function loadPdfJs(): Promise<PdfJsModule> {
 async function renderPages(
   file: Blob,
   dpi: number,
-  onProgress?: (fraction: number) => void
+  onProgress?: (fraction: number) => void,
 ): Promise<HTMLCanvasElement[]> {
   const lib = await loadPdfJs();
   const doc = await lib.getDocument({
@@ -128,12 +130,16 @@ async function renderPages(
   return canvases;
 }
 
-function canvasToJpeg(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+function canvasToJpeg(
+  canvas: HTMLCanvasElement,
+  quality: number,
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("Page encoding failed"))),
+      (blob) =>
+        blob ? resolve(blob) : reject(new Error("Page encoding failed")),
       "image/jpeg",
-      quality
+      quality,
     );
   });
 }
@@ -145,7 +151,12 @@ async function buildPdfFromJpegs(pages: Blob[]): Promise<Blob> {
   for (const jpeg of pages) {
     const embedded = await doc.embedJpg(await jpeg.arrayBuffer());
     const page = doc.addPage([embedded.width, embedded.height]);
-    page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
+    page.drawImage(embedded, {
+      x: 0,
+      y: 0,
+      width: embedded.width,
+      height: embedded.height,
+    });
   }
 
   const bytes = await doc.save({ useObjectStreams: true });
@@ -162,10 +173,11 @@ async function buildPdfFromJpegs(pages: Blob[]): Promise<Blob> {
  */
 export async function compressPdfToTarget(
   file: Blob,
-  options: PdfTargetOptions
+  options: PdfTargetOptions,
 ): Promise<PdfTargetResult> {
   const { targetBytes, strategy, dpi = DEFAULT_DPI, onProgress } = options;
-  if (targetBytes <= 0) throw new Error("Target size must be greater than zero");
+  if (targetBytes <= 0)
+    throw new Error("Target size must be greater than zero");
 
   if (strategy === "restructure") {
     const { blob, pageCount } = await restructurePdf(file);
@@ -190,7 +202,9 @@ export async function compressPdfToTarget(
 
   for (let step = 0; step < 7; step++) {
     const quality = (low + high) / 2;
-    const jpegs = await Promise.all(canvases.map((canvas) => canvasToJpeg(canvas, quality)));
+    const jpegs = await Promise.all(
+      canvases.map((canvas) => canvasToJpeg(canvas, quality)),
+    );
     const candidate = await buildPdfFromJpegs(jpegs);
 
     if (!smallest || candidate.size < smallest.blob.size) {
@@ -220,11 +234,23 @@ export async function compressPdfToTarget(
 }
 
 /** Common PDF upload caps, in bytes. */
-export const PDF_SIZE_PRESETS: Array<{ label: string; bytes: number; note: string }> = [
+export const PDF_SIZE_PRESETS: Array<{
+  label: string;
+  bytes: number;
+  note: string;
+}> = [
   { label: "500 KB", bytes: 500 * 1024, note: "Strict portals and exam forms" },
   { label: "1 MB", bytes: 1024 * 1024, note: "Common government upload cap" },
-  { label: "2 MB", bytes: 2 * 1024 * 1024, note: "University and job applications" },
+  {
+    label: "2 MB",
+    bytes: 2 * 1024 * 1024,
+    note: "University and job applications",
+  },
   { label: "5 MB", bytes: 5 * 1024 * 1024, note: "General web forms" },
   { label: "10 MB", bytes: 10 * 1024 * 1024, note: "Email attachment limits" },
-  { label: "25 MB", bytes: 25 * 1024 * 1024, note: "Gmail's attachment ceiling" },
+  {
+    label: "25 MB",
+    bytes: 25 * 1024 * 1024,
+    note: "Gmail's attachment ceiling",
+  },
 ];
