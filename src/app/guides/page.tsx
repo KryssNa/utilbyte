@@ -4,7 +4,7 @@ import { ArrowRight, BookOpen, Clock } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Guides - File Sizes, Document Photos and Formats | UtilByte",
+  title: "Guides - Files, Formats and Developer Workflows | UtilByte",
   description:
     "Practical guides on compressing images to a KB limit, document and passport photo specifications, PDF size, and image formats. Written to be useful, not to sell you anything.",
   keywords: [
@@ -50,12 +50,10 @@ export default function GuidesIndexPage() {
                 Guides
               </div>
               <h1 className="mt-5 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight sm:text-4xl">
-                How to get files past the form
+                Practical guides for files and developer tools
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-                Upload limits, document photo specifications, format choices. These are the
-                questions the tools on this site exist to answer, explained properly rather
-                than in three sentences of filler around an advert.
+                Understand upload limits, choose formats, and check developer-tool output with reproducible examples.
               </p>
             </div>
           </div>

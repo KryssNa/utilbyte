@@ -2,6 +2,8 @@
 
 import { toolCategories } from "@/components/layout/navbar";
 import { toolIcons } from "@/components/layout/navbar/data";
+import { searchTools } from "@/lib/tool-search";
+import { allTools } from "@/components/layout/navbar/data";
 import SocialProof from "@/components/shared/SocialProof";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -121,17 +123,12 @@ export default function HomePageClient() {
 
   const filteredCategories = useMemo(() => {
     if (!toolSearch.trim() && !activeCategory) return toolCategories;
-    const q = toolSearch.toLowerCase();
+    const matches = searchTools(allTools, toolSearch);
     return toolCategories
       .filter((cat) => !activeCategory || cat.title === activeCategory)
       .map((cat) => ({
         ...cat,
-        tools: cat.tools.filter(
-          (t) =>
-            !q ||
-            t.title.toLowerCase().includes(q) ||
-            t.desc.toLowerCase().includes(q),
-        ),
+        tools: matches.filter(tool => tool.category === cat.title),
       }))
       .filter((cat) => cat.tools.length > 0);
   }, [toolSearch, activeCategory]);
@@ -327,7 +324,8 @@ export default function HomePageClient() {
               <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
               <input
                 type='text'
-                placeholder='Search tools...'
+                placeholder='Search tools or tasks...'
+                aria-label='Search the tool directory'
                 value={toolSearch}
                 onChange={(e) => setToolSearch(e.target.value)}
                 className='w-full pl-9 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30'
@@ -471,18 +469,20 @@ export default function HomePageClient() {
                   <Shield className='h-7 w-7 text-emerald-600 dark:text-emerald-400' />
                 </div>
                 <h2 className='font-display text-2xl font-bold tracking-tight sm:text-3xl mb-3'>
-                  Your Files Never Leave Your Device
+                  Local tools. Clear data choices.
                 </h2>
                 <p className='text-muted-foreground max-w-2xl mx-auto text-lg'>
-                  All processing happens locally in your browser using modern
-                  web technologies. Your files are never uploaded to any server.
+                  Image, PDF, text, and many developer tools process content in your browser.
+                  Network tools send requests to external services; some local tools download processing libraries.
+                  This site also uses analytics and advertising. Tool inputs are not included in the optional tool-outcome metrics.
                 </p>
 
+                <Link href='/privacy' className='mt-4 inline-block text-sm underline underline-offset-4'>Read how data is handled</Link>
                 <div className='mt-6 flex flex-wrap items-center justify-center gap-6 text-sm'>
                   {[
-                    "No server uploads",
-                    "No tracking",
-                    "No data collection",
+                    "Browser-based file tools",
+                    "No account required",
+                    "Open source",
                   ].map((text) => (
                     <div
                       key={text}

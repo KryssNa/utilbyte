@@ -1,3 +1,4 @@
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import WebSocketClient from "@/components/tools/dev/WebSocketClient";
 import { Metadata } from "next";
 
@@ -30,5 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default function WebSocketClientPage() {
-  return <WebSocketClient />;
+  return <><ToolStructuredData href="/dev-tools/websocket-client" /><WebSocketClient /></>;
 }

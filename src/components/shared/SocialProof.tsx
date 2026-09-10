@@ -1,3 +1,4 @@
+import { allTools } from "@/components/layout/navbar/data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Cpu, Github, ShieldCheck, UploadCloud, Wrench } from "lucide-react";
@@ -33,7 +34,7 @@ const GITHUB_URL = "https://github.com/KryssNa/utilbyte";
 export default function SocialProof({ testimonials, stats }: SocialProofProps) {
   // Every figure below is verifiable from the sitemap, the source, or the LICENSE.
   const defaultStats = {
-    tools: "46",
+    tools: String(allTools.length),
     uploads: "0",
     signup: "None",
     license: "MIT",
@@ -51,7 +52,7 @@ export default function SocialProof({ testimonials, stats }: SocialProofProps) {
     {
       icon: UploadCloud,
       value: displayStats.uploads,
-      label: "Files sent to a server",
+      label: "File uploads by local tools",
     },
     {
       icon: ShieldCheck,

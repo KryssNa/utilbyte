@@ -1,9 +1,10 @@
-import { toolCategories } from "@/components/layout/navbar/data";
+import { catalog } from "@/lib/tool-catalog";
 import { GUIDES } from "@/content/guides";
 import { MetadataRoute } from "next";
 
 const staticRoutes: Array<{
   path: string;
+  lastModified?: string;
   changeFrequency: "weekly" | "monthly" | "yearly";
   priority: number;
 }> = [
@@ -23,25 +24,22 @@ const staticRoutes: Array<{
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://utilbyte.app").replace(/\/$/, "");
-  const now = new Date();
 
-  const toolRoutes = toolCategories.flatMap((category) =>
-    category.tools.map((tool) => ({
-      path: tool.href,
-      changeFrequency: "monthly" as const,
-      priority: category.title === "Dev" ? 0.85 : 0.8,
-    }))
-  );
+  const toolRoutes = catalog.map(tool => ({
+    path: tool.href, changeFrequency: "monthly" as const, priority: 0.8,
+    lastModified: tool.contentUpdatedAt,
+  }));
 
   const guideRoutes = GUIDES.map((guide) => ({
     path: `/guides/${guide.slug}`,
     changeFrequency: "monthly" as const,
     priority: 0.7,
+    lastModified: guide.updated || guide.published,
   }));
 
   return [...staticRoutes, ...toolRoutes, ...guideRoutes].map((route) => ({
     url: `${baseUrl}${route.path}`,
-    lastModified: now,
+    ...(route.lastModified ? { lastModified: route.lastModified } : {}),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));

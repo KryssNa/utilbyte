@@ -1,5 +1,6 @@
 "use client";
 
+import { validateFile } from "@/lib/file-validation";
 import { Button } from "@/components/ui/button";
 import { cn, formatFileSize } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -37,35 +38,9 @@ export default function FileDropZone({
   const validateFiles = useCallback(
     (fileList: File[]): File[] => {
       const validFiles: File[] = [];
-      const acceptedTypes = accept.split(",").map((t) => t.trim());
-
       for (const file of fileList) {
-        if (file.size > maxSize) {
-          setError(
-            `File "${file.name}" exceeds maximum size of ${Math.round(maxSize / 1024 / 1024)}MB`
-          );
-          continue;
-        }
-
-        if (accept !== "*") {
-          const fileType = file.type;
-          const fileExt = `.${file.name.split(".").pop()?.toLowerCase()}`;
-          const isAccepted = acceptedTypes.some((type) => {
-            if (type.startsWith(".")) {
-              return fileExt === type.toLowerCase();
-            }
-            if (type.endsWith("/*")) {
-              return fileType.startsWith(type.replace("/*", "/"));
-            }
-            return fileType === type;
-          });
-
-          if (!isAccepted) {
-            setError(`File "${file.name}" is not an accepted file type`);
-            continue;
-          }
-        }
-
+        const message = validateFile(file, accept, maxSize);
+        if (message) { setError(message); continue; }
         validFiles.push(file);
       }
 
@@ -78,6 +53,8 @@ export default function FileDropZone({
   const processDroppedFiles = useCallback(
     (droppedFiles: File[]) => {
       setError(null);
+      if (!droppedFiles.length) return;
+      if (multiple && files.length + droppedFiles.length > maxFiles) { setError(`Select at most ${maxFiles} files in total.`); return; }
       const filesToAdd = multiple ? droppedFiles.slice(0, maxFiles) : [droppedFiles[0]];
       const validFiles = validateFiles(filesToAdd);
 

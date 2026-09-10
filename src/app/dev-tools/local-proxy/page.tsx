@@ -1,3 +1,4 @@
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import LocalProxy from "@/components/tools/dev/LocalProxy";
 import { Metadata } from "next";
 
@@ -28,5 +29,5 @@ export const metadata: Metadata = {
 };
 
 export default function LocalProxyPage() {
-  return <LocalProxy />;
+  return <><ToolStructuredData href="/dev-tools/local-proxy" /><LocalProxy /></>;
 }

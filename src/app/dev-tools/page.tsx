@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Developer Tools - Free Online Dev Utilities",
     description:
-      "17 privacy-first developer tools that run in your browser. No sign-up and no file uploads required.",
+      "Free developer tools for formatting, conversion, validation, and HTTP workflows. See each tool for local or hosted processing details.",
     type: "website",
     url: "https://utilbyte.app/dev-tools",
   },
@@ -39,7 +39,7 @@ export default function DevToolsCategoryPage() {
       categoryTitle="Dev"
       badgeLabel="Developer Tools"
       heading="All Developer Tools"
-      description="Utilities built for daily developer workflows. Everything runs client-side for speed and privacy."
+      description="Format and inspect code, convert structured data, or test HTTP workflows. Most tools process locally; network tools explain which services receive requests."
       accentClassName="border-amber-500/30 bg-amber-500/10 text-amber-400"
     />
   );

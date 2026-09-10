@@ -1,3 +1,4 @@
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import OnlineCompiler from "@/components/tools/dev/OnlineCompiler";
 import { Metadata } from "next";
 
@@ -32,5 +33,5 @@ export const metadata: Metadata = {
 };
 
 export default function OnlineCompilerPage() {
-  return <OnlineCompiler />;
+  return <><ToolStructuredData href="/dev-tools/online-compiler" /><OnlineCompiler /></>;
 }

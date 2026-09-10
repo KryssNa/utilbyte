@@ -1074,3 +1074,21 @@ body.is-dragging-file .dropzone-wrapper .animated-border {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
+
+:root { --header-height: calc(4rem + 2px); }
+
+.tool-shell { display: grid; grid-template-columns: minmax(0, 1fr); }
+.tool-rail { display: none; }
+@media (min-width: 1280px) {
+  .tool-shell { grid-template-columns: 240px minmax(0, 1fr); }
+  .tool-rail { display: block; }
+}
+html[data-tool-focus="true"] .tool-shell { grid-template-columns: minmax(0, 1fr); }
+html[data-tool-focus="true"] .tool-rail,
+html[data-tool-focus="true"] .tool-help { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+html[data-tool-compact="true"] .tool-shell { grid-template-columns: minmax(0, 1fr); }
+html[data-tool-compact="true"] .tool-rail { display: none; }

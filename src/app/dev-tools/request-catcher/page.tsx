@@ -1,3 +1,4 @@
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import RequestCatcher from "@/components/tools/dev/RequestCatcher";
 import { Metadata } from "next";
 
@@ -30,5 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default function RequestCatcherPage() {
-  return <RequestCatcher />;
+  return <><ToolStructuredData href="/dev-tools/request-catcher" /><RequestCatcher /></>;
 }

@@ -1,58 +1,12 @@
+import { catalog, catalogCategories } from "@/lib/tool-catalog";
 import { Code2, FileText, GitFork, Github, Heart, Image, Shield, Sparkles, Star, Type, Video, Wrench } from "lucide-react";
 import Link from "next/link";
 
 import ConsentSettingsLink from "@/components/shared/ConsentSettingsLink";
-const footerLinks = {
-  "Image Tools": [
-    { title: "Image Compressor", href: "/image-tools/compress-image" },
-    { title: "Image Cropper", href: "/image-tools/crop-image" },
-    { title: "Resize Image", href: "/image-tools/resize-image" },
-    { title: "Format Converter", href: "/image-tools/format-converter" },
-    { title: "Background Remover", href: "/image-tools/remove-background" },
-    { title: "Blur Image", href: "/image-tools/blur-image" },
-    { title: "Image to Text (OCR)", href: "/image-tools/ocr" },
-  ],
-  "PDF Tools": [
-    { title: "Merge PDF", href: "/pdf-tools/merge-pdf" },
-    { title: "Split PDF", href: "/pdf-tools/split-pdf" },
-    { title: "Compress PDF", href: "/pdf-tools/compress-pdf" },
-    { title: "PDF to Image", href: "/pdf-tools/pdf-to-image" },
-    { title: "Image to PDF", href: "/pdf-tools/image-to-pdf" },
-    { title: "Rotate PDF", href: "/pdf-tools/rotate-pdf" },
-  ],
-  "Text Tools": [
-    { title: "Word Counter", href: "/text-tools/word-counter" },
-    { title: "Case Converter", href: "/text-tools/case-converter" },
-    { title: "Text Formatter", href: "/text-tools/text-formatter" },
-    { title: "Remove Duplicates", href: "/text-tools/remove-duplicates" },
-    { title: "Lorem Ipsum", href: "/text-tools/lorem-ipsum" },
-  ],
-  "Dev Tools": [
-    { title: "JSON Formatter", href: "/dev-tools/json-formatter" },
-    { title: "Base64 Encoder", href: "/dev-tools/base64" },
-    { title: "UUID Generator", href: "/dev-tools/uuid-generator" },
-    { title: "JWT Decoder", href: "/dev-tools/jwt-decoder" },
-    { title: "Hash Generator", href: "/dev-tools/hash-generator" },
-    { title: "Regex Tester", href: "/dev-tools/regex-tester" },
-    { title: "URL Encoder", href: "/dev-tools/url-encoder" },
-    { title: "Cron Parser", href: "/dev-tools/cron-parser" },
-    { title: "Markdown Renderer", href: "/dev-tools/markdown-renderer" },
-  ],
-  "Utilities": [
-    { title: "QR Code Generator", href: "/utility-tools/qr-code" },
-    { title: "Barcode Generator", href: "/utility-tools/barcode" },
-    { title: "Password Generator", href: "/utility-tools/password-generator" },
-    { title: "Color Converter", href: "/utility-tools/color-converter" },
-    { title: "Unit Converter", href: "/utility-tools/unit-converter" },
-    { title: "Timestamp Converter", href: "/utility-tools/timestamp" },
-    { title: "Countdown Timer", href: "/utility-tools/countdown" },
-  ],
-  "Video Tools": [
-    { title: "Compress Video", href: "/video-tools/compress-video" },
-    { title: "Video to Audio", href: "/video-tools/video-to-audio" },
-    { title: "Video to GIF", href: "/video-tools/video-to-gif" },
-  ],
-};
+const footerLinks = Object.fromEntries(catalogCategories.map(category => [
+  category.title === "Utility" ? "Utilities" : `${category.title} Tools`,
+  catalog.filter(tool => tool.category === category.title).map(tool => ({ title: tool.title, href: tool.href })),
+]));
 
 const categoryIcons: Record<string, React.ElementType> = {
   "Image Tools": Image,

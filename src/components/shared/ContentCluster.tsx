@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, BookOpen, Code2, FileText, Image, Video, Wrench } from "lucide-react";
@@ -24,6 +27,7 @@ interface ContentClusterProps {
 }
 
 export default function ContentCluster({ category, title, description, topics, mainTool }: ContentClusterProps) {
+  const pathname = usePathname();
   const getCategoryIcon = (cat: string) => {
     switch (cat) {
       case 'image': return Image;
@@ -65,7 +69,7 @@ export default function ContentCluster({ category, title, description, topics, m
         </p>
       </div>
 
-      {mainTool && (
+      {mainTool && mainTool.href !== pathname && (
         <div className="mb-8">
           <Card className="border-2 border-primary/20 bg-primary/5">
             <CardHeader>
@@ -89,7 +93,7 @@ export default function ContentCluster({ category, title, description, topics, m
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {topics.map((topic, index) => (
+        {topics.filter(topic => topic.href !== pathname).map((topic, index) => (
           <Link key={topic.href} href={topic.href}>
             <Card className="h-full hover:shadow-lg transition-all duration-300 group cursor-pointer">
               <CardHeader className="pb-3">

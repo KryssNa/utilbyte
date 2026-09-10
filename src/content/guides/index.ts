@@ -1,3 +1,4 @@
+import { sqlFormattingRegressionsGuide } from "./sql-formatting-regressions";
 import type { Guide } from "./types";
 
 import { browserVsUploadPrivacyGuide } from "./browser-vs-upload-privacy";
@@ -19,6 +20,7 @@ export type { Guide } from "./types";
  * the [slug] route and the sitemap all read from this array.
  */
 export const GUIDES: Guide[] = [
+  sqlFormattingRegressionsGuide,
   documentPhotoSizesGuide,
   dvLotteryPhotoRequirementsGuide,
   compressPhotoTo20kbGuide,

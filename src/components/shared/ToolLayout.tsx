@@ -1,6 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import ToolShell from "@/components/shared/ToolShell";
+import ProcessingDisclosure from "@/components/shared/ProcessingDisclosure";
+import { getTool } from "@/lib/tool-catalog";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Clock, LucideIcon, Shield, Zap } from "lucide-react";
@@ -71,6 +73,7 @@ interface ToolLayoutProps {
   children: React.ReactNode;
   relatedTools?: RelatedTool[];
   faqs?: FAQ[];
+  hasDraft?: boolean;
   isWorking?: boolean; // When true, collapses the header
   /**
    * Editorial content for this tool. Rendered below the tool surface and above
@@ -95,6 +98,7 @@ export default function ToolLayout({
   relatedTools = [],
   faqs = [],
   isWorking = false,
+  hasDraft,
   article,
   adSlots,
 }: ToolLayoutProps) {
@@ -108,9 +112,11 @@ export default function ToolLayout({
   // at the writing that explains it, and the guide points back. Resolved from
   // the route so no tool component has to remember to pass anything.
   const pathname = usePathname();
+  const tool = getTool(pathname ?? "");
   const guides = getGuidesForTool(pathname ?? "");
 
   return (
+    <ToolShell tool={tool} isWorking={isWorking} hasDraft={hasDraft}>
     <div className="min-h-screen">
       {/* Header Section - Collapses when working */}
       <AnimatePresence mode="wait">
@@ -125,10 +131,13 @@ export default function ToolLayout({
           >
             <div className="container mx-auto px-4 py-4 lg:px-8 lg:py-5">
               {/* Breadcrumb */}
-              <Link href="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3 cursor-pointer">
-                <ArrowLeft className="h-3.5 w-3.5" />
-                <span>All Tools</span>
-              </Link>
+              <nav aria-label="Breadcrumb" className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <Link href="/" className="py-2 hover:text-foreground">Home</Link>
+                <span aria-hidden="true">/</span>
+                <Link href={`/${category}-tools`} className="py-2 hover:text-foreground">{categoryLabel || `${category} tools`}</Link>
+                <span aria-hidden="true">/</span>
+                <span aria-current="page">{title}</span>
+              </nav>
 
               {/* Title Area */}
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -159,11 +168,11 @@ export default function ToolLayout({
                 <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Shield className="h-3 w-3 text-emerald-500" />
-                    <span>Private</span>
+                    <Link href="/privacy" className="underline underline-offset-2">Data & privacy</Link>
                   </div>
                   <div className="flex items-center gap-1">
                     <Zap className="h-3 w-3 text-amber-500" />
-                    <span>Instant</span>
+                    <span>Free to use</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -181,19 +190,13 @@ export default function ToolLayout({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="sticky top-0 z-40 border-b border-[rgb(var(--border))] bg-background/95 backdrop-blur-sm"
+            className="sticky top-[var(--header-height)] z-40 border-b border-[rgb(var(--border))] bg-background/95 backdrop-blur-sm"
           >
             <div className="container mx-auto px-4 py-2.5 lg:px-8">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <Link href="/">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </Button>
+                  <Link href={`/${category}-tools`} aria-label={`Back to ${categoryLabel || category + " tools"}`} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md hover:bg-muted">
+                    <ArrowLeft className="h-4 w-4" />
                   </Link>
                   <div className={cn("w-px h-5 bg-border")} />
                   {Icon && (
@@ -207,11 +210,11 @@ export default function ToolLayout({
                 <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                   <div className="hidden sm:flex items-center gap-1">
                     <Shield className="h-3 w-3 text-emerald-500" />
-                    <span>Private</span>
+                    <Link href="/privacy" className="underline underline-offset-2">Data & privacy</Link>
                   </div>
                   <div className="hidden sm:flex items-center gap-1">
                     <Zap className="h-3 w-3 text-amber-500" />
-                    <span>Instant</span>
+                    <span>Free to use</span>
                   </div>
                 </div>
               </div>
@@ -221,7 +224,8 @@ export default function ToolLayout({
       </AnimatePresence>
 
       {/* Main Tool Area */}
-      <section className="container mx-auto px-4 py-6 lg:px-8 lg:py-8">
+      <section data-tool-workspace className="container mx-auto min-w-0 px-4 py-6 lg:px-8 lg:py-8">
+        {tool && <ProcessingDisclosure tool={tool} />}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -231,6 +235,57 @@ export default function ToolLayout({
         </motion.div>
       </section>
 
+      <div className="tool-help">
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <section className="border-t border-[rgb(var(--border))]">
+          <div className="container mx-auto px-4 py-12 lg:px-8 lg:py-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl mb-8">
+                Related Tools
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {relatedTools.filter(tool => tool.href !== pathname).map((tool, index) => (
+                  <Link
+                    key={index}
+                    href={tool.href}
+                    className="group rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-5 transition-all duration-200 hover:shadow-lg hover:border-[rgb(var(--primary))]/20 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      {tool.icon && (
+                        <div
+                          className={cn(
+                            "p-2 rounded-lg",
+                            categoryColors[tool.category || "utility"]?.badge || "bg-[rgb(var(--muted))]"
+                          )}
+                        >
+                          <tool.icon
+                            className={cn(
+                              "h-5 w-5",
+                              categoryColors[tool.category || "utility"]?.icon ||
+                              "text-[rgb(var(--muted-foreground))]"
+                            )}
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-medium group-hover:text-[rgb(var(--primary))] transition-colors">
+                          {tool.title}
+                        </h3>
+                        <p className="text-xs text-[rgb(var(--muted-foreground))]">{tool.description}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
       {article && <ToolArticle content={article} toolName={title} />}
 
       {mayServeAds && adSlots?.inArticle && (
@@ -298,57 +353,9 @@ export default function ToolLayout({
         </div>
       )}
 
-      {/* Related Tools */}
-      {relatedTools.length > 0 && (
-        <section className="border-t border-[rgb(var(--border))]">
-          <div className="container mx-auto px-4 py-12 lg:px-8 lg:py-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-            >
-              <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl mb-8">
-                Related Tools
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {relatedTools.map((tool, index) => (
-                  <Link
-                    key={index}
-                    href={tool.href}
-                    className="group rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-5 transition-all duration-200 hover:shadow-lg hover:border-[rgb(var(--primary))]/20 cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      {tool.icon && (
-                        <div
-                          className={cn(
-                            "p-2 rounded-lg",
-                            categoryColors[tool.category || "utility"]?.badge || "bg-[rgb(var(--muted))]"
-                          )}
-                        >
-                          <tool.icon
-                            className={cn(
-                              "h-5 w-5",
-                              categoryColors[tool.category || "utility"]?.icon ||
-                              "text-[rgb(var(--muted-foreground))]"
-                            )}
-                          />
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="font-medium group-hover:text-[rgb(var(--primary))] transition-colors">
-                          {tool.title}
-                        </h3>
-                        <p className="text-xs text-[rgb(var(--muted-foreground))]">{tool.description}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
+      </div>
     </div>
+    </ToolShell>
   );
 }
 

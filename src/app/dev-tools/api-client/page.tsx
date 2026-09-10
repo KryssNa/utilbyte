@@ -1,3 +1,4 @@
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import ApiClient from "@/components/tools/dev/ApiClient";
 import { Metadata } from "next";
 
@@ -30,5 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default function ApiClientPage() {
-  return <ApiClient />;
+  return <><ToolStructuredData href="/dev-tools/api-client" /><ApiClient /></>;
 }

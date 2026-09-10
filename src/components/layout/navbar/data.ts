@@ -1,3 +1,4 @@
+import { catalog, catalogCategories } from "@/lib/tool-catalog";
 import {
     Binary,
     Braces,
@@ -83,140 +84,17 @@ export const toolIcons: Record<string, React.ElementType> = {
   "Video to GIF": Video,
 };
 
-export const toolCategories: ToolCategory[] = [
-  {
-    title: "Image",
-    icon: Image,
-    href: "/image-tools",
-    color: "text-sky-600 dark:text-sky-400",
-    bgColor: "bg-sky-500/10",
-    hoverBg: "hover:bg-sky-500/10",
-    tools: [
-      { title: "Background Remover", href: "/image-tools/remove-background", desc: "Plain backgrounds" },
-      { title: "Blur Image", href: "/image-tools/blur-image", desc: "Blur & pixelate" },
-      { title: "Format Converter", href: "/image-tools/format-converter", desc: "PNG, JPG, WebP" },
-      { title: "Image Compressor", href: "/image-tools/compress-image", desc: "Reduce file size" },
-      { title: "Compress to Size", href: "/image-tools/compress-to-size", desc: "Hit an exact KB limit" },
-      { title: "Document Photo", href: "/image-tools/document-photo", desc: "Passport & visa sizes" },
-      { title: "Image Cropper", href: "/image-tools/crop-image", desc: "Crop with precision" },
-      { title: "Image Resizer", href: "/image-tools/resize-image", desc: "Any dimension" },
-      { title: "Image to Text (OCR)", href: "/image-tools/ocr", desc: "Extract text" },
-      { title: "HEIC to JPG", href: "/image-tools/heic-to-jpg", desc: "iPhone photos" },
-      { title: "WebP to PNG", href: "/image-tools/webp-to-png", desc: "Lossless, keeps alpha" },
-      { title: "AVIF to JPG", href: "/image-tools/avif-to-jpg", desc: "Wide compatibility" },
-    ],
-  },
-  {
-    title: "PDF",
-    icon: FileText,
-    href: "/pdf-tools",
-    color: "text-rose-600 dark:text-rose-400",
-    bgColor: "bg-rose-500/10",
-    hoverBg: "hover:bg-rose-500/10",
-    tools: [
-      { title: "Compress PDF", href: "/pdf-tools/compress-pdf", desc: "Reduce size" },
-      { title: "PDF to Size", href: "/pdf-tools/compress-to-size", desc: "Hit an exact limit" },
-      { title: "Image to PDF", href: "/pdf-tools/image-to-pdf", desc: "Create PDF" },
-      { title: "Merge PDF", href: "/pdf-tools/merge-pdf", desc: "Combine files" },
-      { title: "PDF Editor", href: "/pdf-tools/edit-pdf", desc: "Edit any PDF" },
-      { title: "PDF to Image", href: "/pdf-tools/pdf-to-image", desc: "Convert pages" },
-      { title: "Rotate PDF", href: "/pdf-tools/rotate-pdf", desc: "Rotate pages" },
-      { title: "Split PDF", href: "/pdf-tools/split-pdf", desc: "Separate pages" },
-    ],
-  },
-  {
-    title: "Text",
-    icon: Type,
-    href: "/text-tools",
-    color: "text-emerald-600 dark:text-emerald-400",
-    bgColor: "bg-emerald-500/10",
-    hoverBg: "hover:bg-emerald-500/10",
-    tools: [
-      { title: "Case Converter", href: "/text-tools/case-converter", desc: "Change case" },
-      { title: "Lorem Ipsum", href: "/text-tools/lorem-ipsum", desc: "Generate text" },
-      { title: "Remove Duplicates", href: "/text-tools/remove-duplicates", desc: "Clean text" },
-      { title: "Text Formatter", href: "/text-tools/text-formatter", desc: "Format text" },
-      { title: "Word Counter", href: "/text-tools/word-counter", desc: "Count words" },
-    ],
-  },
-  {
-    title: "Dev",
-    icon: Code2,
-    href: "/dev-tools",
-    color: "text-amber-600 dark:text-amber-400",
-    bgColor: "bg-amber-500/10",
-    hoverBg: "hover:bg-amber-500/10",
-    tools: [
-      { title: "API Client", href: "/dev-tools/api-client", desc: "Send HTTP requests" },
-      { title: "Base64", href: "/dev-tools/base64", desc: "Encode/decode" },
-      { title: "Code Beautifier", href: "/dev-tools/code-beautifier", desc: "Format HTML/CSS/JS" },
-      { title: "Cron Parser", href: "/dev-tools/cron-parser", desc: "Parse cron" },
-      { title: "Diff Checker", href: "/dev-tools/diff-checker", desc: "Compare text" },
-      { title: "Hash Generator", href: "/dev-tools/hash-generator", desc: "MD5, SHA" },
-      { title: "JSON Formatter", href: "/dev-tools/json-formatter", desc: "Format & validate JSON" },
-      { title: "JWT Decoder", href: "/dev-tools/jwt-decoder", desc: "Decode tokens" },
-      { title: "Markdown Renderer", href: "/dev-tools/markdown-renderer", desc: "Render markdown" },
-      { title: "Online Compiler", href: "/dev-tools/online-compiler", desc: "Run code live" },
-      { title: "Regex Tester", href: "/dev-tools/regex-tester", desc: "Test patterns" },
-      { title: "Request Catcher", href: "/dev-tools/request-catcher", desc: "Capture requests" },
-      { title: "Local Proxy", href: "/dev-tools/local-proxy", desc: "Forward to localhost" },
-      { title: "SQL Formatter", href: "/dev-tools/sql-formatter", desc: "Beautify SQL queries" },
-      { title: "URL Encoder", href: "/dev-tools/url-encoder", desc: "Encode URLs" },
-      { title: "UUID Generator", href: "/dev-tools/uuid-generator", desc: "Generate IDs" },
-      { title: "WebSocket Client", href: "/dev-tools/websocket-client", desc: "WS connections" },
-    ],
-  },
-  {
-    title: "Video",
-    icon: Video,
-    href: "/video-tools",
-    color: "text-orange-600 dark:text-orange-400",
-    bgColor: "bg-orange-500/10",
-    hoverBg: "hover:bg-orange-500/10",
-    tools: [
-      { title: "Video to Audio", href: "/video-tools/video-to-audio", desc: "Extract audio" },
-      { title: "Video Compressor", href: "/video-tools/compress-video", desc: "Reduce size" },
-      { title: "Video to GIF", href: "/video-tools/video-to-gif", desc: "Create GIFs" },
-    ],
-  },
-  {
-    title: "Utility",
-    icon: Wrench,
-    href: "/utility-tools",
-    color: "text-cyan-600 dark:text-cyan-400",
-    bgColor: "bg-cyan-500/10",
-    hoverBg: "hover:bg-cyan-500/10",
-    tools: [
-      { title: "Barcode Generator", href: "/utility-tools/barcode", desc: "Generate barcodes" },
-      { title: "Color Converter", href: "/utility-tools/color-converter", desc: "HEX, RGB, HSL" },
-      { title: "Countdown Timer", href: "/utility-tools/countdown", desc: "Create timers" },
-      { title: "Password Generator", href: "/utility-tools/password-generator", desc: "Secure passwords" },
-      { title: "QR Code", href: "/utility-tools/qr-code", desc: "Create codes" },
-      { title: "Timestamp Converter", href: "/utility-tools/timestamp", desc: "Unix timestamps" },
-      { title: "Unit Converter", href: "/utility-tools/unit-converter", desc: "Convert units" },
-    ],
-  },
-];
-
-export const allTools: FlattenedTool[] = toolCategories.flatMap((cat) =>
-  cat.tools.map((tool) => ({
-    ...tool,
-    category: cat.title,
-    color: cat.color,
-    bgColor: cat.bgColor
-  }))
-);
-
-/** Top 10 most popular tools shown in the navbar mega menu */
-export const top10Tools = [
-  { title: "PDF Editor", href: "/pdf-tools/edit-pdf", desc: "Edit text, images & annotations", category: "PDF" },
-  { title: "Image Compressor", href: "/image-tools/compress-image", desc: "Reduce file size without quality loss", category: "Image" },
-  { title: "Online Compiler", href: "/dev-tools/online-compiler", desc: "Write & run code in 10+ languages", category: "Dev" },
-  { title: "Merge PDF", href: "/pdf-tools/merge-pdf", desc: "Combine multiple PDFs into one", category: "PDF" },
-  { title: "Background Remover", href: "/image-tools/remove-background", desc: "Colour-based removal of plain backgrounds", category: "Image" },
-  { title: "JSON Formatter", href: "/dev-tools/json-formatter", desc: "Format & validate JSON", category: "Dev" },
-  { title: "QR Code", href: "/utility-tools/qr-code", desc: "Create QR codes instantly", category: "Utility" },
-  { title: "Password Generator", href: "/utility-tools/password-generator", desc: "Generate secure passwords", category: "Utility" },
-  { title: "Video to GIF", href: "/video-tools/video-to-gif", desc: "Convert video clips to GIFs", category: "Video" },
-  { title: "Word Counter", href: "/text-tools/word-counter", desc: "Count words, characters & more", category: "Text" },
-];
+const presentation = {
+  Image: { icon: Image, color: "text-sky-600 dark:text-sky-400", bgColor: "bg-sky-500/10", hoverBg: "hover:bg-sky-500/10" },
+  PDF: { icon: FileText, color: "text-rose-600 dark:text-rose-400", bgColor: "bg-rose-500/10", hoverBg: "hover:bg-rose-500/10" },
+  Text: { icon: Type, color: "text-emerald-600 dark:text-emerald-400", bgColor: "bg-emerald-500/10", hoverBg: "hover:bg-emerald-500/10" },
+  Dev: { icon: Code2, color: "text-amber-600 dark:text-amber-400", bgColor: "bg-amber-500/10", hoverBg: "hover:bg-amber-500/10" },
+  Video: { icon: Video, color: "text-orange-600 dark:text-orange-400", bgColor: "bg-orange-500/10", hoverBg: "hover:bg-orange-500/10" },
+  Utility: { icon: Wrench, color: "text-cyan-600 dark:text-cyan-400", bgColor: "bg-cyan-500/10", hoverBg: "hover:bg-cyan-500/10" },
+};
+export const toolCategories: ToolCategory[] = catalogCategories.map(group => ({
+  ...group, ...presentation[group.title], tools: catalog.filter(tool => tool.category === group.title),
+}));
+export const allTools: FlattenedTool[] = catalog.map(tool => ({ ...tool, ...presentation[tool.category as keyof typeof presentation] }));
+/** Editorially selected from the catalog, never a measured popularity claim. */
+export const top10Tools = allTools.filter(tool => tool.featuredWeight > 0).sort((a,b) => b.featuredWeight - a.featuredWeight);

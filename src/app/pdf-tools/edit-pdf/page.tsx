@@ -1,3 +1,4 @@
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import PDFEditor from "@/components/tools/pdf/PDFEditor";
 import { Metadata } from "next";
 
@@ -32,5 +33,5 @@ export const metadata: Metadata = {
 };
 
 export default function EditPDFPage() {
-  return <PDFEditor />;
+  return <><ToolStructuredData href="/pdf-tools/edit-pdf" /><PDFEditor /></>;
 }

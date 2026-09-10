@@ -9,30 +9,7 @@ import { toast } from "sonner";
 
 
 import { base64Article } from "@/content/tools/base64";
-/**
- * Base64 that survives non-ASCII text.
- *
- * `btoa` operates on Latin-1 and throws on any character above U+00FF, so it
- * fails outright on Devanagari, CJK, Cyrillic, accented Latin and emoji. Base64
- * encodes bytes, not characters, so the fix is to convert the string to UTF-8
- * bytes first and encode those — which is also what every server-side base64
- * implementation does, so the output round-trips correctly.
- */
-function encodeBase64(text: string): string {
-  const bytes = new TextEncoder().encode(text);
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
-function decodeBase64(encoded: string): string {
-  // Accept the URL-safe alphabet too, and tolerate missing padding.
-  const normalised = encoded.trim().replace(/-/g, "+").replace(/_/g, "/");
-  const padded = normalised.padEnd(Math.ceil(normalised.length / 4) * 4, "=");
-  const binary = atob(padded);
-  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-  return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
-}
+import { encodeBase64, decodeBase64 } from "@/lib/encoding";
 
 type Mode = "encode" | "decode";
 
@@ -42,7 +19,7 @@ export default function Base64Tool() {
   const [copied, setCopied] = useState<boolean>(false);
 
   const result = useMemo(() => {
-    if (!input.trim()) return "";
+    if (!input) return "";
 
     try {
       return mode === "encode" ? encodeBase64(input) : decodeBase64(input);
@@ -54,7 +31,7 @@ export default function Base64Tool() {
   }, [input, mode]);
 
   const handleCopy = useCallback(async () => {
-    if (!result || result === "Invalid Base64 string") return;
+    if (!result || result === "Invalid Base64 string" || result === "Could not encode this input") return;
     await navigator.clipboard.writeText(result);
     setCopied(true);
     toast.success("Result copied to clipboard!");
@@ -75,10 +52,10 @@ export default function Base64Tool() {
   };
 
   const isValidInput = useMemo(() => {
-    if (!input.trim()) return true;
-    if (mode === "decode") {
+    if (!input) return true;
+    {
       try {
-        decodeBase64(input);
+        if (mode === "decode") decodeBase64(input); else encodeBase64(input);
         return true;
       } catch {
         return false;

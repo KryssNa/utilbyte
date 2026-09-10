@@ -11,7 +11,7 @@ import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import { urlEncoderArticle } from "@/content/tools/url-encoder";
-type EncodeType = "url" | "urlComponent" | "formData" | "base64";
+import { transformEncoding, type EncodeType } from "@/lib/encoding";
 
 export default function UrlEncoder() {
   const [inputText, setInputText] = useState<string>("");
@@ -21,55 +21,15 @@ export default function UrlEncoder() {
   const [copied, setCopied] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const encodeText = useCallback((text: string, type: EncodeType): string => {
-    if (!text) return "";
-
-    try {
-      switch (type) {
-        case "url":
-          return isEncoding ? encodeURI(text) : decodeURI(text);
-        case "urlComponent":
-          return isEncoding ? encodeURIComponent(text) : decodeURIComponent(text);
-        case "formData":
-          if (isEncoding) {
-            // Simple form data encoding
-            return text.split('&').map(pair => {
-              const [key, ...valueParts] = pair.split('=');
-              const value = valueParts.join('=');
-              return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-            }).join('&');
-          } else {
-            // Simple form data decoding
-            return text.split('&').map(pair => {
-              const [key, value] = pair.split('=');
-              return `${decodeURIComponent(key)}=${decodeURIComponent(value)}`;
-            }).join('&');
-          }
-        case "base64":
-          if (isEncoding) {
-            return btoa(text);
-          } else {
-            return atob(text);
-          }
-        default:
-          return text;
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Encoding/decoding error");
-      return text;
-    }
-  }, [isEncoding]);
-
   const handleProcess = useCallback(() => {
-    if (!inputText.trim()) {
+    try {
+      setOutputText(transformEncoding(inputText, encodeType, isEncoding));
+      setError("");
+    } catch {
       setOutputText("");
-      return;
+      setError("Unable to process this input. Check percent escapes, Base64, and Unicode. Original input is unchanged.");
     }
-
-    const result = encodeText(inputText, encodeType);
-    setOutputText(result);
-    setError("");
-  }, [inputText, encodeType, encodeText]);
+  }, [inputText, encodeType, isEncoding]);
 
   const handleCopy = useCallback(async () => {
     if (!outputText) return;

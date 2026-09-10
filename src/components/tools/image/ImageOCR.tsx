@@ -22,9 +22,9 @@ import {
   Type,
   ZoomIn
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { createWorker, Worker } from "tesseract.js";
+import type { Worker } from "tesseract.js";
 
 import { ocrArticle } from "@/content/tools/ocr";
 const SUPPORTED_LANGUAGES = [
@@ -56,39 +56,22 @@ export default function ImageOCR() {
 
   const imageRef = useRef<HTMLImageElement>(null);
   const workerRef = useRef<Worker | null>(null);
-
-  // Initialize Tesseract worker
-  const initializeWorker = useCallback(async () => {
-    if (workerRef.current) return workerRef.current;
-
-    try {
-      console.log('Creating Tesseract worker...');
-      setProgress({ status: "Creating OCR worker...", progress: 10 });
-
-      // Create worker without logger to avoid DataCloneError
-      const worker = await createWorker();
-
-      console.log('Worker created successfully');
-
-      setProgress({ status: "Loading language data...", progress: 30 });
-
-      setProgress({ status: "Initializing OCR engine...", progress: 60 });
-
-      console.log('Initializing worker with language:', language);
-      await worker.reinitialize(language);
-
-      console.log('Worker initialized successfully');
-      setProgress({ status: "Ready!", progress: 100 });
-
-      workerRef.current = worker;
-      return worker;
-    } catch (error) {
-      console.error('Failed to initialize OCR worker:', error);
-      setProgress({ status: "Failed to initialize", progress: 0 });
-      toast.error('Failed to initialize OCR engine. Please try again.');
-      throw error;
-    }
-  }, [language]);
+  const runRef = useRef(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopWorker = useCallback(() => {
+    runRef.current += 1;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const worker = workerRef.current;
+    workerRef.current = null;
+    void worker?.terminate();
+  }, []);
+  useEffect(() => stopWorker, [stopWorker]);
+  useEffect(() => () => { if (imageUrl) URL.revokeObjectURL(imageUrl); }, [imageUrl]);
+  const cancelOCR = useCallback(() => {
+    stopWorker();
+    setIsProcessing(false);
+    setProgress({ status: "Cancelled. Your image is still available to retry.", progress: 0 });
+  }, [stopWorker]);
 
   const handleFileSelect = useCallback((files: File[]) => {
     if (files.length > 0) {
@@ -109,67 +92,42 @@ export default function ImageOCR() {
   }, []);
 
   const handleOCR = useCallback(async () => {
-    if (!imageUrl) return;
-
+    if (!imageUrl || isProcessing) return;
+    stopWorker();
+    const run = runRef.current;
+    setExtractedText("");
+    setConfidence(0);
     setIsProcessing(true);
-    setProgress({ status: "Starting OCR process...", progress: 0 });
-
-    try {
-      console.log('Starting OCR process...');
-      toast.info("Initializing OCR engine...");
-
-      // Add timeout for the entire process
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('OCR process timeout - this is normal for first use as language models download')), 60000);
-      });
-
-      const ocrPromise = (async () => {
-        const worker = await initializeWorker();
-
-        setProgress({ status: "Analyzing image...", progress: 80 });
-
-        console.log('Running OCR recognition...');
-        const { data: { text, confidence: conf } } = await worker.recognize(imageUrl);
-
-        console.log('OCR completed:', { textLength: text.length, confidence: conf });
-
-        return { text, confidence: conf };
-      })();
-
-      const result = await Promise.race([ocrPromise, timeoutPromise]);
-
-      setExtractedText((result as { text: string; confidence: number }).text);
-      setConfidence((result as { confidence: number }).confidence);
-
-      setProgress({ status: "Complete!", progress: 100 });
-
-      if ((result as { text: string }).text.trim()) {
-        toast.success(`Text extracted successfully! Confidence: ${Math.round((result as { confidence: number }).confidence)}%`);
-      } else {
-        toast.warning("No text found in the image. Try a different image or language.");
-      }
-
-    } catch (error) {
-      console.error('OCR failed:', error);
-      setProgress({ status: "Failed", progress: 0 });
-
-      if ((error as Error).message?.includes('timeout')) {
-        toast.error('OCR is taking longer than expected. Language models are being downloaded for first use.');
-
-        // Provide demo result for first-time users
-        setTimeout(() => {
-          setExtractedText("Demo OCR Result\n\nThis is a placeholder result while the OCR engine downloads language models.\n\nThe actual OCR will work once initialization completes.\n\nPlease be patient - this only happens once!");
-          setConfidence(75);
-          setProgress({ status: "Demo result", progress: 100 });
-          toast.info("Showing demo result. Real OCR will work after models download.");
-        }, 2000);
-      } else {
-        toast.error('OCR processing failed. Please check your internet connection and try again.');
-      }
-    } finally {
+    setProgress({ status: "Downloading OCR engine and language data...", progress: 10 });
+    timeoutRef.current = setTimeout(() => {
+      if (run !== runRef.current) return;
+      stopWorker();
       setIsProcessing(false);
+      setProgress({ status: "Timed out. Check your connection and retry; your image is preserved.", progress: 0 });
+      toast.error("OCR timed out. No text was extracted.");
+    }, 60000);
+    try {
+      const { createWorker } = await import("tesseract.js");
+      if (run !== runRef.current) return;
+      const worker = await createWorker(language);
+      if (run !== runRef.current) { await worker.terminate(); return; }
+      workerRef.current = worker;
+      setProgress({ status: "Recognizing text...", progress: 70 });
+      const { data } = await worker.recognize(imageUrl);
+      if (run !== runRef.current) return;
+      setExtractedText(data.text);
+      setConfidence(data.confidence);
+      setProgress({ status: "Complete", progress: 100 });
+      if (data.text.trim()) toast.success("Text extracted. Review it for recognition errors.");
+      else toast.warning("No text found. Try a clearer image or another language.");
+    } catch {
+      if (run !== runRef.current) return;
+      setProgress({ status: "OCR failed. Your image is preserved for retry.", progress: 0 });
+      toast.error("Could not extract text. Check the image, language and connection.");
+    } finally {
+      if (run === runRef.current) { stopWorker(); setIsProcessing(false); }
     }
-  }, [imageUrl, initializeWorker]);
+  }, [imageUrl, language, isProcessing, stopWorker]);
 
   const handleCopyText = useCallback(async () => {
     if (!extractedText.trim()) return;
@@ -183,9 +141,10 @@ export default function ImageOCR() {
       textArea.value = extractedText;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      const copied = document.execCommand('copy');
       document.body.removeChild(textArea);
-      toast.success("Text copied to clipboard!");
+      if (copied) toast.success("Text copied to clipboard!");
+      else toast.error("Copy failed. Select and copy the text manually.");
     }
   }, [extractedText]);
 
@@ -204,6 +163,7 @@ export default function ImageOCR() {
   }, [extractedText, image?.name]);
 
   const handleReset = useCallback(() => {
+    cancelOCR();
     setImage(null);
     setImageUrl(null);
     setImageDimensions(null);
@@ -211,56 +171,19 @@ export default function ImageOCR() {
     setConfidence(0);
     setProgress({ status: "", progress: 0 });
     setHoverPreview({ url: "", show: false });
-  }, []);
+  }, [cancelOCR]);
 
-  // Simple fallback OCR using basic canvas analysis (for demo purposes)
-  const handleMockOCR = useCallback(async () => {
-    if (!imageUrl) return;
-
-    setIsProcessing(true);
-    setProgress({ status: "Analyzing image patterns...", progress: 50 });
-
-    try {
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const mockResults = [
-        "Sample OCR Result\n\nThis image contains text that has been extracted using optical character recognition.\n\n• Line 1: Sample text\n• Line 2: More sample content\n• Line 3: Final line of text\n\nConfidence: High",
-        "Document Text Extraction\n\nTITLE: Sample Document\n\nThis is a demonstration of OCR (Optical Character Recognition) functionality.\n\nKey features:\n- Text extraction from images\n- Multiple language support\n- High accuracy results\n\nEnd of document.",
-        "Invoice #12345\n\nDate: January 12, 2025\n\nItems:\n• Widget A - $25.00\n• Widget B - $15.00\n• Widget C - $30.00\n\nTotal: $70.00\n\nThank you for your business!",
-        "NEWS ARTICLE\n\nBREAKING NEWS: Technology Advances\n\nIn a groundbreaking development, new OCR technology allows for instant text extraction from images.\n\nThis innovation promises to revolutionize document processing and accessibility.\n\nSources report 95% accuracy rates."
-      ];
-
-      const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
-
-      setExtractedText(randomResult);
-      setConfidence(75 + Math.random() * 20); // 75-95% confidence
-      setProgress({ status: "Mock OCR complete", progress: 100 });
-
-      toast.success("Mock OCR completed! This demonstrates the interface.");
-      toast.info("For real OCR, the Tesseract.js models need to download first.");
-
-    } catch (error) {
-      console.error('Mock OCR failed:', error);
-      toast.error('Mock OCR failed');
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [imageUrl]);
-
-  const handleLanguageChange = useCallback(async (newLanguage: string) => {
+  const handleLanguageChange = useCallback((newLanguage: string) => {
+    cancelOCR();
     setLanguage(newLanguage);
-    // Reset worker when language changes
-    if (workerRef.current) {
-      await workerRef.current.terminate();
-      workerRef.current = null;
-    }
-  }, []);
+    setExtractedText("");
+    setConfidence(0);
+  }, [cancelOCR]);
 
   const faqs = [
     {
       question: "How accurate is the OCR?",
-      answer: "Accuracy depends on image quality, text clarity, and language. Clear, well-lit images typically achieve 95%+ accuracy.",
+      answer: "Accuracy depends on image quality, text clarity, and language. Use clear, well-lit images and review extracted text for mistakes.",
     },
     {
       question: "Which languages are supported?",
@@ -268,7 +191,7 @@ export default function ImageOCR() {
     },
     {
       question: "Is my image processed on a server?",
-      answer: "No. OCR runs entirely in your browser using Tesseract.js. Your images never leave your device.",
+      answer: "No. OCR runs entirely in your browser using Tesseract.js. The tool does not upload your image; the engine and language models download on first use.",
     },
     {
       question: "What types of images work best?",
@@ -278,6 +201,7 @@ export default function ImageOCR() {
 
   return (
     <ToolLayout
+      hasDraft={Boolean(image) || isProcessing}
       article={ocrArticle}
       title="Image to Text (OCR)"
       description="Extract text from images using advanced OCR technology. Convert scanned documents and photos to editable text."
@@ -388,8 +312,7 @@ export default function ImageOCR() {
                 <div>
                   <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200">OCR Options</h4>
                   <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                    <strong>Extract Text (OCR):</strong> Real OCR using Tesseract.js (downloads models on first use)<br />
-                    <strong>Quick Demo:</strong> Instant sample results to test the interface
+                    Tesseract.js downloads the engine and language models on first use, then recognizes text locally. You can cancel and retry if a download stalls.
                   </p>
                 </div>
               </div>
@@ -547,16 +470,7 @@ export default function ImageOCR() {
                       )}
                     </Button>
 
-                    {/* Alternative: Mock OCR for immediate testing */}
-                    <Button
-                      onClick={handleMockOCR}
-                      variant="outline"
-                      className="w-full h-10 text-sm"
-                      disabled={isProcessing}
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Quick Demo (Instant)
-                    </Button>
+                    {isProcessing && <Button onClick={cancelOCR} variant="outline" className="w-full">Cancel OCR</Button>}
                   </div>
                 </div>
               </div>

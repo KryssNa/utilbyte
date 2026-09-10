@@ -1,3 +1,4 @@
+import { NavigationSafety } from "@/components/shared/NavigationSafety";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -137,6 +138,7 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
       </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+        <Script src="/tool-preferences.js" strategy="beforeInteractive" />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
@@ -151,9 +153,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:ring-2 focus:ring-primary">Skip to content</a>
+          <NavigationSafety>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">{children}</main>
           <Footer />
+          </NavigationSafety>
           <Toaster position="bottom-right" richColors />
         </ThemeProvider>
         <Analytics />

@@ -3,7 +3,7 @@ import type { ToolArticleContent } from "@/components/shared/ToolArticle";
 export const sqlFormatterArticle: ToolArticleContent = {
   intro: [
     "Queries arrive as a single line. An ORM logged it, a colleague pasted it out of a dashboard, it grew a clause at a time until nobody could read it.",
-    "Formatting puts each clause on its own line and indents the structure. It changes nothing about what the query does, and it makes the mistakes visible.",
+    "Formatting puts each clause on its own line and indents the structure. It can make structure easier to review. Always review the output before running a query.",
   ],
   sections: [
     {
@@ -26,7 +26,7 @@ export const sqlFormatterArticle: ToolArticleContent = {
       heading: "Formatting is not validation",
       body: [
         "Unlike JSON, where laying it out proves the syntax is correct, a SQL formatter works from a fairly shallow reading of the text.",
-        "It will happily format a query referencing a table that does not exist, a column misspelled, or a function belonging to a different database engine. Clean output means the brackets balance and the keywords are where a formatter expects. It does not mean the query runs.",
+        "It will happily format a query referencing a table that does not exist, a column misspelled, or a function belonging to a different database engine. Clean output is not proof of valid SQL or equivalent behavior. It does not mean the query runs.",
         "The only way to know a query works is to run it - against a copy, with a LIMIT, inside a transaction you can roll back, or all three.",
       ],
     },
@@ -50,14 +50,14 @@ export const sqlFormatterArticle: ToolArticleContent = {
   example: {
     title: "A cross product hiding on one line",
     input: "SELECT u.name, o.total FROM users u, orders o WHERE o.status = 'paid' AND u.active = true OR u.role = 'admin' ORDER BY o.total DESC LIMIT 10",
-    output: "SELECT u.name,\n       o.total\n  FROM users u,\n       orders o          <- no join condition\n WHERE o.status = 'paid'\n   AND u.active = true\n    OR u.role = 'admin'   <- binds as (status AND active) OR role\n ORDER BY o.total DESC\n LIMIT 10",
+    output: "SELECT u.name,\n       o.total\n  FROM users u,\n       orders o          -- no join condition\n WHERE o.status = 'paid'\n   AND u.active = true\n    OR u.role = 'admin'   -- binds as (status AND active) OR role\n ORDER BY o.total DESC\n LIMIT 10",
     note: "Two serious problems, both invisible on one line. There is no condition linking users to orders, so every user is paired with every order - a thousand users and a thousand orders gives a million rows before filtering. And the OR means an admin matches regardless of order status, which is almost certainly not what was intended. The query runs fine and returns ten rows, which is why nobody notices.",
   },
   limitations: [
     "Formatting does not validate. A query can format perfectly and still reference a table that does not exist.",
-    "Dialect handling is general. Vendor-specific syntax may be laid out awkwardly even though it is correct.",
-    "Comments and deliberate spacing can be moved, since they carry no structural meaning to a formatter.",
+    "Select Standard SQL, PostgreSQL, MySQL, or SQLite. Unsupported vendor extensions and stored procedures may fail to format.",
+    "Layout and comment placement may change. Review output, especially comments and database-specific hints.",
     "There is no query analysis, no execution plan and no performance advice - use your database's own EXPLAIN for that.",
-    "Very long queries are limited by browser memory rather than by the formatter.",
+    "Input is limited to 100,000 characters to keep browser formatting responsive.",
   ],
 };

@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { useFfmpegEngine } from "@/hooks/use-ffmpeg-engine";
 import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Image, Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
@@ -38,149 +38,9 @@ export default function VideoToGif() {
   const [generatedGif, setGeneratedGif] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState<number>(0);
   const [error, setError] = useState<string>("");
-  const [ffmpegLoaded, setFfmpegLoaded] = useState<boolean>(false);
-  const [ffmpegLoading, setFfmpegLoading] = useState<boolean>(false);
-  const [loadAttempts, setLoadAttempts] = useState<number>(0);
-
+  const { ffmpegRef, ffmpegLoaded, ffmpegLoading, loadAttempts, loadFFmpeg, cancelEngine } = useFfmpegEngine(setError, setProgress);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const ffmpegRef = useRef<FFmpeg | null>(null);
-
-  // Initialize FFmpeg with improved error handling
-  const loadFFmpeg = useCallback(async (retryCount = 0) => {
-    if (ffmpegLoaded || ffmpegRef.current) return;
-
-    setFfmpegLoading(true);
-    setError("");
-
-    try {
-      const ffmpeg = new FFmpeg();
-      ffmpegRef.current = ffmpeg;
-
-      // Try multiple CDNs for better reliability - using different CDNs to avoid QUIC issues
-      const cdns = [
-        "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd",
-        "https://unpkg.com/@ffmpeg/core@0.12.4/dist/umd",
-        "https://esm.run/@ffmpeg/core@0.12.4/dist/umd",
-        "https://fastly.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd"
-      ];
-
-      const baseURL = cdns[retryCount % cdns.length];
-      console.log(`Attempting to load FFmpeg from: ${baseURL} (attempt ${retryCount + 1})`);
-
-      ffmpeg.on("log", ({ message }) => {
-        console.log("FFmpeg log:", message);
-      });
-      ffmpeg.on("progress", ({ progress: prog }) => {
-        const percent = Math.round(prog * 100);
-        setProgress(percent);
-        console.log(`FFmpeg loading progress: ${percent}%`);
-      });
-
-      // Try loading with different strategies
-      let loadPromise;
-
-      try {
-        console.log("Testing CDN availability and downloading files...");
-        console.log("Testing URL:", `${baseURL}/ffmpeg-core.js`);
-
-        // First test if the CDN is reachable
-        const testResponse = await fetch(`${baseURL}/ffmpeg-core.js`, {
-          method: 'HEAD',
-          mode: 'cors'
-        });
-
-        if (!testResponse.ok) {
-          throw new Error(`CDN not reachable: ${testResponse.status}`);
-        }
-
-        console.log("CDN is reachable, downloading FFmpeg files...");
-
-        // Try fetchFile first, then fallback to regular fetch if it fails
-        let coreFile, wasmFile;
-        try {
-          console.log("Trying fetchFile approach...");
-          const coreFilePromise = fetchFile(`${baseURL}/ffmpeg-core.js`);
-          const wasmFilePromise = fetchFile(`${baseURL}/ffmpeg-core.wasm`);
-
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("File download timeout")), 25000);
-          });
-
-          [coreFile, wasmFile] = await Promise.race([
-            Promise.all([coreFilePromise, wasmFilePromise]),
-            timeoutPromise.then(() => { throw new Error("Timeout"); })
-          ]);
-
-          console.log("fetchFile successful, sizes:", coreFile.length, wasmFile.length);
-        } catch (fetchFileError) {
-          console.log("fetchFile failed, trying regular fetch...", fetchFileError);
-
-          // Fallback to regular fetch
-          const coreResponse = await fetch(`${baseURL}/ffmpeg-core.js`);
-          const wasmResponse = await fetch(`${baseURL}/ffmpeg-core.wasm`);
-
-          if (!coreResponse.ok || !wasmResponse.ok) {
-            throw new Error(`Fetch failed: core=${coreResponse.status}, wasm=${wasmResponse.status}`);
-          }
-
-          coreFile = new Uint8Array(await coreResponse.arrayBuffer());
-          wasmFile = new Uint8Array(await wasmResponse.arrayBuffer());
-
-          console.log("Regular fetch successful, sizes:", coreFile.length, wasmFile.length);
-        }
-
-        console.log("Loading FFmpeg with downloaded files...");
-        loadPromise = ffmpeg.load({
-          coreURL: URL.createObjectURL(new Blob([coreFile as any], { type: 'text/javascript' })),
-          wasmURL: URL.createObjectURL(new Blob([wasmFile as any], { type: 'application/wasm' })),
-        });
-      } catch (downloadError) {
-        console.error("File download failed:", downloadError);
-
-        // Try direct loading as fallback
-        console.log("Trying direct loading as fallback...");
-        try {
-          console.log("Using direct URLs for fallback loading");
-          loadPromise = ffmpeg.load({
-            coreURL: `${baseURL}/ffmpeg-core.js`,
-            wasmURL: `${baseURL}/ffmpeg-core.wasm`,
-          });
-        } catch (directError) {
-          console.error("Direct loading also failed:", directError);
-          throw new Error(`Loading failed: ${downloadError instanceof Error ? downloadError.message : 'Unknown error'}`);
-        }
-      }
-
-      // Shorter timeout for faster feedback
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Loading timeout after 45 seconds")), 45000);
-      });
-
-      console.log("Starting FFmpeg load with timeout...");
-      await Promise.race([loadPromise, timeoutPromise]);
-
-      console.log("FFmpeg loaded successfully!");
-      setFfmpegLoaded(true);
-      setFfmpegLoading(false);
-      setLoadAttempts(0);
-      toast.success("Video processing engine loaded successfully!");
-    } catch (err) {
-      console.error("Failed to load FFmpeg:", err);
-      setFfmpegLoading(false);
-
-      if (retryCount < 2) {
-        console.log(`Retrying FFmpeg load (attempt ${retryCount + 1})...`);
-        setLoadAttempts(retryCount + 1);
-        setTimeout(() => loadFFmpeg(retryCount + 1), 1000);
-      } else {
-        const errorMsg = `Failed to load video processing engine after ${retryCount + 1} attempts. This might be due to network issues, browser restrictions, or CDN problems. Please try refreshing the page or using a different browser.`;
-        setError(errorMsg);
-        console.error("All FFmpeg loading attempts failed:", err);
-        setLoadAttempts(0);
-      }
-    }
-  }, [ffmpegLoaded]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -264,6 +124,7 @@ export default function VideoToGif() {
 
       // Read the output file
       const data = await ffmpeg.readFile("output.gif");
+      if (ffmpegRef.current !== ffmpeg || !ffmpeg.loaded) return;
       const blob = new Blob([data as unknown as BlobPart], { type: "image/gif" });
       const url = URL.createObjectURL(blob);
 
@@ -357,6 +218,7 @@ export default function VideoToGif() {
         { title: "Image to PDF", description: "Convert images to PDF", href: "/pdf-tools/image-to-pdf", icon: Image, category: "video" },
       ]}
     >
+      {(ffmpegLoading || isProcessing) && <Button variant="outline" className="mb-4" onClick={() => { cancelEngine(); setIsProcessing(false); setError("Cancelled. Your selected file is unchanged. Reload the engine to try again."); }}>Cancel processing</Button>}
       <div className="max-w-4xl mx-auto space-y-6">
         {/* File Upload */}
         <Card>

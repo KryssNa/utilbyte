@@ -28,14 +28,20 @@ export default function Navbar() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
+        setMegaOpen(false);
         setSearchOpen(true);
       }
       if (e.key === "Escape") setMegaOpen(false);
     };
+    const openSearch = () => { setMegaOpen(false); setSearchOpen(true); };
     document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    window.addEventListener("utilbyte:open-tool-search", openSearch);
+    return () => {
+      document.removeEventListener("keydown", handler);
+      window.removeEventListener("utilbyte:open-tool-search", openSearch);
+    };
   }, []);
 
   useEffect(() => {
@@ -76,7 +82,7 @@ export default function Navbar() {
         <div className='h-[2px] bg-gradient-to-r from-sky-500 via-teal-500 to-emerald-500' />
 
         <nav className='relative border-b border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150'>
-          <div className='container mx-auto flex h-16 items-center justify-between px-4 lg:px-6'>
+          <div className='container mx-auto flex h-[calc(var(--header-height)-2px)] items-center justify-between px-4 lg:px-6'>
             <Link
               href='/'
               className='flex items-center gap-2.5 group cursor-pointer'
@@ -129,6 +135,9 @@ export default function Navbar() {
 
             <div className='flex items-center gap-2'>
               <button
+                data-tool-search-trigger
+                aria-label="Search tools"
+                aria-haspopup="dialog"
                 onClick={() => setSearchOpen(true)}
                 className='hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/50 hover:bg-muted transition-colors text-sm text-muted-foreground cursor-pointer'
               >
@@ -156,6 +165,9 @@ export default function Navbar() {
                 variant='ghost'
                 size='icon-sm'
                 className='sm:hidden'
+                data-tool-search-trigger
+                aria-label="Search tools"
+                aria-haspopup="dialog"
                 onClick={() => setSearchOpen(true)}
               >
                 <Search className='h-4 w-4' />
@@ -194,13 +206,13 @@ export default function Navbar() {
           <div
             onMouseEnter={keepOpen}
             onMouseLeave={startClose}
-            className='fixed left-0 right-0 top-[66px] z-[70] hidden lg:block animate-fade-in'
+            className='fixed left-0 right-0 top-[var(--header-height)] z-[70] hidden lg:block animate-fade-in'
           >
             <div className='bg-card border-b border-border shadow-2xl'>
               <div className='container mx-auto px-6 py-6'>
                 <div className='mb-3'>
                   <h3 className='text-sm font-bold text-foreground tracking-tight'>
-                    Popular Tools
+                    Featured Tools
                   </h3>
                   <p className='text-[11px] text-muted-foreground'>
                     Most used tools by our community
