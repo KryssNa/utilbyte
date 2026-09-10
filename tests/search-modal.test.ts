@@ -15,11 +15,11 @@ test('search filters results and recovers from empty results without closing', (
   assert.equal(document.activeElement, input);
   fireEvent.change(input, { target: { value: 'postgres' } });
   assert.ok(view.getByRole('link', { name: /SQL Formatter/ }));
-  fireEvent.click(view.getByRole('button', { name: 'Image', exact: true }));
+  fireEvent.click(view.getByRole('button', { name: /^Image$/ }));
   assert.ok(view.getByText('No matching tools'));
   fireEvent.click(view.getByRole('button', { name: 'Clear filters and start again' }));
   assert.equal((input as HTMLInputElement).value, '');
-  assert.equal(view.getByRole('button', { name: 'All tools', exact: true }).getAttribute('aria-pressed'), 'true');
+  assert.equal(view.getByRole('button', { name: /^All tools$/ }).getAttribute('aria-pressed'), 'true');
   assert.equal(document.activeElement, input);
   cleanup();
 });
