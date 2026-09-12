@@ -1,3 +1,4 @@
+import { SOCIAL_CARD } from "./social-card";
 import type { Metadata } from "next";
 
 // Nested social metadata replaces the parent's object in Next.js; always supply
@@ -12,11 +13,11 @@ export function withPageMetadata(route: string, metadata: Metadata): Metadata {
       type: "website", locale: "en_US", siteName: "UtilByte",
       ...metadata.openGraph,
       title, description, url: `https://utilbyte.app${route === "/" ? "" : route}`,
-      images: [{ url: "/social-card.png", width: 1200, height: 630, alt: "UtilByte — free tools for everyday work" }],
+      images: [SOCIAL_CARD],
     },
     twitter: {
       ...metadata.twitter,
-      card: "summary_large_image", title, description, images: ["/social-card.png"],
+      card: "summary_large_image", title, description, images: [SOCIAL_CARD],
     },
   };
 }

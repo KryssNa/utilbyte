@@ -1,3 +1,4 @@
+import { SOCIAL_CARD } from "@/lib/social-card";
 import WorkspaceLayout from "@/components/layout/WorkspaceLayout";
 import { NavigationSafety } from "@/components/shared/NavigationSafety";
 import Footer from "@/components/layout/Footer";
@@ -73,20 +74,13 @@ export const metadata: Metadata = {
     description:
       "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
     siteName: "UtilByte",
-    images: [
-      {
-        url: "/social-card.png",
-        width: 1200,
-        height: 630,
-        alt: "UtilByte - Free Online Tools",
-      },
-    ],
+    images: [SOCIAL_CARD],
   },
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
     description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
-    images: ["/social-card.png"],
+    images: [SOCIAL_CARD],
   },
   robots: {
     index: true,

@@ -1,3 +1,4 @@
+import { SOCIAL_CARD } from "@/lib/social-card";
 import { allTools } from "@/components/layout/navbar/data";
 import { Metadata } from "next";
 import HomePageClient from "./HomePageClient";
@@ -29,20 +30,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://utilbyte.app",
     siteName: "UtilByte",
-    images: [
-      {
-        url: "https://utilbyte.app/social-card.png",
-        width: 1200,
-        height: 630,
-        alt: "UtilByte - Free Online Tools",
-      },
-    ],
+    images: [SOCIAL_CARD],
   },
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
     description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
-    images: ["https://utilbyte.app/social-card.png"],
+    images: [SOCIAL_CARD],
   },
   alternates: {
     canonical: "https://utilbyte.app",

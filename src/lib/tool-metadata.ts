@@ -1,3 +1,4 @@
+import { SOCIAL_CARD } from "./social-card";
 import type { Metadata } from "next";
 import { catalog } from "@/lib/tool-catalog";
 
@@ -12,7 +13,9 @@ export function createToolMetadata(path: string, { title, description, keywords 
   const origin = (process.env.NEXT_PUBLIC_BASE_URL || "https://utilbyte.app").replace(/\/$/, "");
   const url = `${origin}${path}`;
   const tool = catalog.find(item => item.href === path);
-  const image = { url: tool ? `${origin}/og/${tool.id}` : `${origin}/social-card.png`, width: 1200, height: 630, alt: tool ? `${tool.title} — ${tool.category === "Dev" ? "Developer" : tool.category} tools by UtilByte` : "UtilByte — Free tools for everyday work" };
+  const image = tool
+    ? { url: `${origin}/og/${tool.id}`, width: 1200, height: 630, alt: `${tool.title} — ${tool.category === "Dev" ? "Developer" : tool.category} tools by UtilByte` }
+    : { ...SOCIAL_CARD, url: `${origin}${SOCIAL_CARD.url}` };
   return {
     title,
     description,

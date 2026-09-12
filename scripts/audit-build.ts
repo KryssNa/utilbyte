@@ -1,3 +1,4 @@
+import { SOCIAL_CARD } from "../src/lib/social-card";
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { gzipSync } from "node:zlib";
@@ -56,7 +57,7 @@ for (const route of routes) {
   }
   assert.equal(new URL(meta("og:url")!).pathname.replace(/\/$/, "") || "/", route, `Wrong social URL: ${route}`);
   for (const name of ["og:image", "twitter:image"]) {
-    if (!catalog.some(tool => tool.href === route)) assert.equal(new URL(meta(name)!).pathname, "/social-card.png", `Default social card missing: ${route}`);
+    if (!catalog.some(tool => tool.href === route)) assert.equal(new URL(meta(name)!).pathname + new URL(meta(name)!).search, SOCIAL_CARD.url, `Default social card missing: ${route}`);
     const image = new URL(meta(name)!);
     assert.equal(image.origin, "https://utilbyte.app", `Unexpected social image origin: ${route}`);
     assert.ok(existsSync(`public${image.pathname}`) || existsSync(`.next/server/app${image.pathname}.body`), `Missing social image: ${route}`);
@@ -136,10 +137,11 @@ for (const filename of ["llms.txt", "llms-full.txt"]) {
 }
 const socialCard = readFileSync("public/social-card.png");
 assert.equal(socialCard.subarray(1, 4).toString(), "PNG", "Invalid standalone social card");
-assert.equal(socialCard.readUInt32BE(16), 1200);
-assert.equal(socialCard.readUInt32BE(20), 630);
+assert.equal(socialCard.readUInt32BE(16), SOCIAL_CARD.width);
+assert.equal(socialCard.readUInt32BE(20), SOCIAL_CARD.height);
 assert.ok(existsSync(".next/server/app/opengraph-image.body"), "Missing generated social preview image");
-for (const path of ["opengraph-image", ...catalog.map(tool => `og/${tool.id}`)]) {
+assert.deepEqual(readFileSync(".next/server/app/opengraph-image.body"), socialCard, "Open Graph endpoint must serve the approved artwork");
+for (const path of catalog.map(tool => `og/${tool.id}`)) {
   const image = readFileSync(`.next/server/app/${path}.body`);
   assert.equal(image.subarray(1, 4).toString(), "PNG", `Invalid social image: ${path}`);
   assert.equal(image.readUInt32BE(16), 1200, `Social image width: ${path}`);

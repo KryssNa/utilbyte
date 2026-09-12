@@ -6,11 +6,11 @@ These are build artifacts and transfer-size estimates, not browser or field perf
 
 | Route | HTML bytes | Initial JS bytes | Initial JS gzip estimate |
 |---|---:|---:|---:|
-| /image-tools/compress-image | 74218 | 1376924 | 431407 |
-| /text-tools/word-counter | 66864 | 1339589 | 419567 |
-| /dev-tools/json-schema | 58298 | 1338434 | 419519 |
-| /dev-tools/json-formatter | 85215 | 1378693 | 431220 |
-| /dev-tools/sql-formatter | 76268 | 1691416 | 516906 |
+| /image-tools/compress-image | 74218 | 1376924 | 431410 |
+| /text-tools/word-counter | 66864 | 1339589 | 419570 |
+| /dev-tools/json-schema | 58298 | 1338434 | 419522 |
+| /dev-tools/json-formatter | 85215 | 1378693 | 431223 |
+| /dev-tools/sql-formatter | 76268 | 1691416 | 516909 |
 
 Client source maps are removed during this build. Initial-runtime module membership and subsequent runtime/network loading remain unverified; transfer-size estimates alone do not prove isolation.
 
