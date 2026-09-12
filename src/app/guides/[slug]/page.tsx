@@ -17,10 +17,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const guide = getGuide(slug);
 
-  if (!guide) return { title: "Guide not found | UtilByte" };
+  if (!guide) return { title: "Guide not found" };
 
   return {
-    title: `${guide.metaTitle} | UtilByte`,
+    title: guide.metaTitle,
     description: guide.metaDescription,
     keywords: guide.keywords,
     openGraph: {

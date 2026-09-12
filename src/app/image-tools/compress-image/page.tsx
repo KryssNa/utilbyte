@@ -2,12 +2,12 @@ import ImageCompressor from "@/components/tools/image/ImageCompressor";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Compress Image Online Free - Reduce Image File Size by 90% Losslessly",
+  title: "Image Compressor Online - Adjust JPEG Quality Free",
   description:
-    "Compress images online for free without losing quality. Reduce JPG, PNG, WebP file sizes by up to 90% instantly. Advanced compression algorithm works in your browser.",
+    "Reduce image file size with adjustable JPEG quality. Open a JPG, PNG or WebP image, compare the estimated size, and download a JPEG processed in your browser.",
   keywords: [
     "compress image online free",
-    "compress image without losing quality",
+    "adjust image compression quality",
     "reduce image file size",
     "image compression tool",
     "compress jpg online",
@@ -16,18 +16,18 @@ export const metadata: Metadata = {
     "shrink image size",
     "photo compressor",
     "image size reducer",
-    "lossless image compression"
+    "jpeg image compression"
   ],
   openGraph: {
-    title: "Compress Image Online Free - 90% Size Reduction",
-    description: "Compress images online for free. Reduce file sizes by up to 90% without quality loss. Fast, secure, browser-based compression.",
+    title: "Image Compressor Online - Adjustable JPEG Quality",
+    description: "Adjust JPEG quality and preview the estimated file size. Image processing runs in your browser; savings depend on the original image.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Compress Image Online Free - 90% Size Reduction",
-    description: "Compress JPG, PNG, WebP images online for free. Reduce file sizes instantly without losing quality.",
+    title: "Image Compressor Online - Adjustable JPEG Quality",
+    description: "Open JPG, PNG or WebP images and download a JPEG with adjustable quality. Process images locally in your browser.",
   },
   alternates: {
     canonical: "/image-tools/compress-image",
@@ -50,7 +50,7 @@ const jsonLd = [
             "@type": "ListItem",
             "position": 2,
             "name": "Image Tools",
-            "item": "https://utilbyte.app#image-tools"
+            "item": "https://utilbyte.app/image-tools"
           },
           {
             "@type": "ListItem",
@@ -64,7 +64,7 @@ const jsonLd = [
         "@context": "https://schema.org",
         "@type": "Service",
         "name": "Online Image Compression Service",
-        "description": "Professional image compression service that reduces file sizes by up to 90% while maintaining quality. Perfect for web optimization, faster loading times, and bandwidth savings.",
+        "description": "Browser-based image compression with adjustable JPEG quality. Lower quality can reduce file size at the cost of image detail.",
         "provider": {
           "@type": "Organization",
           "name": "UtilByte",
@@ -90,7 +90,7 @@ const jsonLd = [
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Image Compressor Online Free",
-        "description": "Compress images online for free without losing quality. Reduce JPG, PNG, WebP file sizes by up to 90% instantly. Advanced compression algorithm works in your browser.",
+        "description": "Reduce image file size with adjustable JPEG quality. Open a JPG, PNG or WebP image, compare the estimated size, and download a JPEG processed in your browser.",
         "url": "https://utilbyte.app/image-tools/compress-image",
         "applicationCategory": "Utility",
         "operatingSystem": "Web Browser",
@@ -100,13 +100,12 @@ const jsonLd = [
           "priceCurrency": "USD"
         },
         "featureList": [
-          "Reduce image file size by up to 90%",
-          "Lossless compression",
+          "Adjust JPEG compression quality",
+          "Lossy JPEG compression",
           "Supports JPG, PNG, WebP",
           "Fast processing",
-          "No quality loss"
+          "Preview estimated output size"
         ],
-        "screenshot": "https://utilbyte.app/images/image-compress-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -145,7 +144,7 @@ const jsonLd = [
             "name": "How much can I compress my images?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Our advanced compression algorithm can reduce image file sizes by up to 90% while maintaining visual quality. The actual compression ratio depends on the original image and format."
+              "text": "Savings depend on the original image and quality setting. Already optimized images may not become smaller. Review the output size before downloading."
             }
           },
           {
@@ -153,7 +152,7 @@ const jsonLd = [
             "name": "Will image quality be affected?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Our compressor uses lossless compression techniques that preserve image quality. You can adjust compression settings to balance file size and quality according to your needs."
+              "text": "The tool uses lossy JPEG compression. Lower quality reduces detail and can create visible artifacts. Compare the result and choose the quality setting that suits your use."
             }
           },
           {
@@ -161,7 +160,7 @@ const jsonLd = [
             "name": "What image formats are supported?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "We support JPG, PNG, and WebP formats. Each format has optimized compression algorithms to achieve the best results for that specific image type."
+              "text": "Open JPG, PNG or WebP images. The compressor re-encodes the selected image as JPEG; it does not preserve transparency."
             }
           },
           {
@@ -169,7 +168,7 @@ const jsonLd = [
             "name": "Is this image compression secure?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Absolutely secure. All image processing happens locally in your browser. Your images never leave your device or get uploaded to any server."
+              "text": "Image processing runs locally in your browser. The tool does not upload your selected image. Site analytics and advertising are separate from file processing."
             }
           }
         ]

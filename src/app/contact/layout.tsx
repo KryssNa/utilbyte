@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Us | UtilByte",
+  title: "Contact Us",
   description: "Get in touch with the UtilByte team. We're here to help with questions, feedback, and support for our free online tools.",
   keywords: "contact utilbyte, support, help, feedback, get in touch",
   openGraph: {

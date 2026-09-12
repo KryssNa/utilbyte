@@ -58,7 +58,6 @@ const jsonLd = [
           "Meeting timers",
           "Productivity enhancement"
         ],
-        "screenshot": "https://utilbyte.app/images/countdown-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

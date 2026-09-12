@@ -57,7 +57,6 @@ const jsonLd = [
           "Password security",
           "Data integrity verification"
         ],
-        "screenshot": "https://utilbyte.app/images/hash-generator-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

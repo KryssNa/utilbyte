@@ -2,7 +2,7 @@ import DocumentPhoto from "@/components/tools/image/DocumentPhoto";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Passport & Document Photo Maker - Exact Size and KB Limit | UtilByte",
+  title: "Passport & Document Photo Maker - Exact Size and KB Limit",
   description:
     "Crop and size a photo to passport, visa or exam specifications. US visa 600x600 under 240KB, UK passport, 35x45mm and custom sizes. Free, runs in your browser, no upload.",
   keywords: [

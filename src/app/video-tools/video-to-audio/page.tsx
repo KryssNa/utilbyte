@@ -37,85 +37,59 @@ export const metadata: Metadata = {
 
 
 const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Video to Audio Converter Online Free",
+    "description": "Convert video to audio online for free. Extract MP3, WAV, AAC, OGG, M4A from MP4, AVI, MOV, MKV videos. High-quality audio extraction, fast processing.",
+    "url": "https://utilbyte.app/video-tools/video-to-audio",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Multiple audio formats",
+      "Video format support",
+      "High-quality extraction",
+      "Batch processing",
+      "Audio format conversion",
+      "Fast extraction"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
       {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Video to Audio Converter Online Free",
-        "description": "Convert video to audio online for free. Extract MP3, WAV, AAC, OGG, M4A from MP4, AVI, MOV, MKV videos. High-quality audio extraction, fast processing.",
-        "url": "https://utilbyte.app/video-tools/video-to-audio",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "Web Browser",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "featureList": [
-          "Multiple audio formats",
-          "Video format support",
-          "High-quality extraction",
-          "Batch processing",
-          "Audio format conversion",
-          "Fast extraction"
-        ],
-        "screenshot": "https://utilbyte.app/images/video-to-audio-screenshot.jpg"
+        "@type": "Question",
+        "name": "What audio formats can I extract?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Extract audio as MP3, WAV, AAC, OGG, M4A, and other popular audio formats from your video files."
+        }
       },
       {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What audio formats can I extract?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Extract audio as MP3, WAV, AAC, OGG, M4A, and other popular audio formats from your video files."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Does the conversion maintain audio quality?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, we maintain high audio quality during extraction. You can also choose different quality settings for compression."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I extract audio from multiple videos?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, our batch processing feature allows you to extract audio from multiple video files simultaneously."
-            }
-          }
-        ]
+        "@type": "Question",
+        "name": "Does the conversion maintain audio quality?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we maintain high audio quality during extraction. You can also choose different quality settings for compression."
+        }
       },
       {
-        "@context": "https://schema.org",
-        "@type": "VideoObject",
-        "name": "Video to Audio Converter Online",
-        "description": "Extract audio from video files online for free. Convert MP4, AVI, MOV videos to MP3, WAV, AAC audio formats instantly.",
-        "thumbnailUrl": "https://utilbyte.app/images/video-to-audio-thumbnail.jpg",
-        "uploadDate": "2024-01-01",
-        "duration": "PT1M45S",
-        "contentUrl": "https://utilbyte.app/video-tools/video-to-audio",
-        "embedUrl": "https://utilbyte.app/video-tools/video-to-audio",
-        "interactionStatistic": {
-          "@type": "InteractionCounter",
-          "interactionType": "https://schema.org/WatchAction",
-          "userInteractionCount": 10000
-        },
-        "author": {
-          "@type": "Organization",
-          "name": "UtilByte",
-          "url": "https://utilbyte.app"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "UtilByte"
+        "@type": "Question",
+        "name": "Can I extract audio from multiple videos?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, our batch processing feature allows you to extract audio from multiple video files simultaneously."
         }
       }
-    ];
+    ]
+  }
+];
 
 export default function VideoToAudioPage() {
   return (

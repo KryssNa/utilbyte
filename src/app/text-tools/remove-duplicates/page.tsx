@@ -58,7 +58,6 @@ const jsonLd = [
           "Batch processing",
           "Data cleaning"
         ],
-        "screenshot": "https://utilbyte.app/images/remove-duplicates-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -147,7 +146,6 @@ const jsonLd = [
           "Instant results",
           "Free to use"
         ],
-        "screenshot": "https://utilbyte.app/images/remove-duplicates-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

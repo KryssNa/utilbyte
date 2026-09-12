@@ -51,7 +51,6 @@ const jsonLd = [
           "Fast processing",
           "Download merged PDF"
         ],
-        "screenshot": "https://utilbyte.app/images/pdf-merge-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -103,7 +102,6 @@ const jsonLd = [
           "No file size limits",
           "Secure local processing"
         ],
-        "screenshot": "https://utilbyte.app/images/pdf-merge-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

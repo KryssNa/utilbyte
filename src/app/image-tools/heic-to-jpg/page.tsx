@@ -4,7 +4,7 @@ import { FORMAT_PAIRS } from "@/lib/format-pairs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "HEIC to JPG Converter - Free, No Upload | UtilByte",
+  title: "HEIC to JPG Converter - Free, No Upload",
   description: "Convert iPhone HEIC photos to JPG in your browser. Works in Safari; if your browser cannot decode HEIC we tell you, and show you the phone setting that fixes it for good.",
   keywords: ["heic to jpg", "heic to jpeg converter", "convert heic to jpg", "iphone heic to jpg", "open heic on windows", "heic converter free", "heic to jpg online no upload"],
   openGraph: {

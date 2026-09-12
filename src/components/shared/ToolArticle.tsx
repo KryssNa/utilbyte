@@ -1,3 +1,4 @@
+import CopyButton from "./CopyButton";
 import { AlertTriangle } from "lucide-react";
 
 export interface ToolArticleSection {
@@ -12,6 +13,8 @@ export interface ToolArticleExample {
   input: string;
   output: string;
   note?: string;
+  copyInput?: boolean;
+  copyOutput?: boolean;
 }
 
 export interface ToolArticleContent {
@@ -40,10 +43,10 @@ export default function ToolArticle({ content, toolName }: ToolArticleProps) {
   const { intro, sections = [], example, limitations = [] } = content;
 
   return (
-    <section className="border-t border-[rgb(var(--border))]">
-      <div className="container mx-auto px-4 py-12 lg:px-8 lg:py-16">
+    <section className="border-t border-border">
+      <div className="container mx-auto px-4 py-8 lg:px-6 lg:py-10">
         <article className="mx-auto max-w-3xl">
-          <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight sm:text-3xl mb-6">
+          <h2 className="font-[family-name:var(--font-display)] mb-5 text-xl font-semibold tracking-tight">
             About the {toolName}
           </h2>
 
@@ -78,22 +81,24 @@ export default function ToolArticle({ content, toolName }: ToolArticleProps) {
           ))}
 
           {example && (
-            <div className="mt-10 rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-6">
+            <div className="mt-10 rounded-xl border border-border bg-card p-6">
               <h3 className="text-lg font-semibold mb-4">{example.title}</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">
-                    Input
+                  <div className={`mb-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground ${example.copyInput || example.copyOutput ? "min-h-10" : ""}`}>
+                    <span className="uppercase tracking-widest">Input</span>
+                    {example.copyInput && <CopyButton value={example.input} label={`${toolName} example input`} />}
                   </div>
-                  <pre className="overflow-x-auto rounded-lg bg-[rgb(var(--muted))]/40 p-3 text-xs leading-relaxed">
+                  <pre className="overflow-x-auto rounded-lg bg-muted/40 p-3 text-xs leading-relaxed">
                     <code>{example.input}</code>
                   </pre>
                 </div>
                 <div>
-                  <div className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">
-                    Output
+                  <div className={`mb-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground ${example.copyInput || example.copyOutput ? "min-h-10" : ""}`}>
+                    <span className="uppercase tracking-widest">Output</span>
+                    {example.copyOutput && <CopyButton value={example.output} label={`${toolName} example output`} />}
                   </div>
-                  <pre className="overflow-x-auto rounded-lg bg-[rgb(var(--muted))]/40 p-3 text-xs leading-relaxed">
+                  <pre className="overflow-x-auto rounded-lg bg-muted/40 p-3 text-xs leading-relaxed">
                     <code>{example.output}</code>
                   </pre>
                 </div>

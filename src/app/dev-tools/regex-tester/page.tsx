@@ -58,7 +58,6 @@ const jsonLd = [
           "Multiple regex flavors",
           "Real-time validation"
         ],
-        "screenshot": "https://utilbyte.app/images/regex-tester-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

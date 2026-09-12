@@ -1,3 +1,4 @@
+import CopyBlock from "@/components/shared/CopyBlock";
 import type { Guide } from "@/content/guides/types";
 import { getGuide } from "@/content/guides";
 import { AlertTriangle, ArrowRight, Clock, Info } from "lucide-react";
@@ -68,11 +69,11 @@ export default function GuideArticle({ guide }: { guide: Guide }) {
               </h2>
 
               <div className="space-y-4">
-                {section.body.map((paragraph, i) => (
+                {section.body.map((paragraph, i) => typeof paragraph === "string" ? (
                   <p key={i} className="text-[16px] leading-relaxed text-muted-foreground">
                     {paragraph}
                   </p>
-                ))}
+                ) : <CopyBlock key={i} value={paragraph.code} label={paragraph.label} multiline />)}
               </div>
 
               {section.bullets && section.bullets.length > 0 && (

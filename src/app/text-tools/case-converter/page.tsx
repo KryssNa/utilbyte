@@ -58,7 +58,6 @@ const jsonLd = [
           "Copy to clipboard",
           "Character counting"
         ],
-        "screenshot": "https://utilbyte.app/images/case-converter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

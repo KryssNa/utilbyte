@@ -55,7 +55,7 @@ const definitions = [
       {
         "title": "Compress to Size",
         "href": "/image-tools/compress-to-size",
-        "desc": "Hit an exact KB limit",
+        "desc": "Target a KB limit",
         "aliases": []
       },
       {
@@ -115,7 +115,7 @@ const definitions = [
       {
         "title": "PDF to Size",
         "href": "/pdf-tools/compress-to-size",
-        "desc": "Hit an exact limit",
+        "desc": "Target a file size",
         "aliases": [
           "shrink pdf"
         ]

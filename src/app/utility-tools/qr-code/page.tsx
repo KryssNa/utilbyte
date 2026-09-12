@@ -57,7 +57,6 @@ const jsonLd = [
           "High resolution output",
           "Multiple export formats"
         ],
-        "screenshot": "https://utilbyte.app/images/qr-code-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -227,7 +226,6 @@ const jsonLd = [
           "Instant generation",
           "Download multiple formats"
         ],
-        "screenshot": "https://utilbyte.app/images/qr-code-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

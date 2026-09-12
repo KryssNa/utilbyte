@@ -109,16 +109,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache static assets for better performance
-      {
-        source: '/_next/static/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
+      // Next.js manages caching for its own assets, including uncached dev chunks.
       // Cache images and other assets
       {
         source: '/images/(.*)',

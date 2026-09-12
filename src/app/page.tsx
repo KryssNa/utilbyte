@@ -5,7 +5,7 @@ import HomePageClient from "./HomePageClient";
 export const metadata: Metadata = {
   title: "UtilByte - Free Online Tools for Images, PDFs & Developers",
   description:
-    "Free online tools for images, PDFs, text and developers. No login. File tools run entirely in your browser, so your files are never uploaded.",
+    "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -24,14 +24,14 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "UtilByte - Free Online Tools for Everyday Work",
-    description: "Free image, PDF, text & developer tools. No sign-up. No uploads. Everything runs in your browser.",
+    description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
     type: "website",
     locale: "en_US",
     url: "https://utilbyte.app",
     siteName: "UtilByte",
     images: [
       {
-        url: "https://utilbyte.app/images/og-image.jpg",
+        url: "https://utilbyte.app/opengraph-image",
         width: 1200,
         height: 630,
         alt: "UtilByte - Free Online Tools",
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
-    description: "Free online tools that respect your privacy. Your files are processed in your browser, not uploaded.",
-    images: ["https://utilbyte.app/images/og-image.jpg"],
+    description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
+    images: ["https://utilbyte.app/opengraph-image"],
   },
   alternates: {
     canonical: "https://utilbyte.app",

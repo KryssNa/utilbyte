@@ -10,8 +10,8 @@
 
 export interface GuideSection {
   heading: string;
-  /** One string per paragraph. Markdown is deliberately not supported — keep it plain. */
-  body: string[];
+  /** Plain paragraphs or explicit copyable code examples, in reading order. */
+  body: Array<string | { code: string; label: string }>;
   bullets?: string[];
   /** Optional simple table. `rows` cells align to `columns`. */
   table?: {

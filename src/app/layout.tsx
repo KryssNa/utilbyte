@@ -1,3 +1,4 @@
+import WorkspaceLayout from "@/components/layout/WorkspaceLayout";
 import { NavigationSafety } from "@/components/shared/NavigationSafety";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | UtilByte",
   },
   description:
-    "Free online tools for images, PDFs, text and developers. No login. File tools run entirely in your browser, so your files are never uploaded.",
+    "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -70,11 +71,11 @@ export const metadata: Metadata = {
     url: "https://utilbyte.app",
     title: "UtilByte - Free Online Tools for Everyday Work",
     description:
-      "Free image, PDF, text and developer tools. No login. Your files never leave your browser.",
+      "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
     siteName: "UtilByte",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "UtilByte - Free Online Tools",
@@ -84,8 +85,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
-    description: "Free online tools that respect your privacy. Your files are processed in your browser, not uploaded.",
-    images: ["/images/og-image.jpg"],
+    description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
@@ -131,6 +132,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="UtilByte AI tool directory" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo_small.png" />
         <meta name="msapplication-TileColor" content="#000000" />
@@ -156,8 +158,10 @@ export default function RootLayout({
           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:ring-2 focus:ring-primary">Skip to content</a>
           <NavigationSafety>
           <Navbar />
+          <WorkspaceLayout>
           <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">{children}</main>
           <Footer />
+          </WorkspaceLayout>
           </NavigationSafety>
           <Toaster position="bottom-right" richColors />
         </ThemeProvider>

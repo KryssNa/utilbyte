@@ -56,7 +56,6 @@ const jsonLd = [
           "Fast processing",
           "Document creation"
         ],
-        "screenshot": "https://utilbyte.app/images/image-to-pdf-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

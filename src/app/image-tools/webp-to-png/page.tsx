@@ -4,7 +4,7 @@ import { FORMAT_PAIRS } from "@/lib/format-pairs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "WebP to PNG Converter - Free, No Upload | UtilByte",
+  title: "WebP to PNG Converter - Free, No Upload",
   description: "Convert WebP images to PNG in your browser. Lossless, keeps transparency, no upload. Includes when PNG is the wrong choice and JPG would be far smaller.",
   keywords: ["webp to png", "convert webp to png", "webp to png converter", "webp converter free", "open webp file", "webp to png online no upload", "save webp as png"],
   openGraph: {

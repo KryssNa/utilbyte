@@ -56,7 +56,6 @@ const jsonLd = [
           "Real-time processing",
           "Developer-friendly interface"
         ],
-        "screenshot": "https://utilbyte.app/images/base64-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

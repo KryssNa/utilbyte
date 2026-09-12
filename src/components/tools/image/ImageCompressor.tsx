@@ -200,7 +200,7 @@ export default function ImageCompressor() {
     <ToolLayout
       article={compressImageArticle}
       title="Image Compressor"
-      description="Reduce image file size without losing quality. Adjust compression level and download optimized images instantly."
+      description="Reduce image file size by adjusting JPEG quality. Preview the result and download your compressed image."
       category="image"
       categoryLabel="Image Tools"
       icon={FileDown}

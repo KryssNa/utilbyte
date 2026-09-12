@@ -58,7 +58,6 @@ const jsonLd = [
           "Visual color preview",
           "HEX, RGB, HSL, HSV, CMYK support"
         ],
-        "screenshot": "https://utilbyte.app/images/color-converter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

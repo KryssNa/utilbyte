@@ -56,7 +56,6 @@ const jsonLd = [
           "Multiple export formats",
           "Social media presets"
         ],
-        "screenshot": "https://utilbyte.app/images/crop-image-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -145,7 +144,6 @@ const jsonLd = [
           "High-quality output",
           "Free to use"
         ],
-        "screenshot": "https://utilbyte.app/images/image-crop-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

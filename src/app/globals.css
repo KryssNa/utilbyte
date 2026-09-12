@@ -303,7 +303,7 @@ h1, h2, h3, h4, h5, h6 {
 .drop-zone {
   position: relative;
   display: flex;
-  min-height: 380px;
+  min-height: 250px;
   cursor: pointer;
   flex-direction: column;
   align-items: center;
@@ -311,14 +311,14 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-2xl);
   border: 2px dashed var(--border);
   background-color: var(--muted);
-  padding: 4rem 2rem;
+  padding: 1.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (min-width: 640px) {
   .drop-zone {
-    min-height: 450px;
-    padding: 5rem 3rem;
+    min-height: 300px;
+    padding: 2rem;
   }
 }
 
@@ -1079,16 +1079,22 @@ body.is-dragging-file .dropzone-wrapper .animated-border {
 
 .tool-shell { display: grid; grid-template-columns: minmax(0, 1fr); }
 .tool-rail { display: none; }
-@media (min-width: 1280px) {
-  .tool-shell { grid-template-columns: 240px minmax(0, 1fr); }
+@media (min-width: 1024px) {
+  .tool-shell { grid-template-columns: 248px minmax(0, 1fr); }
   .tool-rail { display: block; }
 }
-html[data-tool-focus="true"] .tool-shell { grid-template-columns: minmax(0, 1fr); }
-html[data-tool-focus="true"] .tool-rail,
 html[data-tool-focus="true"] .tool-help { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 
-html[data-tool-compact="true"] .tool-shell { grid-template-columns: minmax(0, 1fr); }
-html[data-tool-compact="true"] .tool-rail { display: none; }
+/* Search keeps a quiet surface; links and buttons retain keyboard focus rings. */
+.tool-search-input:focus,
+.tool-search-input:focus-visible { outline: none; box-shadow: none; border-color: transparent; }
+
+/* Option rows use a filled focus state; the trigger keeps a subtle keyboard ring. */
+.tool-select-option:focus-visible { outline: none; box-shadow: none; }
+.tool-select-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 22%, transparent);
+}

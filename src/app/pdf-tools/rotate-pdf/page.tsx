@@ -56,7 +56,6 @@ const jsonLd = [
           "Document repair",
           "Instant processing"
         ],
-        "screenshot": "https://utilbyte.app/images/rotate-pdf-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

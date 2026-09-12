@@ -56,7 +56,6 @@ const jsonLd = [
           "Lossless conversion",
           "Format optimization"
         ],
-        "screenshot": "https://utilbyte.app/images/format-converter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

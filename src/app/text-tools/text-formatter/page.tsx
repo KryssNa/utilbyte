@@ -60,7 +60,6 @@ const jsonLd = [
           "Validation and error checking",
           "Developer-friendly formatting"
         ],
-        "screenshot": "https://utilbyte.app/images/text-formatter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

@@ -2,7 +2,7 @@ import { AlertTriangle, FileText, Heart, Scale, Shield, Users } from "lucide-rea
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | UtilByte",
+  title: "Terms of Service",
   description: "Read UtilByte's terms of service and usage guidelines. Understand your rights and responsibilities when using our tools.",
   keywords: "terms of service, terms and conditions, user agreement, UtilByte terms",
   openGraph: {
@@ -39,7 +39,7 @@ export default function TermsPage() {
               Please read these terms carefully before using UtilByte. By using our services, you agree to these terms.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              Last updated: September 12, 2026
             </p>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function TermsPage() {
                 <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-3">What We Offer</h3>
                 <p className="text-blue-700 dark:text-blue-300 mb-4">
                   UtilByte provides free online tools for processing images, PDFs, text, and other files.
-                  All processing happens in your browser - your files never leave your device.
+                  Local file tools process in your browser. Network tools send requests to disclosed endpoints, and MCP text operations process submitted text on our server.
                 </p>
                 <div className="grid gap-3 md:grid-cols-2 text-sm">
                   <ul className="text-blue-700 dark:text-blue-300 space-y-1">
@@ -96,7 +96,7 @@ export default function TermsPage() {
                   <div>
                     <h4 className="font-semibold text-emerald-800 dark:text-emerald-200">Privacy by Design</h4>
                     <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">
-                      All file processing occurs locally in your browser. We never upload or store your files on our servers.
+                      Local file tools do not upload selected files for processing. Hosted developer tools, MCP, contact and feedback have separate data handling described in our Privacy Policy.
                     </p>
                   </div>
                 </div>

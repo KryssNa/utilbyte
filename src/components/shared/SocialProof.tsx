@@ -83,9 +83,9 @@ export default function SocialProof({ testimonials, stats }: SocialProofProps) {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-4">How UtilByte handles your files</h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Most online converters upload your file to a server, process it there and
-          promise to delete it afterwards. UtilByte does the work in the browser tab
-          you already have open, so there is nothing to delete and nothing to trust.
+          Image, PDF and video tools process selected files in your browser. Network
+          tools send data to the services described on their pages. Site analytics
+          and advertising are separate from tool processing.
         </p>
       </div>
 
@@ -93,12 +93,11 @@ export default function SocialProof({ testimonials, stats }: SocialProofProps) {
         <Card className="h-full">
           <CardContent className="pt-6">
             <Cpu className="h-6 w-6 mb-3 text-primary" />
-            <h3 className="font-semibold mb-2">Processing runs on your machine</h3>
+            <h3 className="font-semibold mb-2">Local file processing</h3>
             <p className="text-sm text-muted-foreground">
-              Image, PDF and video tools use WebAssembly builds of the same libraries a
-              desktop app would — <code className="text-xs">pdf-lib</code> for PDFs and{" "}
-              <code className="text-xs">ffmpeg.wasm</code> for video. Speed depends on
-              your CPU, not on our queue.
+              Local file tools use your device to process files. Processing time depends
+              on the file, the tool and your device. Some tools download an engine
+              or language data before they can start.
             </p>
           </CardContent>
         </Card>
@@ -106,12 +105,15 @@ export default function SocialProof({ testimonials, stats }: SocialProofProps) {
         <Card className="h-full">
           <CardContent className="pt-6">
             <ShieldCheck className="h-6 w-6 mb-3 text-primary" />
-            <h3 className="font-semibold mb-2">Works offline once loaded</h3>
+            <h3 className="font-semibold mb-2">Check each tool’s data choices</h3>
             <p className="text-sm text-muted-foreground">
-              Open a tool, disconnect from the network, and it still works. That is the
-              simplest proof that your file is not going anywhere — and it is a test you
-              can run yourself in about ten seconds.
+              Read the processing disclosure before adding content. Network tools need
+              a connection, and local tools may need one to load their processing
+              resources. Offline availability varies by tool.
             </p>
+            <Link href="/privacy" className="mt-3 inline-block text-sm text-primary underline underline-offset-4">
+              Read how data is handled
+            </Link>
           </CardContent>
         </Card>
 

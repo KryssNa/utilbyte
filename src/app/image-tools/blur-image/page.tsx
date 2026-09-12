@@ -57,7 +57,6 @@ const jsonLd = [
           "Customizable blur intensity",
           "Real-time preview"
         ],
-        "screenshot": "https://utilbyte.app/images/blur-image-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

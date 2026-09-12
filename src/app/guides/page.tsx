@@ -4,7 +4,7 @@ import { ArrowRight, BookOpen, Clock } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Guides - Files, Formats and Developer Workflows | UtilByte",
+  title: "Guides - Files, Formats and Developer Workflows",
   description:
     "Practical guides on compressing images to a KB limit, document and passport photo specifications, PDF size, and image formats. Written to be useful, not to sell you anything.",
   keywords: [

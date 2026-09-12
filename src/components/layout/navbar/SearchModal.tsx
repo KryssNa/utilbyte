@@ -86,7 +86,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 }
               }}
               placeholder="Search tools or a task…"
-              className="h-[72px] min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70 [&::-webkit-search-cancel-button]:hidden"
+              className="tool-search-input h-16 min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70 [&::-webkit-search-cancel-button]:hidden"
             />
             {query && <button type="button" aria-label="Clear search" onClick={() => { setQuery(""); inputRef.current?.focus(); }} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><X aria-hidden="true" className="h-4 w-4" /></button>}
             <Dialog.Close aria-label="Close tool search" className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"><span className="hidden rounded border px-1.5 py-0.5 text-[11px] sm:inline">Esc</span><X aria-hidden="true" className="h-5 w-5 sm:hidden" /></Dialog.Close>

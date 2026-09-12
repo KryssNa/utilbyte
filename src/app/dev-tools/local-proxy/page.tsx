@@ -3,7 +3,7 @@ import LocalProxy from "@/components/tools/dev/LocalProxy";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Local Proxy - Forward Requests to Localhost | UtilByte",
+  title: "Local Proxy - Forward Requests to Localhost",
   description:
     "Forward public webhook requests to your localhost via ngrok, localtunnel, or cloudflared. Debug integrations directly on your local machine in real-time.",
   keywords: [

@@ -57,7 +57,6 @@ const jsonLd = [
           "High precision calculations",
           "Easy unit switching"
         ],
-        "screenshot": "https://utilbyte.app/images/unit-converter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

@@ -2,7 +2,7 @@ import { Cookie, Database, Eye, Lock, Mail, Shield } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | UtilByte",
+  title: "Privacy Policy",
   description: "Learn about how UtilByte protects your privacy and handles your data. We believe in transparency and user control.",
   keywords: "privacy policy, data protection, user privacy, UtilByte privacy",
   openGraph: {
@@ -39,7 +39,7 @@ export default function PrivacyPage() {
               Your privacy is our top priority. This policy explains how we collect, use, and protect your information.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              Last updated: September 12, 2026
             </p>
           </div>
         </div>
@@ -69,6 +69,12 @@ export default function PrivacyPage() {
               <p className="mb-3 text-muted-foreground">Each tool explains whether it processes locally, connects directly to an endpoint, or uses a hosted service. Request Catcher stores requests and Local Proxy can forward them; clearing a bin removes its request rows but does not control provider logs or backups. No automatic expiry is implemented in the supplied service code.</p>
               <p className="mb-3 text-muted-foreground">Pins, recent tool IDs, and layout preferences are stored in your browser. Tool inputs are not saved in those preferences. Explicit transfers between local JSON tools are held briefly in memory and are not placed in URLs.</p>
               <p className="text-muted-foreground">Optional tool-outcome metrics use tool IDs, fixed event and error names, and coarse size/duration buckets. They do not include input, filenames, tokens, free-text searches, or copied results. Runtime session replay, console capture, and error-event delivery are disabled. Site analytics and advertising are described below.</p>
+            </section>
+
+            <section className="mb-12 rounded-xl border p-5">
+              <h2 className="mb-3 text-xl font-semibold">MCP, contact and feedback</h2>
+              <p className="mb-3 text-muted-foreground">Connecting an assistant to MCP sends protocol requests to UtilByte. Text supplied to formatting and conversion operations is processed on our server. The MCP handler does not intentionally persist or log input or output; hosting providers may retain standard request metadata. Your assistant provider has its own data practices. For local processing, use the browser tool instead.</p>
+              <p className="text-muted-foreground">Contact messages and tool feedback are forwarded to our Slack workspace so we can respond or improve the tools. Feedback includes the comment and tool page, not the tool’s input or selected files. Please omit sensitive information from comments. Messages may remain in Slack until removed; no automatic deletion period is implemented.</p>
             </section>
 
             {/* Information We Collect */}
@@ -166,7 +172,7 @@ export default function PrivacyPage() {
                       </div>
                       <div>
                         <strong className="text-emerald-800 dark:text-emerald-200">Processing:</strong>
-                        <p className="text-emerald-700 dark:text-emerald-300">Browser-based or network-based, as labeled</p>
+                        <p className="text-emerald-700 dark:text-emerald-300">Browser, network or server-based MCP, as labeled</p>
                       </div>
                     </div>
                   </div>
@@ -276,7 +282,7 @@ export default function PrivacyPage() {
                   <h3 className="font-semibold text-foreground">Security Measures</h3>
                   <ul className="text-muted-foreground space-y-2">
                     <li>HTTPS encryption for all connections</li>
-                    <li>Client-side processing only</li>
+                    <li>Local file processing, with disclosed network and MCP services</li>
                     <li>Local file tools do not store your files on our servers; hosted developer tools handle submitted requests separately.</li>
                     <li>Regular security updates</li>
                   </ul>

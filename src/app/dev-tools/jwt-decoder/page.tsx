@@ -58,7 +58,6 @@ const jsonLd = [
           "Expiration checking",
           "API debugging"
         ],
-        "screenshot": "https://utilbyte.app/images/jwt-decoder-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

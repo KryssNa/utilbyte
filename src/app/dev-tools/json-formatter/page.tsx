@@ -83,7 +83,6 @@ const jsonLd = [
           "Error detection",
           "API data formatting"
         ],
-        "screenshot": "https://utilbyte.app/images/json-formatter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -172,7 +171,6 @@ const jsonLd = [
           "Error detection",
           "API data formatting"
         ],
-        "screenshot": "https://utilbyte.app/images/json-formatter-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

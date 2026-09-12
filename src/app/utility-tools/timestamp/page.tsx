@@ -58,7 +58,6 @@ const jsonLd = [
           "Date parsing",
           "API timestamp formatting"
         ],
-        "screenshot": "https://utilbyte.app/images/timestamp-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

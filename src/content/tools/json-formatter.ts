@@ -45,6 +45,8 @@ export const jsonFormatterArticle: ToolArticleContent = {
     },
   ],
   example: {
+    copyInput: true,
+    copyOutput: true,
     title: "What one line was hiding",
     input: '{"id":4821,"count":"42","user":{"name":"Kryss","roles":["admin"]},"deletedAt":null}',
     output: '{\n  "id": 4821,\n  "count": "42",\n  "user": {\n    "name": "Kryss",\n    "roles": [\n      "admin"\n    ]\n  },\n  "deletedAt": null\n}',

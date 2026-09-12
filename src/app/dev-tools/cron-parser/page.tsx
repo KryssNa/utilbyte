@@ -58,7 +58,6 @@ const jsonLd = [
           "Multiple examples",
           "DevOps tooling"
         ],
-        "screenshot": "https://utilbyte.app/images/cron-parser-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

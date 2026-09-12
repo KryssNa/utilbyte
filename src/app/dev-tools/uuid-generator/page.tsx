@@ -56,7 +56,6 @@ const jsonLd = [
           "Batch generation",
           "Developer-friendly output"
         ],
-        "screenshot": "https://utilbyte.app/images/uuid-generator-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

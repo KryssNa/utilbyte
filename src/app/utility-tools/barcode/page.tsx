@@ -58,7 +58,6 @@ const jsonLd = [
           "Retail applications",
           "PNG and SVG export"
         ],
-        "screenshot": "https://utilbyte.app/images/barcode-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

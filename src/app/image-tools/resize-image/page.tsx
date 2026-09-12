@@ -57,7 +57,6 @@ const jsonLd = [
           "Quality maintenance",
           "Real-time preview"
         ],
-        "screenshot": "https://utilbyte.app/images/resize-image-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

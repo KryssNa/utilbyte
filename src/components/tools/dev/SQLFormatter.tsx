@@ -2,6 +2,7 @@
 
 import { formatSql, SQL_DIALECTS, MAX_SQL_LENGTH, type SqlDialect, type SqlKeywordCase } from "@/lib/sql-format";
 import ToolLayout from "@/components/shared/ToolLayout";
+import ToolSelect from "@/components/shared/ToolSelect";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Database, Check, Copy, RotateCcw } from "lucide-react";
@@ -91,22 +92,16 @@ export default function SQLFormatter() {
         { title: "Regex Tester", description: "Test regular expressions", href: "/dev-tools/regex-tester", icon: Database, category: "dev" },
       ]}
     >
-      <div className="mb-5 flex flex-wrap items-end gap-4">
-        <label className="grid gap-1.5 text-sm">SQL dialect
-          <select value={dialect} onChange={e => { setDialect(e.target.value as SqlDialect); invalidateOutput(); }} className="h-11 rounded-md border bg-background px-3">
-            {Object.entries(SQL_DIALECTS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select>
-        </label>
-        <label className="grid gap-1.5 text-sm">Indentation
-          <select value={indent} onChange={e => { setIndent(Number(e.target.value)); invalidateOutput(); }} className="h-11 rounded-md border bg-background px-3">
-            <option value={2}>2 spaces</option><option value={4}>4 spaces</option>
-          </select>
-        </label>
-        <label className="grid gap-1.5 text-sm">Keywords
-          <select value={keywordCase} onChange={e => { setKeywordCase(e.target.value as SqlKeywordCase); invalidateOutput(); }} className="h-11 rounded-md border bg-background px-3">
-            <option value="upper">UPPERCASE</option><option value="lower">lowercase</option><option value="preserve">Keep original</option>
-          </select>
-        </label>
+      <div className="mb-5 flex flex-wrap items-end gap-3">
+        <ToolSelect label="SQL dialect" value={dialect} className="w-[148px]"
+          onValueChange={value => { setDialect(value as SqlDialect); invalidateOutput(); }}
+          options={Object.entries(SQL_DIALECTS).map(([value, label]) => ({ value, label, description: value === "sql" ? "General-purpose SQL syntax" : `${label}-specific syntax` }))} />
+        <ToolSelect label="Indentation" value={String(indent)} className="w-[116px]"
+          onValueChange={value => { setIndent(Number(value)); invalidateOutput(); }}
+          options={[{ value: "2", label: "2 spaces", description: "Compact indentation" }, { value: "4", label: "4 spaces", description: "Wider indentation" }]} />
+        <ToolSelect label="Keywords" value={keywordCase} className="w-[152px]"
+          onValueChange={value => { setKeywordCase(value as SqlKeywordCase); invalidateOutput(); }}
+          options={[{ value: "upper", label: "UPPERCASE", description: "SELECT, FROM, WHERE" }, { value: "lower", label: "lowercase", description: "select, from, where" }, { value: "preserve", label: "Keep original", description: "Keep your keyword casing" }]} />
         <label className="cursor-pointer rounded-md border px-3 py-3 text-sm">Import SQL
           <input aria-label="Import SQL file" className="sr-only" type="file" accept=".sql,.txt" onChange={async e => {
             const file = e.target.files?.[0]; e.target.value = "";

@@ -56,7 +56,6 @@ const jsonLd = [
           "Batch processing",
           "Document extraction"
         ],
-        "screenshot": "https://utilbyte.app/images/pdf-to-image-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

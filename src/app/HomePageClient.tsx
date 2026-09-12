@@ -24,12 +24,12 @@ import { useMemo, useState } from "react";
 const features = [
   {
     icon: Shield,
-    title: "Files stay local",
+    title: "Local file tools",
     color: "text-emerald-500 dark:text-emerald-400",
   },
   {
     icon: Zap,
-    title: "Lightning Fast",
+    title: "Browser-based",
     color: "text-amber-500 dark:text-amber-400",
   },
   {
@@ -39,28 +39,28 @@ const features = [
   },
   {
     icon: Sparkles,
-    title: "Always Free",
+    title: "Free to use",
     color: "text-teal-500 dark:text-teal-400",
   },
 ];
 
-const popularTools = [
+const featuredTools = [
   {
     title: "PDF Editor",
     href: "/pdf-tools/edit-pdf",
-    desc: "Edit text, images, and annotations in any PDF",
+    desc: "Add text, images, and annotations to PDFs",
     category: "PDF",
   },
   {
     title: "Image Compressor",
     href: "/image-tools/compress-image",
-    desc: "Reduce file size without quality loss",
+    desc: "Reduce file size with adjustable quality",
     category: "Image",
   },
   {
     title: "Online Compiler",
     href: "/dev-tools/online-compiler",
-    desc: "Write and run code in 10+ languages",
+    desc: "Run JavaScript, Python, and HTML",
     category: "Dev",
   },
   {
@@ -163,7 +163,7 @@ export default function HomePageClient() {
             <motion.div variants={itemVariants} className='mb-5'>
               <span className='inline-flex items-center gap-2 rounded-full border border-sky-300 dark:border-sky-500/30 bg-sky-100 dark:bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-700 dark:text-sky-300 backdrop-blur-sm'>
                 <Sparkles className='h-4 w-4' />
-                {totalTools} Free Tools &middot; No file uploads
+                {totalTools} Free Tools &middot; No sign-up
               </span>
             </motion.div>
 
@@ -184,9 +184,9 @@ export default function HomePageClient() {
             >
               Image, PDF, text & developer tools.{" "}
               <span className='text-foreground font-medium'>
-                No sign-up. No uploads.
+                No sign-up.
               </span>{" "}
-              Everything runs in your browser.
+              Local file processing, with clear data choices for network tools.
             </motion.p>
 
             <motion.div
@@ -237,7 +237,7 @@ export default function HomePageClient() {
         <div className='h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent' />
       </section>
 
-      {/* Popular Tools */}
+      {/* Featured Tools */}
       <section className='py-14 lg:py-20'>
         <div className='container mx-auto px-4 lg:px-8'>
           <motion.div
@@ -251,16 +251,16 @@ export default function HomePageClient() {
             </div>
             <div>
               <h2 className='font-display text-2xl font-bold tracking-tight'>
-                Popular Tools
+                Featured Tools
               </h2>
               <p className='text-sm text-muted-foreground'>
-                Most used tools by our community
+                Selected tools for common tasks
               </p>
             </div>
           </motion.div>
 
           <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
-            {popularTools.map((tool, i) => {
+            {featuredTools.map((tool, i) => {
               const Icon = toolIcons[tool.title] ?? Wrench;
               const { color, bg } = getCategoryMeta(tool.category);
               return (
@@ -314,8 +314,7 @@ export default function HomePageClient() {
               All {totalTools} Tools
             </h2>
             <p className='mt-3 text-muted-foreground text-lg max-w-2xl mx-auto'>
-              Everything you need, right in your browser. No downloads, no
-              sign-ups.
+              Choose a tool for your task. No installation or account required.
             </p>
           </motion.div>
 

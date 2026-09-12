@@ -394,11 +394,11 @@ export default function PDFCompress() {
   const faqs = [
     {
       question: "How much can I compress PDFs?",
-      answer: "Compression depends on the PDF content. Text-heavy PDFs compress less than image-heavy ones. Typical savings: 20-50%.",
+      answer: "Savings depend on the original PDF structure. This tool rewrites pages with object streams; already optimized PDFs may not shrink and can become larger.",
     },
     {
       question: "Does compression affect quality?",
-      answer: "Yes, higher compression reduces quality. Choose based on your needs - low compression for quality, maximum for smallest files.",
+      answer: "The current implementation rewrites PDF structure without downsampling or re-encoding embedded images. Always review the output before replacing your original.",
     },
     {
       question: "What types of compression are used?",

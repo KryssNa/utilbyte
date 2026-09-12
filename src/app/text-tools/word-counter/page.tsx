@@ -57,7 +57,6 @@ const jsonLd = [
           "Sentence and paragraph count",
           "Real-time statistics"
         ],
-        "screenshot": "https://utilbyte.app/images/word-counter-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -138,7 +137,6 @@ const jsonLd = [
           "Real-time updates",
           "Multi-language support"
         ],
-        "screenshot": "https://utilbyte.app/images/word-counter-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

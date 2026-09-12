@@ -57,7 +57,6 @@ const jsonLd = [
           "Password strength indicator",
           "One-click generation"
         ],
-        "screenshot": "https://utilbyte.app/images/password-generator-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -138,7 +137,6 @@ const jsonLd = [
           "No password storage",
           "Local generation"
         ],
-        "screenshot": "https://utilbyte.app/images/password-generator-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

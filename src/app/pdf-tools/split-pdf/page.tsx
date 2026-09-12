@@ -56,7 +56,6 @@ const jsonLd = [
           "Document organization",
           "Fast processing"
         ],
-        "screenshot": "https://utilbyte.app/images/split-pdf-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",
@@ -137,7 +136,6 @@ const jsonLd = [
           "Fast splitting",
           "Secure processing"
         ],
-        "screenshot": "https://utilbyte.app/images/pdf-split-screenshot.jpg",
         "author": {
           "@type": "Organization",
           "name": "UtilByte"

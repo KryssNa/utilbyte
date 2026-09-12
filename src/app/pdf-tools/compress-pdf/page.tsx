@@ -2,9 +2,9 @@ import PDFCompress from "@/components/tools/pdf/PDFCompress";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Compress PDF Online Free - Reduce PDF File Size by 80% Instantly",
+  title: "Compress PDF Online Free - Optimize PDF Structure",
   description:
-    "Compress PDF files online for free. Reduce PDF file size by up to 80% without losing quality. Fast, secure, and works in your browser. No software download required.",
+    "Optimize PDF structure and object streams in your browser. Remove document metadata optionally, then compare file sizes before downloading. Savings vary by PDF.",
   keywords: [
     "compress pdf online free",
     "reduce pdf file size",
@@ -18,15 +18,15 @@ export const metadata: Metadata = {
     "reduce pdf size online"
   ],
   openGraph: {
-    title: "Compress PDF Online Free - Reduce File Size by 80%",
-    description: "Compress PDF files instantly online. Reduce file size by up to 80% without quality loss. Fast, free, and secure PDF compression tool.",
+    title: "Compress PDF Online Free - Optimize PDF Structure",
+    description: "Optimize PDF structure locally in your browser and compare the result with the original. Existing PDF images are not re-encoded.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Compress PDF Online Free - 80% Size Reduction",
-    description: "Compress PDF files online for free. Reduce file size instantly without losing quality. Works in browser, no download needed.",
+    title: "Compress PDF Online Free - Optimize PDF Structure",
+    description: "Optimize PDF structure and object streams in your browser. Results depend on the original PDF; size reduction is not guaranteed.",
   },
   alternates: {
     canonical: "/pdf-tools/compress-pdf",
@@ -40,7 +40,7 @@ const jsonLd = {
         {
           "@type": "Service",
           "name": "PDF Compression Service",
-          "description": "Professional PDF compression service that reduces file sizes by up to 80% while maintaining document quality. Perfect for email attachments, web sharing, and storage optimization.",
+          "description": "Browser-based PDF structure optimization with object stream controls and optional document metadata removal. Existing images are not re-encoded.",
           "provider": {
             "@type": "Organization",
             "name": "UtilByte",
@@ -65,7 +65,7 @@ const jsonLd = {
         {
           "@type": "WebApplication",
           "name": "PDF Compressor Online Free",
-          "description": "Compress PDF files online for free. Reduce PDF file size by up to 80% without losing quality. Fast, secure, and works in your browser.",
+          "description": "Optimize PDF structure and object streams locally with optional document metadata removal. File size savings vary.",
           "url": "https://utilbyte.app/pdf-tools/compress-pdf",
           "applicationCategory": "Utility",
           "operatingSystem": "Web Browser",
@@ -75,13 +75,12 @@ const jsonLd = {
             "priceCurrency": "USD"
           },
           "featureList": [
-            "Reduce PDF file size by up to 80%",
-            "Maintain document quality",
+            "Optimize PDF structure and object streams",
+            "Existing images are not re-encoded",
             "Fast compression",
             "No file upload required",
             "Works in browser"
           ],
-          "screenshot": "https://utilbyte.app/images/pdf-compress-screenshot.jpg"
         },
         {
           "@type": "FAQPage",
@@ -91,7 +90,7 @@ const jsonLd = {
               "name": "How much can I reduce PDF file size?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Our advanced compression can reduce PDF file sizes by up to 80% while maintaining document quality and readability."
+                "text": "Savings depend on the original structure. Already optimized PDFs may not shrink and can become larger. Compare the actual result before downloading."
               }
             },
             {
@@ -99,7 +98,7 @@ const jsonLd = {
               "name": "Will PDF quality be affected by compression?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Our compression algorithm preserves text quality and important visual elements while optimizing images and removing unnecessary data."
+                "text": "This tool copies PDF pages and optimizes document structure and object streams. It does not downsample or re-encode existing images. Review the resulting document before use."
               }
             },
             {
@@ -107,7 +106,7 @@ const jsonLd = {
               "name": "What types of PDFs can be compressed?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "You can compress any PDF file including scanned documents, images, text documents, and mixed content PDFs."
+                "text": "Use a PDF that the tool can open. Structural optimization may help some files, but scanned PDFs can remain large because embedded images are not re-encoded."
               }
             },
             {

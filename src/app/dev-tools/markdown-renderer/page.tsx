@@ -57,7 +57,6 @@ const jsonLd = [
           "HTML export functionality",
           "Real-time rendering"
         ],
-        "screenshot": "https://utilbyte.app/images/markdown-renderer-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

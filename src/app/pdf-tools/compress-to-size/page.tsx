@@ -2,7 +2,7 @@ import PDFCompressToSize from "@/components/tools/pdf/PDFCompressToSize";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Compress PDF to a Target Size - 500KB, 1MB, 2MB | UtilByte",
+  title: "Compress PDF to a Target Size - 500KB, 1MB, 2MB",
   description:
     "Compress a PDF to an exact size limit. Choose lossless restructuring that keeps the text, or rasterising that hits any target. Runs in your browser, no upload, free.",
   keywords: [

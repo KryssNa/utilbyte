@@ -56,7 +56,6 @@ const jsonLd = [
           "Process images and PDFs",
           "Copy extracted text"
         ],
-        "screenshot": "https://utilbyte.app/images/ocr-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

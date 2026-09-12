@@ -58,7 +58,6 @@ const jsonLd = [
           "Real-time generation",
           "Design placeholder text"
         ],
-        "screenshot": "https://utilbyte.app/images/lorem-ipsum-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

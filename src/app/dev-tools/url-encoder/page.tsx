@@ -58,7 +58,6 @@ const jsonLd = [
           "Special character handling",
           "Web development tools"
         ],
-        "screenshot": "https://utilbyte.app/images/url-encoder-screenshot.jpg"
       },
       {
         "@context": "https://schema.org",

@@ -4,7 +4,7 @@ import { FORMAT_PAIRS } from "@/lib/format-pairs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AVIF to JPG Converter - Free, No Upload | UtilByte",
+  title: "AVIF to JPG Converter - Free, No Upload",
   description: "Convert AVIF images to JPG in your browser. Free, nothing uploaded, and clear about what the conversion costs in file size, bit depth and colour.",
   keywords: ["avif to jpg", "avif to jpeg converter", "convert avif to jpg", "open avif file", "avif converter free", "avif to jpg online no upload"],
   openGraph: {

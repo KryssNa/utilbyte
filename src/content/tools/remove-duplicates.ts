@@ -51,6 +51,7 @@ export const removeDuplicatesArticle: ToolArticleContent = {
     },
   ],
   example: {
+    copyInput: true,
     title: "The same list, two settings",
     input: "kryss@example.com\nKryss@Example.com\nadmin@example.com\nkryss@example.com \nADMIN@example.com",
     output: "Case-sensitive:   4 remain\n  kryss@example.com\n  Kryss@Example.com\n  admin@example.com\n  kryss@example.com    <- trailing space\n  (only the exact repeat of line 1 was removed)\n\nCase-insensitive: 3 remain\n  kryss@example.com\n  admin@example.com\n  kryss@example.com    <- trailing space, still survives",

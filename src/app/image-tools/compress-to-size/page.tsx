@@ -2,7 +2,7 @@ import CompressToSize from "@/components/tools/image/CompressToSize";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Compress Image to a Target Size - 20KB, 50KB, 100KB, 200KB | UtilByte",
+  title: "Compress Image to a Target Size - 20KB, 50KB, 100KB, 200KB",
   description:
     "Compress a photo to an exact file size limit. Enter 20KB, 50KB, 100KB or any target and get the best quality that fits. Runs in your browser, no upload, free.",
   keywords: [
