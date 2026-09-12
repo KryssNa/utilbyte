@@ -274,7 +274,7 @@ export default function MarkdownRenderer() {
     {
       question: "Is my data private?",
       answer:
-        "Everything runs 100% in your browser. Your markdown content is never sent to any server or stored anywhere.",
+        "Markdown rendering happens in your browser and the tool does not upload your document. Images referenced by remote URLs can contact their source servers. Site analytics and advertising are separate from document processing.",
     },
   ];
 

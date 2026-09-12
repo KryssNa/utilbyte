@@ -1,3 +1,4 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import CopyBlock from "@/components/shared/CopyBlock";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -5,10 +6,10 @@ import { catalog } from "@/lib/tool-catalog";
 
 const title = "Connect AI assistants with MCP";
 const description = "Connect a compatible AI assistant to UtilByte through MCP. Discover tools, format JSON and SQL, and convert JSON and CSV with clear processing limits.";
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/ai", {
   title, description, alternates: { canonical: "/ai" },
   openGraph: { title, description, url: "https://utilbyte.app/ai", type: "website" },
-};
+});
 
 const operations = [
   ["discover_tools", "Find a tool by task, name, category or alias."],

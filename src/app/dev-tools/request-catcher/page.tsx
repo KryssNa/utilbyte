@@ -1,11 +1,10 @@
-import ToolStructuredData from "@/components/shared/ToolStructuredData";
-import RequestCatcher from "@/components/tools/dev/RequestCatcher";
-import { Metadata } from "next";
+import { createToolMetadata } from "@/lib/tool-metadata";
 
-export const metadata: Metadata = {
+import RequestCatcher from "@/components/tools/dev/RequestCatcher";
+
+export const metadata = createToolMetadata("/dev-tools/request-catcher", {
   title: "Request Catcher Online Free - Capture & Inspect HTTP Requests",
-  description:
-    "Capture and inspect HTTP requests in real-time. Debug webhooks, test API integrations, and inspect request payloads with headers, body, and query parameters.",
+  description: "Capture and inspect synthetic webhook requests in hosted bins. View headers, body and query parameters; anyone with the bin ID can read or clear its requests.",
   keywords: [
     "request catcher",
     "http request inspector",
@@ -18,18 +17,8 @@ export const metadata: Metadata = {
     "request logger",
     "http request viewer",
   ],
-  openGraph: {
-    title: "Request Catcher - Capture & Inspect HTTP Requests",
-    description:
-      "Debug webhooks and test API integrations by capturing HTTP requests in real-time.",
-    type: "website",
-    locale: "en_US",
-  },
-  alternates: {
-    canonical: "/dev-tools/request-catcher",
-  },
-};
+});
 
 export default function RequestCatcherPage() {
-  return <><ToolStructuredData href="/dev-tools/request-catcher" /><RequestCatcher /></>;
+  return <RequestCatcher />;
 }

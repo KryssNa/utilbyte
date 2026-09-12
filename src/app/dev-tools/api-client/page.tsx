@@ -1,11 +1,10 @@
-import ToolStructuredData from "@/components/shared/ToolStructuredData";
-import ApiClient from "@/components/tools/dev/ApiClient";
-import { Metadata } from "next";
+import { createToolMetadata } from "@/lib/tool-metadata";
 
-export const metadata: Metadata = {
+import ApiClient from "@/components/tools/dev/ApiClient";
+
+export const metadata = createToolMetadata("/dev-tools/api-client", {
   title: "API Client Online Free - Send HTTP Requests & Test APIs",
-  description:
-    "Send HTTP requests to any API endpoint and inspect responses. Supports GET, POST, PUT, DELETE with custom headers, authentication, and body. A browser-based Postman alternative.",
+  description: "Send HTTP requests with custom headers and bodies through UtilByte’s server proxy. Inspect responses from permitted destinations; requests are not processed only in your browser.",
   keywords: [
     "api client online",
     "http request tester",
@@ -18,18 +17,8 @@ export const metadata: Metadata = {
     "api debugger",
     "web api tester",
   ],
-  openGraph: {
-    title: "API Client Online Free - Test APIs in Your Browser",
-    description:
-      "Send HTTP requests and inspect responses. Browser-based API testing with authentication, headers, and body support.",
-    type: "website",
-    locale: "en_US",
-  },
-  alternates: {
-    canonical: "/dev-tools/api-client",
-  },
-};
+});
 
 export default function ApiClientPage() {
-  return <><ToolStructuredData href="/dev-tools/api-client" /><ApiClient /></>;
+  return <ApiClient />;
 }

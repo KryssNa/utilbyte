@@ -1,7 +1,9 @@
+import PageStructuredData from "@/components/shared/PageStructuredData";
+import { withPageMetadata } from "@/lib/page-metadata";
 import { Cookie, Database, Eye, Lock, Mail, Shield } from "lucide-react";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/privacy", {
   title: "Privacy Policy",
   description: "Learn about how UtilByte protects your privacy and handles your data. We believe in transparency and user control.",
   keywords: "privacy policy, data protection, user privacy, UtilByte privacy",
@@ -19,11 +21,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/privacy",
   },
-};
+});
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
+      <PageStructuredData route="/privacy" name={String(metadata.title)} description={metadata.description!} type="WebPage" />
       {/* Header */}
       <div className="border-b border-border bg-gradient-to-b from-transparent to-violet-50/30 dark:to-violet-950/10">
         <div className="container mx-auto px-4 py-16 lg:px-8">

@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     siteName: "UtilByte",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/social-card.png",
         width: 1200,
         height: 630,
         alt: "UtilByte - Free Online Tools",
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
     description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
-    images: ["/opengraph-image"],
+    images: ["/social-card.png"],
   },
   robots: {
     index: true,
@@ -140,6 +140,12 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
       </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org", "@graph": [
+            { "@type": "WebSite", "@id": "https://utilbyte.app/#website", url: "https://utilbyte.app", name: "UtilByte", inLanguage: "en", publisher: { "@id": "https://utilbyte.app/#organization" } },
+            { "@type": "Organization", "@id": "https://utilbyte.app/#organization", name: "UtilByte", url: "https://utilbyte.app", logo: "https://utilbyte.app/logo.svg", sameAs: ["https://github.com/KryssNa/utilbyte"] },
+          ],
+        }) }} />
         <Script src="/tool-preferences.js" strategy="beforeInteractive" />
         <Script
           async

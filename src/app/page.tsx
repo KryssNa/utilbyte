@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: "UtilByte",
     images: [
       {
-        url: "https://utilbyte.app/opengraph-image",
+        url: "https://utilbyte.app/social-card.png",
         width: 1200,
         height: 630,
         alt: "UtilByte - Free Online Tools",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
     description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
-    images: ["https://utilbyte.app/opengraph-image"],
+    images: ["https://utilbyte.app/social-card.png"],
   },
   alternates: {
     canonical: "https://utilbyte.app",
@@ -58,15 +58,7 @@ const jsonLd = [
     name: "UtilByte - Free Online Tools for Everyday Work",
     description: metadata.description,
     url: "https://utilbyte.app",
-    isPartOf: { "@type": "WebSite", name: "UtilByte", url: "https://utilbyte.app" },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "UtilByte",
-    url: "https://utilbyte.app",
-    logo: "https://utilbyte.app/logo.svg",
-    sameAs: ["https://github.com/KryssNa/utilbyte"],
+    isPartOf: { "@id": "https://utilbyte.app/#website" },
   },
   {
     "@context": "https://schema.org",

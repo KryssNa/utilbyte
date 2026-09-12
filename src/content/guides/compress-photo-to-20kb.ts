@@ -65,8 +65,8 @@ export const compressPhotoTo20kbGuide: Guide = {
       heading: "Some forms have a floor, and squeezing too hard fails them",
       body: [
         "A stated cap is not always the only constraint on file size, and that is where the habit of compressing as hard as possible turns into a rejection. Two published specifications make the point.",
-        "The UK passport service asks for a digital photo at least 600 pixels wide and 750 pixels tall, with the file between 50 KB and 10 MB, in colour, in focus, unaltered, against a plain light-coloured background. Fifty kilobytes is a minimum. Push a 600 by 750 photo down to 30 KB and you have a tidy small file that does not meet the requirement. The page https://www.gov.uk/photos-for-passports carries the full list.",
-        "The US visa and Diversity Visa digital photo caps the file at 240 KB, with a square shape between 600 by 600 and 1200 by 1200 pixels, JPEG only, in colour at 24 bits per pixel in sRGB. It also specifies a compression ratio of 20:1 or lower, which limits how hard the image may be squeezed - in effect an indirect floor, since the more pixels you send the more bytes the photo is expected to carry. A scanned photo takes the print route instead, at 2 by 2 inches (51 by 51 mm) at 300 ppi. The page https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html carries the requirements in full.",
+        "The UK passport service asks for a digital photo at least 600 pixels wide and 750 pixels tall, with the file between 50 KB and 10 MB, in colour, in focus, unaltered, against a plain light-coloured background. Fifty kilobytes is a minimum. Push a 600 by 750 photo down to 30 KB and you have a tidy small file that does not meet the requirement. GOV.UK also says not to crop self-taken photos for the digital application; follow https://www.gov.uk/photos-for-passports before editing a photo.",
+        "US visa requirements differ by application: the general digital-image page gives a 600–1200 square pixel range, while the DV entry section specifies exactly 600 × 600. Both specify JPEG and a 240 kB cap. Check the applicable section at https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html rather than applying a generic target-size rule.",
         "Read every other limit the same way, on the authority's own site rather than in somebody's summary of it. Before aiming for the smallest file your tool can produce, check whether the stated range has a bottom, and whether anything is said about resolution or compression alongside the byte figure.",
       ],
       callout: {
@@ -100,7 +100,7 @@ export const compressPhotoTo20kbGuide: Guide = {
       body: [
         "You have reached the end when the image is already at the dimensions the form asks for, the quality is as low as your tool will go, and the file either still overshoots or is unusable at the size that fits. At that point the input is the problem, not the settings.",
         "Format is the one lever left, and it is usually blocked. WebP reaches a given file size at better quality than JPEG, sometimes by a wide margin at very small sizes, and the portals imposing 20 KB caps are the least likely to accept it. Renaming a .webp to .jpg converts nothing: the good outcome is rejection at upload, the bad one is a file that uploads and will not open for whoever reviews it a month later. PNG is no help for photographs either, being lossless with no quality control at all.",
-        "So go back a step instead. Retake the photograph against a plain wall in daylight, crop tighter than you think you need to, or take the lower end of the range if the form gives you one. For a passport or a visa, where a rejection costs weeks, a studio will hand you a file already inside the specification.",
+        "Go back to the source if the requirements cannot be met without losing necessary detail. Retake the photo with suitable lighting and composition, or use a professional photo service. Crop or resize only where the application permits it; neither a studio nor a tool can guarantee acceptance.",
       ],
       bullets: [
         "Check you have not applied the photograph's limit to the signature field or the other way round. It happens constantly.",
@@ -157,7 +157,7 @@ export const compressPhotoTo20kbGuide: Guide = {
     {
       question: "Can a file be rejected for being too small?",
       answer:
-        "Yes, and it catches people out. The UK passport service requires a digital photo between 50 KB and 10 MB, so a heavily compressed file fails even though it looks tidy. The US visa and Diversity Visa specification caps the file at 240 KB and also states a compression ratio of 20:1 or lower, which limits how hard the image may be squeezed. Read the whole requirement before you aim for the smallest possible file.",
+        "Yes, and it catches people out. The UK passport service requires a digital photo between 50 KB and 10 MB, so a heavily compressed file fails even though it looks tidy. US visa and DV requirements also include constraints beyond a maximum byte count; check the application-specific photo instructions. Read the whole requirement before you aim for the smallest possible file.",
     },
     {
       question: "Should I use WebP to hit a 20 KB limit?",

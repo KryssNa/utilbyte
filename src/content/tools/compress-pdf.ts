@@ -21,10 +21,10 @@ export const compressPdfArticle: ToolArticleContent = {
       ],
     },
     {
-      heading: "Why a text PDF barely moves and a scan collapses",
+      heading: "Why a structural rebuild may save little",
       body: [
         "A PDF exported from Word, Pages or LaTeX is mostly Flate-compressed content streams. That is the same algorithm behind a ZIP file, and it has already been applied. Compressing it again gets you very little, which is why a 300 page text document that weighs 1.2 MB will not turn into 400 KB no matter what you feed it to. There is nothing left in it to squeeze.",
-        "A scanned document is the opposite. Every page is a photograph of a piece of paper, usually captured at whatever the scanner defaulted to, which is frequently 300 or 600 dpi in full colour for a page that is black text on white. Drop it to 150 dpi and three quarters of the pixels disappear. Convert it to grayscale and two of the three colour channels go with them. Reductions of 70 to 90 percent are normal for that kind of file.",
+        "A scanned document is the opposite. Every page is a photograph of a piece of paper, usually captured at whatever the scanner defaulted to, which is frequently 300 or 600 dpi in full colour for a page that is black text on white. Drop it to 150 dpi and three quarters of the pixels disappear. Convert it to grayscale and two of the three colour channels go with them. The reduction depends on the source and the chosen settings.",
         "The distinction matters here for a specific reason: the second kind of saving requires decoding and re-encoding the image data, and a client-side pdf-lib rebuild does not do that. Read the limitations at the bottom of this page before you plan around it.",
       ],
     },
@@ -36,7 +36,7 @@ export const compressPdfArticle: ToolArticleContent = {
       bullets: [
         "Go back to the source file and export again. Word, Docs, InDesign and most design tools have a smallest-file or screen-quality export preset, and it usually beats anything applied afterwards, because it downsamples the images before they are ever embedded.",
         "If it is a scan, re-scan it. 200 dpi grayscale instead of 600 dpi colour is the single biggest change available to you, and it takes less time than searching for a compressor.",
-        "Strip metadata and rebuild the structure, which is what this tool does. Expect a few percent on a normal file, sometimes more on one with a long edit history.",
+        "Strip metadata and rebuild the structure, which is what this tool does. The result may be smaller, unchanged or larger.",
         "Split it. Two attachments of 4 MB clear a 5 MB cap that one 8 MB file never will, and the split tool on this site runs in the browser the same way.",
         "Send only the pages that are needed. Most people attaching a 60 page document are being asked about four of those pages.",
       ],
@@ -45,18 +45,16 @@ export const compressPdfArticle: ToolArticleContent = {
       heading: "What Ghostscript does that a browser tool does not",
       body: [
         "Server-side compressors are usually Ghostscript with a preset behind them. Run it with -dPDFSETTINGS=/ebook and it decodes every embedded image, downsamples each one to a target resolution, re-encodes it as JPEG at a chosen quality, and can convert colour to grayscale, re-subset fonts and flatten transparency on the way. That is a full raster pipeline, and it is why those tools can turn 40 MB into 4 MB.",
-        "pdf-lib is a different kind of library. Its job is the object graph: parse the file, copy pages with their resources intact, write out a clean and well-formed document. It never touches the pixels inside an image stream. The saving on this page therefore comes from structure and metadata rather than image data, and the tool will not drop pages, flatten a form or rasterise anything. Page count and visible content come out identical to what went in.",
+        "pdf-lib is a different kind of library. Its job is the object graph: parse the file, copy pages with their resources intact, write out a clean and well-formed document. It never touches the pixels inside an image stream. The saving on this page comes from structure and metadata rather than image data. Copying pages into a new document does not preserve every document-level feature: forms, bookmarks, attachments and signatures need particular care. Review the output before replacing the source.",
         "If you genuinely need the Ghostscript kind of reduction and you still do not want to hand your file to a stranger's server, Ghostscript is free and runs locally: gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -dNOPAUSE -dBATCH -sOutputFile=out.pdf in.pdf. That is a fair thing to tell you, and more useful than pretending a browser tab does the same job.",
       ],
     },
   ],
   example: {
-    title: "A worked example: a 32 page quarterly report",
-    input:
-      "quarterly-report.pdf\n4.8 MB  -  32 pages\nVector text, 6 embedded PNG charts\nTitle / Author / Producer metadata present\nPreset: Web Optimized (metadata removal on)",
-    output:
-      "quarterly-report_compressed.pdf\n4.3 MB  -  32 pages\nSaved 512 KB (10.4%)\nMetadata fields cleared\nProcessing time: 840 ms",
-    note: "Ten percent is a realistic result for a structural rewrite of a document that was already produced sensibly. The six PNG charts come out byte for byte identical, which is why the remaining 4.3 MB stays where it is. Run the same tool over a 38 MB scanned contract and it hands back roughly 37 MB, because that file is one large image per page and none of those images are re-encoded. When the file is mostly scans, the fix is upstream at the scanner, not here.",
+    title: "Review a structural rebuild",
+    input: "report.pdf\n32 pages with text and embedded images\nEnable metadata removal if needed",
+    output: "Download report_compressed.pdf\nCompare its actual byte size with the original\nOpen the exported PDF and check every page and any interactive features",
+    note: "This workflow does not predict a compression percentage or processing time. Embedded images are not downsampled, and an already optimized PDF may become larger. Keep whichever file meets your needs after review.",
   },
   limitations: [
     "It does not re-encode or downsample embedded images. The image quality and DPI sliders under Custom Settings record your preference and appear in the summary, but they do not currently change the bytes that get written. A scan-heavy PDF comes back close to the size it went in at.",

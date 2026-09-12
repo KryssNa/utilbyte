@@ -210,7 +210,7 @@ export default function RegexTester() {
     <ToolLayout
       article={regexTesterArticle}
       title="Regex Tester"
-      description="Test and debug regular expressions with live matching, highlighting, and replacement. Supports all major regex flags and features."
+      description="Test and debug regular expressions with live matching, highlighting, and replacement. Uses your browser’s JavaScript regular expression engine; syntax differs from Python and PCRE."
       category="dev"
       categoryLabel="Developer Tools"
       icon={Search}

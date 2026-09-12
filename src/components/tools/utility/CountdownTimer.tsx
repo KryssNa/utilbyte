@@ -189,7 +189,7 @@ export default function CountdownTimer() {
   const faqs = [
     {
       question: "How accurate is the countdown timer?",
-      answer: "The timer is accurate to within 1 second and runs in the browser using JavaScript intervals.",
+      answer: "The timer decreases its counter on JavaScript interval callbacks. Delayed callbacks can make it drift, especially in background tabs or when a device sleeps. It is not a precision alarm.",
     },
     {
       question: "Does the timer work when the browser tab is not active?",

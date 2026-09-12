@@ -206,7 +206,7 @@ export default function ColorConverter() {
     },
     {
       question: "Are the conversions accurate?",
-      answer: "Yes, all color conversions use standard color space mathematics and are accurate for web and print use.",
+      answer: "Conversions use mathematical formulas with rounded output. CMYK values are approximate because this tool does not use printer or paper ICC profiles; confirm production print colors with a color-managed workflow.",
     },
   ];
 

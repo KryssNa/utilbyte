@@ -27,6 +27,8 @@
   ],
   "scripts": {
     "dev": "next dev --turbopack",
+    "generate:social-card": "node --import tsx scripts/generate-social-card.tsx",
+    "prebuild": "npm run generate:social-card",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -1,100 +1,19 @@
+import { createToolMetadata } from "@/lib/tool-metadata";
 import FormatPairConverter from "@/components/tools/image/FormatPairConverter";
 import { avifToJpgArticle } from "@/content/tools/avif-to-jpg";
 import { FORMAT_PAIRS } from "@/lib/format-pairs";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = createToolMetadata("/image-tools/avif-to-jpg", {
   title: "AVIF to JPG Converter - Free, No Upload",
   description: "Convert AVIF images to JPG in your browser. Free, nothing uploaded, and clear about what the conversion costs in file size, bit depth and colour.",
   keywords: ["avif to jpg", "avif to jpeg converter", "convert avif to jpg", "open avif file", "avif converter free", "avif to jpg online no upload"],
-  openGraph: {
-    title: "AVIF to JPG Converter",
-    description: "Convert AVIF images to JPG in your browser. Free and private.",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "AVIF to JPG - Free Converter",
-    description: "Convert AVIF to JPG in your browser. Free, no upload.",
-  },
-  alternates: { canonical: "/image-tools/avif-to-jpg" },
-};
+});
 
 const pair = FORMAT_PAIRS["avif-to-jpg"];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebApplication",
-      name: `Convert ${pair.label}`,
-      url: "https://utilbyte.app/image-tools/avif-to-jpg",
-      description: "Convert AVIF images to JPG in your browser. Free, nothing uploaded, and clear about what the conversion costs in file size, bit depth and colour.",
-      applicationCategory: "MultimediaApplication",
-      operatingSystem: "Any",
-      browserRequirements: "Requires JavaScript and HTML5 Canvas",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      featureList: [
-        `Convert ${pair.sourceLabel} to ${pair.targetLabel}`,
-        "Client-side processing, no upload",
-        "Clear reporting when the browser cannot decode the source",
-      ],
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Why can I not open AVIF files in my software?",
-          acceptedAnswer: { "@type": "Answer", text: "AVIF is recent. Browsers adopted it quickly, but desktop applications, older operating systems and upload forms lag well behind. Converting to JPG is the pragmatic fix when something else refuses the format." },
-        },
-        {
-          "@type": "Question",
-          name: "Why is the JPG so much bigger than the AVIF?",
-          acceptedAnswer: { "@type": "Answer", text: "AVIF uses AV1 intra-frame compression and typically reaches the same visual quality in about half the bytes of a JPEG. Converting gives up roughly thirty years of codec progress, so the file about doubles." },
-        },
-        {
-          "@type": "Question",
-          name: "What is lost converting AVIF to JPG?",
-          acceptedAnswer: { "@type": "Answer", text: "Transparency, which JPEG cannot carry. Bit depth, dropping from 10 or 12 bits to 8, which can cause banding in smooth gradients. And HDR and wide-gamut colour, so the result usually looks flatter than the original." },
-        },
-        {
-          "@type": "Question",
-          name: "The conversion failed. What is wrong?",
-          acceptedAnswer: { "@type": "Answer", text: "Almost always an out-of-date browser. AVIF decoding has been available in Chrome since 2020, Firefox since 2021 and Safari since version 16 in 2022, so updating fixes it." },
-        },
-      ],
-    },
-    {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://utilbyte.app" },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Image Tools",
-          item: "https://utilbyte.app/image-tools",
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: `Convert ${pair.label}`,
-          item: "https://utilbyte.app/image-tools/avif-to-jpg",
-        },
-      ],
-    },
-  ],
-};
-
 export default function Page() {
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <FormatPairConverter
+    <FormatPairConverter
         pair={pair}
         article={avifToJpgArticle}
       relatedTools={[
@@ -121,25 +40,25 @@ export default function Page() {
         {
           question: "Why can I not open AVIF files in my software?",
           answer:
-            "AVIF is recent. Browsers adopted it quickly, but desktop applications, older operating systems and upload forms lag well behind. Converting to JPG is the pragmatic fix when something else refuses the format.",
+            "Support depends on the application and file. JPEG can be useful when the receiving application accepts it but does not accept AVIF. Check the destination’s supported formats before converting.",
         },
         {
           question: "Why is the JPG so much bigger than the AVIF?",
           answer:
-            "AVIF uses AV1 intra-frame compression and typically reaches the same visual quality in about half the bytes of a JPEG. Converting gives up roughly thirty years of codec progress, so the file about doubles.",
+            "JPEG and AVIF use different compression methods. JPEG output may be larger depending on the original encoding, dimensions and selected quality. Compare the actual file sizes; there is no fixed multiplier.",
         },
         {
           question: "What is lost converting AVIF to JPG?",
           answer:
-            "Transparency, which JPEG cannot carry. Bit depth, dropping from 10 or 12 bits to 8, which can cause banding in smooth gradients. And HDR and wide-gamut colour, so the result usually looks flatter than the original.",
+            "JPEG does not preserve transparency. The browser decodes the source and the tool exports a JPEG, so metadata, auxiliary information, color and fine detail may change. This is not an archival conversion; retain the original and inspect the output.",
         },
         {
           question: "The conversion failed. What is wrong?",
           answer:
-            "Almost always an out-of-date browser. AVIF decoding has been available in Chrome since 2020, Firefox since 2021 and Safari since version 16 in 2022, so updating fixes it.",
+            "Your browser must decode the particular AVIF file. Unsupported variants, corrupt input and device memory limits can cause failure. Try a current compatible browser or a smaller file; updating alone does not guarantee success.",
         },
         ]}
       />
-    </>
+
   );
 }

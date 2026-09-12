@@ -1,11 +1,10 @@
-import ToolStructuredData from "@/components/shared/ToolStructuredData";
-import PDFEditor from "@/components/tools/pdf/PDFEditor";
-import { Metadata } from "next";
+import { createToolMetadata } from "@/lib/tool-metadata";
 
-export const metadata: Metadata = {
-  title: "PDF Editor Online Free - Edit Any PDF Document",
-  description:
-    "Edit PDF files online for free. Add text, images, drawings, highlights, and annotations. No upload required - everything runs in your browser.",
+import PDFEditor from "@/components/tools/pdf/PDFEditor";
+
+export const metadata = createToolMetadata("/pdf-tools/edit-pdf", {
+  title: "PDF Editor Online - Add Text, Drawings and Annotations",
+  description: "Add text, images, drawings and annotations over PDF pages in your browser. Review the exported document; this is not a full editor for existing PDF text.",
   keywords: [
     "pdf editor online free",
     "edit pdf online",
@@ -16,22 +15,8 @@ export const metadata: Metadata = {
     "draw on pdf",
     "highlight pdf",
   ],
-  openGraph: {
-    title: "PDF Editor Online Free - Edit Any PDF",
-    description: "Edit PDF files online for free. Add text, images, drawings, highlights, and annotations.",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "PDF Editor Online Free",
-    description: "Edit PDF files online for free. Add text, images, drawings, and annotations.",
-  },
-  alternates: {
-    canonical: "/pdf-tools/edit-pdf",
-  },
-};
+});
 
 export default function EditPDFPage() {
-  return <><ToolStructuredData href="/pdf-tools/edit-pdf" /><PDFEditor /></>;
+  return <PDFEditor />;
 }

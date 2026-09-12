@@ -178,7 +178,7 @@ export default function UnitConverter() {
   const faqs = [
     {
       question: "How accurate are the conversions?",
-      answer: "All conversions use standard conversion factors and are accurate to at least 10 decimal places.",
+      answer: "Results use the listed conversion factors and JavaScript floating-point arithmetic, then display up to 10 decimal places. Displayed digits are not a guarantee of measurement accuracy; some factors are rounded.",
     },
     {
       question: "What unit types are supported?",

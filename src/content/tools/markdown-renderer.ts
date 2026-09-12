@@ -55,8 +55,8 @@ export const markdownRendererArticle: ToolArticleContent = {
   },
   limitations: [
     "Rendering follows one implementation. GitHub, GitLab, Notion and various wikis differ in their extensions - always preview where the document is actually going.",
-    "Raw HTML in the source is rendered. That is standard behaviour and a security consideration for anything user-submitted.",
-    "No export to HTML or PDF. This previews rather than converts.",
+    "Raw HTML in the source is rendered. Remote images can contact their hosts; review external resources before previewing untrusted documents.",
+    "Export is available as Markdown, styled HTML or plain text. There is no dedicated PDF export.",
     "Nothing is saved. Close the tab and the text is gone.",
     "Very large documents will slow the live preview, since it re-renders as you type.",
   ],

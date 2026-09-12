@@ -3,7 +3,7 @@ import type { ToolArticleContent } from "@/components/shared/ToolArticle";
 export const jsonFormatterArticle: ToolArticleContent = {
   intro: [
     "JSON arrives unreadable more often than not. A log line with the newlines stripped, an API response echoed into a terminal, a config value pasted out of an environment variable. Formatting it is the difference between staring at it and understanding it.",
-    "This formats, validates, minifies and lets you query with JSON Path, in the browser.",
+    "This formats, validates and minifies strict JSON in your browser. A simple path lookup retrieves individual properties and array entries.",
   ],
   sections: [
     {
@@ -40,7 +40,7 @@ export const jsonFormatterArticle: ToolArticleContent = {
       heading: "JSON Path, for when the document is too big to read",
       body: [
         "Once a response runs past a few hundred lines, formatting stops being enough and you want to ask a question instead of scrolling.",
-        "JSON Path expressions do that: pull one field from deep in a structure, or the same field from every element of an array. It is the quickest way to answer questions like whether any item in a list is missing a required key, or what the distinct set of values in one field is - both of which are painful by eye and trivial as a query.",
+        "Use a dot path such as address.city or an array index such as projects[0].name to retrieve one value. This is a simple property lookup, not a complete JSONPath implementation: wildcard selection, filters and aggregate queries are not supported.",
       ],
     },
   ],
@@ -55,8 +55,8 @@ export const jsonFormatterArticle: ToolArticleContent = {
   limitations: [
     "Formatting proves the syntax is valid. It cannot tell you whether the data is correct or matches a schema.",
     "Comments are not part of JSON. A document containing them will fail to parse, even though several tools accept them as an extension.",
-    "Very large documents are limited by browser memory, and the tree view slows noticeably on deeply nested structures.",
-    "Key order is preserved on formatting but is not meaningful in JSON. Do not rely on it.",
-    "Numbers pass through the browser's parser, so very large integers beyond the safe range lose precision - a known JSON limitation, not one this tool introduces.",
+    "Input is limited to 1,000,000 characters and 64 nesting levels. Duplicate object keys are rejected before formatting so an earlier value is not silently discarded.",
+    "Object key order is not meaningful in JSON. Formatting can reorder integer-like keys through JavaScript object enumeration; Sort Keys deliberately reorders keys.",
+    "Numbers that cannot be represented safely by this tool are rejected rather than silently rounded. Use quoted strings for exact identifiers or high-precision values; rejected input is left unchanged.",
   ],
 };

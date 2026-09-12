@@ -16,6 +16,7 @@ export const pdfCompressionExplainedGuide: Guide = {
     "pdf-lib compress",
   ],
   published: "2026-08-24",
+  updated: "2026-09-12",
   summary:
     "Run two PDFs through the same compressor and one collapses while the other barely moves. The difference is structural, and it is obvious once you know what a PDF is made of. This is the mechanical account: the objects, the stream filters, what a rebuild can remove, and why some files will not shrink at all.",
   readingMinutes: 7,
@@ -50,7 +51,7 @@ export const pdfCompressionExplainedGuide: Guide = {
       heading: "Why two files of the same length behave nothing alike",
       body: [
         "Everything above works on the container. If that is where your megabytes are, the result is dramatic. If they sit inside image streams, the container is a rounding error and the result is close to nothing. That one fact explains most of the variance between files.",
-        "Before running anything, divide the file size by the page count. Under 50 KB a page and you have a well-produced text document with no fat on it. Over 1 MB a page and every page is a photograph, whatever the reader shows you.",
+        "File size per page is a clue, not a diagnosis. A large average can come from scanned images, fonts, attachments or other resources. Inspect a few pages and the document properties before choosing a compression method.",
       ],
       table: {
         columns: ["What the file is mostly made of", "Result from a structural rebuild", "Why"],
@@ -100,11 +101,11 @@ export const pdfCompressionExplainedGuide: Guide = {
       body: [
         "This is the distinction the whole subject turns on. Compression makes the same data smaller. Deflate finds repetition and encodes it more efficiently, and what comes out is bit for bit what went in. Downsampling means having less data: fewer pixels, fewer colour channels, coarser detail. It cannot be undone, and it is where the large savings live.",
         "The arithmetic is blunt. An A4 page at 600 dpi is about 35 million pixels. Resample to 150 dpi and you keep one sixteenth, because you halve in both directions twice. Convert a colour scan of black text on white to grayscale and two channels of three go with it. Re-encode what survives at JPEG quality 60 rather than 95 and it drops again. That chain, usually Ghostscript behind a preset, explains 40 MB becoming 4 MB.",
-        "A library like pdf-lib does none of it, and that is a design choice rather than an oversight. Its job is the object graph: parse the file, copy pages with their resources attached, write a well-formed document. It never decodes an image stream, never looks at a pixel, never touches a font program. So it cannot damage your pages, and it cannot rescue a scan. Those are the same property seen from two sides.",
+        "UtilByte’s structural PDF mode uses pdf-lib to rewrite document structure without intentionally resampling page images. That limits potential savings on image-heavy scans. A rewrite can still affect document features, metadata or signatures; inspect the output and keep the original.",
       ],
       callout: {
         tone: "warning",
-        text: "If a browser tool claims it shrank your 40 MB scan to 3 MB, check what came back. Either the file went to a server, or your pages were re-rendered into a canvas as fresh images, which does work but flattens everything: an OCR text layer, links, bookmarks and form fields do not survive. Open the result and try to select a word before sending it anywhere.",
+        text: "A browser can reduce a scan locally by re-encoding images or rasterizing pages; a large reduction does not prove an upload. UtilByte’s PDF-to-size raster mode produces page images and loses features such as selectable text, links and forms. Check the processing disclosure and inspect the result.",
       },
     },
     {
@@ -146,7 +147,7 @@ export const pdfCompressionExplainedGuide: Guide = {
       label: "Split PDF",
       href: "/pdf-tools/split-pdf",
       description:
-        "When the file will not shrink, send fewer pages. Two files of 4 MB clear a 5 MB cap that one 8 MB file never will.",
+        "Split into separate files only if the receiving application permits it. Keep every required page and check whether the size limit applies per file or to the whole submission.",
     },
     {
       label: "Merge PDF",
@@ -178,7 +179,7 @@ export const pdfCompressionExplainedGuide: Guide = {
     {
       question: "Why did my PDF not get smaller at all?",
       answer:
-        "Almost certainly one of two reasons. Either it is a text document whose pages were already Flate-compressed when it was created, in which case there is nothing left to take out, or it is a scan and the tool works on the file structure rather than the pixels inside the images. Divide the file size by the page count. Over about 1 MB a page and you are in the second case, and no structural compressor will help.",
+        "The PDF may already be optimized, or it may contain large images that a structural rewrite does not resize. Other resources can also account for the size. Compare the original and result rather than diagnosing the document from a bytes-per-page threshold alone.",
     },
     {
       question: "Why is my compressed PDF larger than the original?",
@@ -188,17 +189,17 @@ export const pdfCompressionExplainedGuide: Guide = {
     {
       question: "What is the difference between compressing and downsampling a PDF?",
       answer:
-        "Compression encodes the same data more efficiently and gives back exactly what went in. Downsampling throws data away: fewer pixels, fewer colour channels, lower JPEG quality. Every large reduction on a scanned document is downsampling, which is why it is irreversible and why the tools that do it have to decode your images first.",
+        "Lossless compression preserves the encoded data, while lossy image re-encoding discards information. Downsampling specifically reduces spatial resolution. PDF tools may combine these operations; inspect which mode you chose before assuming that a smaller file preserves every feature.",
     },
     {
       question: "Can a browser-based tool compress a scanned PDF properly?",
       answer:
-        "Not in the way you want. A tool built on pdf-lib copies pages and their resources without decoding image streams, so a scan comes back within a percent or two of its original size. Real reductions need something that re-encodes the images, which means Ghostscript locally or a server that has your file. The other fix is upstream: re-scan at 200 dpi in grayscale instead of 600 dpi in colour.",
+        "Yes, with an implementation that re-encodes images or rasterizes pages locally. UtilByte’s structural mode does not downsample images; its PDF-to-size raster mode can reduce scans but loses selectable text and other document features. Results depend on the input, settings and device memory.",
     },
     {
       question: "Does compressing a PDF affect quality?",
       answer:
-        "A structural rebuild does not. Page count, layout, fonts and images come out identical, because none of them were opened. A raster pipeline does reduce quality on purpose, and that trade is exactly where its much larger savings come from. If you cannot tell which kind you used, open the output and try to select text on a page that had text before.",
+        "A structural rewrite is intended to retain page appearance, but can change metadata and invalidate digital signatures; document features still need checking. Rasterization turns pages into images and can reduce visual quality while removing text, links or form behavior. Retain the original and review the exported copy.",
     },
   ],
 };

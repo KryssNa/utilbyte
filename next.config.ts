@@ -1,6 +1,26 @@
 import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 
+// Allow only the configured hosted-tool origin, never arbitrary HTTPS endpoints.
+// Keep it on all documents because Next.js client navigation retains their CSP.
+const hostedToolOrigin = (() => {
+  try {
+    const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "");
+    return url.protocol === "https:" && !url.username && !url.password ? ` ${url.origin}` : "";
+  } catch { return ""; }
+})();
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://www.googletagmanager.com https://pagead2.googlesyndication.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  `connect-src 'self' blob: data: https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.ingest.sentry.io${hostedToolOrigin}`,
+  "media-src 'self' blob: data:",
+  "frame-src 'self' https://googleads.g.doubleclick.net https://www.googletagmanager.com",
+  "worker-src 'self' blob:",
+].join("; ");
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
@@ -11,6 +31,10 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  async redirects() {
+    // Retire the old scaffold URL rather than leave a second indexable homepage.
+    return [{ source: "/index.html", destination: "/", permanent: true }];
+  },
   experimental: {
     optimizeCss: false,
     scrollRestoration: true,
@@ -101,7 +125,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.ingest.sentry.io; frame-src 'self' https://googleads.g.doubleclick.net https://www.googletagmanager.com; worker-src 'self' blob:",
+            value: contentSecurityPolicy,
           },
           {
             key: 'Feature-Policy',

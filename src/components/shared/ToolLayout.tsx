@@ -2,6 +2,7 @@
 
 import ToolShell from "@/components/shared/ToolShell";
 import ProcessingDisclosure from "@/components/shared/ProcessingDisclosure";
+import ToolStructuredData from "@/components/shared/ToolStructuredData";
 import { getTool } from "@/lib/tool-catalog";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, LucideIcon } from "lucide-react";
@@ -113,15 +114,17 @@ export default function ToolLayout({
   const pathname = usePathname();
   const tool = getTool(pathname ?? "");
   const guides = getGuidesForTool(pathname ?? "");
+  const breadcrumbCategory = categoryLabel || `${category} tools`;
 
   return (
     <ToolShell tool={tool} isWorking={isWorking} hasDraft={hasDraft}>
     <div className="min-h-screen">
+      {tool && <ToolStructuredData tool={tool} title={title} description={description} categoryLabel={breadcrumbCategory} faqs={faqs} />}
       <header className="px-4 pb-2 pt-3 lg:px-6 lg:pt-4">
         <nav aria-label="Breadcrumb" className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <Link href="/" className="py-1 hover:text-foreground">Home</Link>
           <span aria-hidden="true">/</span>
-          <Link href={`/${category}-tools`} className="py-1 hover:text-foreground">{categoryLabel || `${category} tools`}</Link>
+          <Link href={tool?.categoryHref || `/${category}-tools`} className="py-1 hover:text-foreground">{breadcrumbCategory}</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{title}</span>
         </nav>
@@ -252,4 +255,3 @@ export default function ToolLayout({
     </ToolShell>
   );
 }
-

@@ -92,7 +92,7 @@ export function renderLlmsFull(baseUrl = discoveryBaseUrl()): string {
     "",
     "Browser tools operate within device memory and browser codec support. Compression to a target size can require quality or dimension changes; the requested size is not a promise that every file can reach it. Review the actual output before submitting a document or replacing an original.",
     "",
-    "Formatting does not execute SQL or establish that a query is correct. JSON conversion and schema validation have different purposes; review precision, duplicate-key, and spreadsheet-formula handling on their tool pages. An image conversion does not add detail to the original. Background removal works on plain backgrounds; it is not general subject segmentation.",
+    "Formatting does not execute SQL or establish that a query is correct. JSON Formatter rejects duplicate keys and numbers it cannot represent safely; its path lookup supports property names and array indices, not full JSONPath. JSON conversion and schema validation have different purposes; review spreadsheet-formula handling on their tool pages. Online Compiler runs JavaScript and Python without an isolated security sandbox; its TypeScript mode does not transpile types. An image conversion does not add detail to the original. Background removal works on plain backgrounds; it is not general subject segmentation.",
     "",
     "## Guide summaries",
     ...GUIDES.flatMap(guide => [

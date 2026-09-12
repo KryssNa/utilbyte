@@ -231,7 +231,7 @@ export default function PDFMerge() {
     },
     {
       question: "Will the merged PDF maintain quality?",
-      answer: "Yes! We use pdf-lib which preserves 100% of the original quality. No compression or quality loss occurs during merging.",
+      answer: "Pages are copied with pdf-lib without rasterizing or re-encoding their images. Document-level features such as forms, bookmarks and signatures may not survive merging; review the output and keep the originals.",
     },
     {
       question: "Can I reorder the PDFs before merging?",
@@ -255,7 +255,7 @@ export default function PDFMerge() {
       relatedTools={[
         { title: "Split PDF", description: "Split PDF files", href: "/pdf-tools/split-pdf", icon: FileText, category: "pdf" },
         { title: "Compress PDF", description: "Reduce file size", href: "/pdf-tools/compress-pdf", icon: Download, category: "pdf" },
-        { title: "Crop PDF", description: "Crop PDF pages", href: "/pdf-tools/crop-pdf", icon: Sparkles, category: "pdf" },
+        { title: "PDF Editor", description: "Add text and annotations", href: "/pdf-tools/edit-pdf", icon: Sparkles, category: "pdf" },
       ]}
       isWorking={!!files.length}
     >

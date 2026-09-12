@@ -4,7 +4,7 @@ export const compressVideoArticle: ToolArticleContent = {
   intro: [
     "A phone shoots at a bitrate that is generous by any standard, so a two minute clip lands somewhere north of two hundred megabytes and then refuses to attach to an email, upload to a portal, or sit in a chat thread without a warning.",
     "Compressing it means re-encoding: decode every frame, throw away information, encode again. That is expensive work, and this page does it with ffmpeg compiled to WebAssembly, running on your own processor inside the browser tab. Your video is never uploaded. The honest trade-off is that your laptop is slower than a server farm, and there is a size ceiling past which the browser simply runs out of memory. More on that below, because it is the thing most likely to affect you.",
-    "The three presets set a bitrate, a resolution and a frame rate together. Low is 500 kbps at 854x480 and 24 fps, medium is 1000 kbps at 1280x720 and 30 fps, high is 2000 kbps at 1920x1080 and 30 fps. Video goes through libx264 for MP4 or VP9 for WebM, audio is re-encoded to AAC at 128 kbps.",
+    "The three presets set a bitrate, a resolution and a frame rate together. Low is 500 kbps at 854x480 and 24 fps, medium is 1000 kbps at 1280x720 and 30 fps, high is 2000 kbps at 1920x1080 and 30 fps. Video goes through libx264 for MP4 or AVI and VP9 for WebM. Audio is re-encoded at 128 kbps using AAC for MP4/AVI or Opus for WebM.",
   ],
   sections: [
     {
@@ -56,11 +56,11 @@ export const compressVideoArticle: ToolArticleContent = {
     note: "The original was running at around 16 Mbps, which is normal for a phone and enormously more than the content needs. Dropping to 1000 kbps and 720p cut it by a factor of thirteen and the result is perfectly watchable on a phone screen. Note the encode time - this is real work happening on your machine, and it scales with duration and resolution. The same clip at the high preset would be roughly twice the size and take noticeably longer.",
   },
   limitations: [
-    "Large files are the hard limit. ffmpeg.wasm runs inside the browser's memory ceiling, and a long or high-resolution video can be slow to the point of impractical, or fail outright. Use a desktop encoder for anything substantial.",
+    "The input limit is 1,000 MB, but a file below that limit can still exceed available browser memory. Long or high-resolution videos can be slow or fail; use a desktop encoder for larger jobs.",
     "The first run downloads the ffmpeg runtime, so there is a wait before anything starts.",
     "Encoding is CPU-bound and single-machine. A two minute 1080p clip takes minutes, not seconds, and the tab will be busy throughout.",
     "Presets pad rather than crop, so a vertical video compressed to a landscape preset gains black bars.",
-    "Audio is always re-encoded to AAC at 128 kbps. There is no option to copy the original audio stream untouched.",
+    "Audio is re-encoded at 128 kbps: AAC for MP4/AVI, Opus for WebM. There is no stream-copy option.",
     "One file at a time, and re-encoding is destructive - keep your original.",
   ],
 };

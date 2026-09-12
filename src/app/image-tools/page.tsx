@@ -1,12 +1,13 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/image-tools", {
   title: "Image Tools - Compress, Resize, Convert & Edit Images",
   description:
     "Free image tools to compress, resize, convert, blur, crop, remove backgrounds, and extract text from images directly in your browser.",
   alternates: { canonical: "/image-tools" },
-};
+});
 
 export default function ImageToolsCategoryPage() {
   return (

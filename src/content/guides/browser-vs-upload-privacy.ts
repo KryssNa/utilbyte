@@ -15,6 +15,7 @@ export const browserVsUploadPrivacyGuide: Guide = {
     "check if website uploads file",
   ],
   published: "2026-08-24",
+  updated: "2026-09-12",
   summary:
     "Two websites that look identical can do completely different things with the file you hand them. One sends it to a server, the other never lets it leave the tab. This guide explains both paths honestly, including what browser processing costs you, then shows two ways to find out for yourself which one a site is using.",
   readingMinutes: 7,
@@ -49,20 +50,20 @@ export const browserVsUploadPrivacyGuide: Guide = {
       heading: "What client-side actually means",
       body: [
         "None of that matters much for a holiday photo. It matters for a payslip, a passport scan or a signed contract. Which brings up the other approach: not sending the file at all.",
-        "When you pick a file in a browser, the page does not automatically receive the bytes. It gets a File object, closer to a handle than to contents. The page has to read it explicitly through the File API, which pulls the data into memory inside that tab. Choosing a file involves no network at all.",
-        "The work then happens in code that was already downloaded when the page loaded. For images that is usually the canvas element, which decodes the picture, lets the page scale or redraw it, and re-encodes it as JPEG, PNG or WebP using the browser's own encoder. For heavier jobs, like rearranging a PDF, it is WebAssembly running in the same sandbox at close to native speed.",
-        "The result comes back as a Blob in the tab's memory. The page makes a blob URL pointing at it and attaches that to a download link. It looks like a web address and starts with blob:, but it resolves only inside your own browser. Close the tab and it is gone, input included.",
+        "Selecting a file gives the page access to that file. The browser’s picker does not itself upload it, but the page can immediately read, store or transmit it in response. What happens next depends on the implementation.",
+        "Local processing uses JavaScript or WebAssembly on your device. An image tool may use a canvas and browser encoders; a PDF tool may manipulate the document in JavaScript. Additional processing libraries can be downloaded when a feature is first used.",
+        "A local result can be held in a Blob and downloaded through a blob: URL. That URL does not itself imply a server upload. It also does not prove the page made no other copy: browser storage or separate network requests must be considered independently.",
         "That is the entire mechanism. Nothing about it needs taking on faith. Either the page sends a request with your file inside it or it does not, and that is something you can watch.",
       ],
     },
     {
       heading: "The first check: pull the plug",
       body: [
-        "The strongest test available to someone who does not write software is also the simplest. If a tool still works with no internet connection, your file did not go anywhere, because there was nowhere for it to go.",
+        "Disconnecting before selecting a synthetic test file can show that a particular conversion works without a live server connection. It does not prove what the page did before disconnection or what it might send after reconnecting.",
       ],
       callout: {
         tone: "info",
-        text: "Open the tool page and let it finish loading. Now turn off wifi, switch to aeroplane mode, or unplug the network cable. Do not reload the page. Pick your file and run the job as normal. If a working file comes back with the network off, the processing happened on your own machine. If it hangs or sits on a progress bar that never moves, it did not.",
+        text: "Load the page, disconnect without reloading, then select a synthetic file and try the conversion. A valid result demonstrates offline processing for that run. Failure is inconclusive: a local tool may still need to download a runtime or language model.",
       },
       bullets: [
         "Let the page load fully first. Some tools fetch a WebAssembly module the first time you use a feature, so a failure may be about that rather than uploads. Reconnect, run it once, then disconnect and try again.",
@@ -73,20 +74,20 @@ export const browserVsUploadPrivacyGuide: Guide = {
     {
       heading: "The second check: watch the network yourself",
       body: [
-        "The offline test gives you the answer. The Network tab shows you the evidence. Every desktop browser ships with it and this needs no programming knowledge.",
+        "The Network panel provides another view of the tested run. Combine it with an offline test and the implementation’s data-handling notes; neither observation alone proves that every feature is private.",
       ],
       bullets: [
         "Open the tool page, press F12 or right-click and choose Inspect, then pick the Network tab.",
         "Tick Preserve log if the option is there, then clear the list so you are starting from empty.",
         "Do the job: choose your file, run the conversion, download the result.",
-        "Look at what appeared and sort by size. A request carrying your file would be about as large as the file itself, and its method would be POST or PUT.",
+        "Inspect request payloads and destinations during file selection, processing and download. Traffic may be split, transformed or sent over WebSocket, and the Size column often reflects response size rather than upload size.",
       ],
     },
     {
       heading: "Reading the result, and what neither test proves",
       body: [
-        "On a tool that runs locally you will see either nothing after the initial page load, or a scattering of small requests - an analytics ping, a font, an error beacon. On an upload-based tool you cannot miss it: a request the size of your photo is orders of magnitude larger than anything else in the list.",
-        "Neither test is a security audit, and it would be dishonest to present them as one. A determined operator could upload on the second run, or only above a certain size. But that is a different threat model from whether a free converter is quietly accumulating other people's documents, and for that these two checks come close to conclusive.",
+        "A local tool may download a large runtime or model, so a large transfer is not automatically a file upload. Conversely, uploaded data can be compressed, split across requests or sent later. Inspect what was transmitted rather than inferring privacy from request size alone.",
+        "These observations are limited to the actions, file and version tested. They do not exclude delayed uploads, persistent storage, conditional behavior or other data collection. Use synthetic data for investigation and a fuller implementation and network review when the distinction matters.",
       ],
     },
     {
@@ -107,9 +108,9 @@ export const browserVsUploadPrivacyGuide: Guide = {
       body: [
         "Two claims usually get bundled into one. Your file staying local is one thing. The page not tracking you is another, and the first does not imply the second.",
         "A page can process everything locally and still load an analytics script, serve ads, report errors to a third party and pull fonts from a CDN that sees your IP address. Your document is not in that traffic, but you are.",
-        "There is also work that genuinely needs a server - OCR across hundreds of pages, anything reaching an external service, anything using a licensed codec. Local processing is a sensible default for ordinary conversions, not a universal answer.",
+        "Features that communicate with external services need a network connection. Other heavy work, including OCR and some codecs, can run locally when a suitable implementation is available, though device memory, runtime downloads and processing time may limit practicality.",
         "And a website can change. The code is fetched fresh on every visit, so the version you tested in August is not necessarily the one you get in November. Repeat the check occasionally.",
-        "Which is the honest end point. The reason to prefer a tool that runs locally is not that its homepage says so. It is that the claim is one you can verify yourself in under a minute, on this site or any other.",
+        "A useful privacy claim identifies the processing path and its limits. Tests can provide evidence for the run you observed, while source review, browser storage inspection and service policies answer different questions.",
       ],
     },
   ],
@@ -150,12 +151,12 @@ export const browserVsUploadPrivacyGuide: Guide = {
     {
       question: "How can I tell whether a website uploads my file?",
       answer:
-        "Two ways. Load the page fully, disconnect from the internet without reloading, then run the tool. If it still produces a correct file, nothing was uploaded. Or open the browser developer tools, go to the Network tab, clear it, and run the job while watching. An upload shows up as a POST or PUT roughly the same size as your file, far larger than anything else in the list.",
+        "Test with synthetic input: disconnect before selecting the file and check whether conversion completes, then inspect request payloads and destinations during an online run. Offline success demonstrates local capability for that run, not the absence of past or later uploads.",
     },
     {
       question: "Does HTTPS mean my file is private?",
       answer:
-        "It means nobody can read it while it crosses the network. It says nothing about what happens once it arrives. HTTPS ends at the server, where the file is decrypted and handled by whatever software runs there, recorded by whatever logs requests, and kept for as long as the operator's policy says. It protects the journey, not the destination.",
+        "HTTPS encrypts traffic between the browser and the TLS endpoint. It does not prevent that endpoint or downstream application services from reading or retaining the data, and does not establish how the file is handled after receipt.",
     },
     {
       question: "Are free online file converters safe to use?",
@@ -170,7 +171,7 @@ export const browserVsUploadPrivacyGuide: Guide = {
     {
       question: "If a tool runs in my browser, does that mean the site is not tracking me?",
       answer:
-        "No, and they are separate questions. A page can keep your file entirely local while still loading analytics, ads, error reporting or third-party fonts, all of which reveal that you visited and roughly where from. Your file is not in that traffic but you are. The same Network tab check shows this as clearly as it shows an upload.",
+        "No. Tool processing and site telemetry are separate. Analytics, ads, error reporting or embedded resources can send data even when a file conversion runs locally. Review the actual requests and privacy disclosures rather than assuming that local processing means no tracking.",
     },
   ],
 };

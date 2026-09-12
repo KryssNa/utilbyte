@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { downloadBlob } from "@/lib/utils";
 import { Calendar, Check, Copy, Download, MapPin, Palette, QrCode, Settings, User, Wifi } from "lucide-react";
 import QRCode from "qrcode";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { qrCodeArticle } from "@/content/tools/qr-code";
@@ -120,6 +120,9 @@ export default function QRCodeGenerator() {
   const [input, setInput] = useState<string>("");
   const [qrType, setQrType] = useState<QRType>("url");
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [resultFormat, setResultFormat] = useState<ExportFormat>("png");
+  const [resultDetails, setResultDetails] = useState<{ settings: QRSettings; contentLength: number; logoName?: string } | null>(null);
+  useEffect(() => () => { if (qrCodeUrl?.startsWith("blob:")) URL.revokeObjectURL(qrCodeUrl); }, [qrCodeUrl]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -136,6 +139,8 @@ export default function QRCodeGenerator() {
   const [includeLogo, setIncludeLogo] = useState<boolean>(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+  const previewSettings = resultDetails?.settings ?? settings;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -168,7 +173,7 @@ export default function QRCodeGenerator() {
   }, []);
 
   const generateQRWithLogo = useCallback(async (qrCanvas: HTMLCanvasElement, logoUrl: string): Promise<HTMLCanvasElement> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d')!;
 
@@ -204,18 +209,36 @@ export default function QRCodeGenerator() {
 
         resolve(canvas);
       };
+      img.onerror = () => reject(new Error("Logo image could not be decoded."));
       img.src = logoUrl;
     });
   }, [settings.backgroundColor]);
 
-  const generateQR = useCallback(async () => {
+  const generateQR = useCallback(async (format: ExportFormat = exportFormat) => {
     if (!qrContent.trim()) {
       toast.error("Please enter some content");
       return;
     }
 
+    if (format === "svg" && includeLogo) {
+      toast.error("SVG export does not include logos. Choose PNG or JPEG, or turn off Include Logo.");
+      return;
+    }
     setIsGenerating(true);
     try {
+      if (format === "svg") {
+        const svgString = await QRCode.toString(qrContent, {
+          type: "svg", width: settings.size, margin: settings.margin,
+          errorCorrectionLevel: settings.errorCorrection,
+          color: { dark: settings.foregroundColor, light: settings.backgroundColor },
+        });
+        setQrCodeUrl(URL.createObjectURL(new Blob([svgString], { type: "image/svg+xml" })));
+        setResultFormat("svg");
+        setResultDetails({ settings: { ...settings }, contentLength: qrContent.length });
+        setExportFormat("svg");
+        toast.success("SVG QR code generated!");
+        return;
+      }
       const canvas = canvasRef.current;
       if (!canvas) return;
 
@@ -238,8 +261,12 @@ export default function QRCodeGenerator() {
       }
 
       // Convert to data URL
-      const url = finalCanvas.toDataURL(`image/${exportFormat === 'jpeg' ? 'jpeg' : 'png'}`);
+      const mime = `image/${format}`;
+      const url = finalCanvas.toDataURL(mime);
+      if (!url.startsWith(`data:${mime};`)) throw new Error("Browser returned an unsupported image encoding.");
       setQrCodeUrl(url);
+      setResultFormat(format);
+      setResultDetails({ settings: { ...settings }, contentLength: qrContent.length, logoName: includeLogo && logoFile ? logoFile.name : undefined });
       toast.success("QR code generated!");
     } catch (error) {
       console.error(error);
@@ -247,7 +274,7 @@ export default function QRCodeGenerator() {
     } finally {
       setIsGenerating(false);
     }
-  }, [qrContent, settings, includeLogo, logoPreview, exportFormat, generateQRWithLogo]);
+  }, [qrContent, settings, includeLogo, logoPreview, logoFile, exportFormat, generateQRWithLogo]);
 
   const downloadQR = useCallback(() => {
     if (!qrCodeUrl) return;
@@ -255,39 +282,14 @@ export default function QRCodeGenerator() {
     fetch(qrCodeUrl)
       .then((res) => res.blob())
       .then((blob) => {
-        const extension = exportFormat === 'svg' ? 'svg' : exportFormat;
+        const extension = resultFormat;
         downloadBlob(blob, `qrcode.${extension}`);
         toast.success(`QR code downloaded as ${extension.toUpperCase()}!`);
       })
       .catch(() => {
         toast.error("Failed to download QR code");
       });
-  }, [qrCodeUrl, exportFormat]);
-
-  const generateSVG = useCallback(async () => {
-    if (!qrContent.trim()) return;
-
-    try {
-      const options = {
-        type: 'svg' as const,
-        color: {
-          dark: settings.foregroundColor,
-          light: settings.backgroundColor,
-        },
-        errorCorrectionLevel: settings.errorCorrection,
-        margin: settings.margin,
-      };
-
-      const svgString = await QRCode.toString(qrContent, options);
-      const blob = new Blob([svgString], { type: 'image/svg+xml' });
-      const url = URL.createObjectURL(blob);
-      setQrCodeUrl(url);
-      setExportFormat('svg');
-      toast.success("SVG QR code generated!");
-    } catch (error) {
-      toast.error("Failed to generate SVG QR code");
-    }
-  }, [qrContent, settings]);
+  }, [qrCodeUrl, resultFormat]);
 
   const copyToClipboard = useCallback(async () => {
     if (!qrContent) return;
@@ -409,10 +411,10 @@ export default function QRCodeGenerator() {
                 )}
 
                 <div className="flex gap-2">
-                  <Button onClick={generateQR} disabled={!qrContent || isGenerating} className="flex-1">
+                  <Button onClick={() => generateQR()} disabled={!qrContent || isGenerating} className="flex-1">
                     {isGenerating ? "Generating..." : "Generate QR Code"}
                   </Button>
-                  <Button onClick={generateSVG} disabled={!qrContent} variant="outline">
+                  <Button onClick={() => generateQR("svg")} disabled={!qrContent || isGenerating || includeLogo} variant="outline">
                     Generate SVG
                   </Button>
                 </div>
@@ -424,7 +426,7 @@ export default function QRCodeGenerator() {
                   <CardHeader>
                     <CardTitle>QR Code Preview</CardTitle>
                     <CardDescription>
-                      Size: {settings.size}x{settings.size}px • Format: {exportFormat.toUpperCase()}
+                      Size: {previewSettings.size}x{previewSettings.size}px • Format: {(qrCodeUrl ? resultFormat : exportFormat).toUpperCase()}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -432,12 +434,13 @@ export default function QRCodeGenerator() {
                       <div className="relative">
                         <canvas
                           ref={canvasRef}
-                          className="border rounded-lg shadow-sm"
+                          className={`border rounded-lg shadow-sm${qrCodeUrl ? " hidden" : ""}`}
                           style={{
                             width: Math.min(settings.size, 400),
                             height: Math.min(settings.size, 400)
                           }}
                         />
+                        {qrCodeUrl && <img src={qrCodeUrl} alt="Generated QR code" width={previewSettings.size} height={previewSettings.size} className="max-w-full rounded-lg border shadow-sm" style={{ width: Math.min(previewSettings.size, 400), height: "auto" }} />}
                         {!qrCodeUrl && (
                           <div className="absolute inset-0 flex items-center justify-center bg-muted/50 rounded-lg">
                             <div className="text-center text-muted-foreground">
@@ -453,7 +456,7 @@ export default function QRCodeGenerator() {
                       <div className="flex gap-2 mt-4">
                         <Button onClick={downloadQR} className="flex-1">
                           <Download className="h-4 w-4 mr-2" />
-                          Download {exportFormat.toUpperCase()}
+                          Download {resultFormat.toUpperCase()}
                         </Button>
                       </div>
                     )}
@@ -469,21 +472,21 @@ export default function QRCodeGenerator() {
                     <CardContent className="space-y-2">
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <strong>Size:</strong> {settings.size}x{settings.size}px
+                          <strong>Size:</strong> {previewSettings.size}x{previewSettings.size}px
                         </div>
                         <div>
-                          <strong>Error Correction:</strong> {settings.errorCorrection} ({settings.errorCorrection === 'L' ? '7%' : settings.errorCorrection === 'M' ? '15%' : settings.errorCorrection === 'Q' ? '25%' : '30%'})
+                          <strong>Error Correction:</strong> {previewSettings.errorCorrection} ({previewSettings.errorCorrection === 'L' ? '7%' : previewSettings.errorCorrection === 'M' ? '15%' : previewSettings.errorCorrection === 'Q' ? '25%' : '30%'})
                         </div>
                         <div>
-                          <strong>Margin:</strong> {settings.margin}px
+                          <strong>Margin:</strong> {previewSettings.margin} modules
                         </div>
                         <div>
-                          <strong>Content Length:</strong> {qrContent.length} chars
+                          <strong>Content Length:</strong> {resultDetails?.contentLength ?? 0} chars
                         </div>
                       </div>
-                      {includeLogo && logoFile && (
+                      {resultDetails?.logoName && (
                         <Badge variant="secondary" className="mt-2">
-                          Logo: {logoFile.name}
+                          Logo: {resultDetails.logoName}
                         </Badge>
                       )}
                     </CardContent>
@@ -682,7 +685,7 @@ export default function QRCodeGenerator() {
                   <div className="text-sm text-muted-foreground">
                     <strong>PNG:</strong> Best quality, supports transparency<br />
                     <strong>JPEG:</strong> Smaller files, no transparency<br />
-                    <strong>SVG:</strong> Scalable vector format
+                    <strong>SVG:</strong> Scalable vector format; turn off Include Logo to use SVG
                   </div>
                 </CardContent>
               </Card>

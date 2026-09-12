@@ -12,14 +12,14 @@ export const documentPhotoArticle: ToolArticleContent = {
       body: [
         "It gets two things right: dimensions and file size. Those are the two constraints that are purely mechanical, and they are also the two that cause most automated rejections, because a portal can check them instantly and bounce you without a human ever looking.",
         "It cannot tell you whether your photo will be accepted. Head height as a proportion of the frame, eye line position, whether your expression is neutral enough, whether the background is uniform enough, whether you are wearing glasses that catch the light, whether the photo is recent enough - all of that is judged by a person or a biometric checker at the other end, and none of it is something a cropping tool can assess.",
-        "Any site that tells you your photo is guaranteed to be accepted is selling you something. Treat the mechanical part as solved here, and read the actual requirements for the actual document. They are usually one page long and worth the five minutes.",
+        "Any site that tells you your photo is guaranteed to be accepted is selling you something. Check the exported dimensions and byte size, and read the actual requirements for the actual document. They are usually one page long and worth the five minutes.",
       ],
     },
     {
       heading: "Where the preset numbers come from",
       body: [
-        "Two of the presets are marked as verified. Those were checked against the issuing authority's own published specification and link straight to it, so you can read the source rather than trusting a badge.",
-        "The US visa and Diversity Visa spec is unusually precise and unusually strict: square, between 600 x 600 and 1200 x 1200 pixels, JPEG, 240 kilobytes or less, colour at 24 bits per pixel in sRGB, with a compression ratio no worse than 20:1. The UK passport service asks for at least 600 pixels wide by 750 tall, and a file between 50 KB and 10 MB - note the floor as well as the ceiling, which catches people out.",
+        "The US presets link to the relevant Department of State guidance. A checked source confirms the listed specification, not the acceptability of your exported photo. Read the instructions for your specific application before choosing a preset.",
+        "Diversity Visa entry photos must be exactly 600 x 600 pixels, JPEG, and no larger than 240 kB. The broader US visa digital-image guidance allows square images from 600 x 600 to 1200 x 1200 pixels. The 1200-pixel preset is not a DV entry preset. Pixel dimensions and file size alone do not check composition, color space, compression ratio or acceptance.",
         "The rest are widely-used standards rather than verified specifications. The 35 x 45 mm print size is derived from the ICAO travel document standard and is used by most passport authorities outside the United States, which is why it appears here at both 300 and 600 dpi. The exam portal presets reflect what South Asian competitive exam systems commonly ask for. Both are marked as unverified on purpose, because they vary by country, by exam, and sometimes between sessions of the same exam.",
       ],
       bullets: [
@@ -29,12 +29,19 @@ export const documentPhotoArticle: ToolArticleContent = {
       ],
     },
     {
+      heading: "UK digital passport photos: use the official upload workflow",
+      body: [
+        "GOV.UK says a photo taken on your own device should include your head, shoulders and upper body, and should not be cropped: the passport application handles that. It also requires the image to be unaltered by computer software. This cropping tool therefore has no UK digital passport preset.",
+        "Follow the current GOV.UK digital passport photo instructions and submit the original through the official application, or use a photo code from a photo booth or shop. Do not crop an image here and assume that matching a pixel size makes it compliant.",
+      ],
+    },
+    {
       heading: "The two-constraint problem, and how to get out of it",
       body: [
         "The awkward part of these specifications is that they pull in opposite directions. A minimum pixel size pushes the file up. A maximum file size pushes it down. When both are tight - 600 x 600 pixels and under 240 KB, say - you can end up unable to satisfy both by fiddling with quality.",
         "The tool never resolves that by shrinking your image, because the dimensions are the thing being checked. Instead it compresses as far as it sensibly can and, if that is not enough, tells you.",
         "When you hit that, the lever that actually works is the crop. File size tracks how much detail is in the picture, and background is detail. A head-and-shoulders crop encodes far smaller than the same face with a metre of wall around it - and most document specifications want the tight crop anyway. Cropping in is usually both the correct composition and the fix for the size limit.",
-        "The opposite problem is rarer but real. Some systems set a minimum file size, on the theory that a very small file means a very low quality scan. If your crop is plain enough to fall under that floor, the tool flags it, and a larger pixel preset is the usual answer.",
+        "Some systems also set a minimum file size. The tool flags a result below the configured floor. Only choose larger pixel dimensions when the application permits them; a DV entry still requires exactly 600 x 600 pixels.",
       ],
     },
     {
@@ -56,13 +63,13 @@ export const documentPhotoArticle: ToolArticleContent = {
   ],
   example: {
     title: "A phone photo turned into a US Diversity Visa entry photo",
-    input: "IMG_0912.jpg\n3024 x 4032 px, 3.6 MB\nTaken indoors against a cream wall\nSpec: square, 600-1200 px, JPEG, max 240 KB",
+    input: "IMG_0912.jpg\n3024 x 4032 px, 3.6 MB\nTaken indoors against a cream wall\nSpec: exactly 600 x 600 px, JPEG, max 240 kB",
     output: "Crop: 1:1 frame, zoomed to 1.35x, head and shoulders\nRendered at 600 x 600 px\nFirst encode at quality 95: 121 KB\n\nResult: 600 x 600 px, 121 KB\nUnder the 240 KB cap, no compression pass needed",
-    note: "The interesting part is that no compression was necessary. A tight 600 x 600 crop of a face simply does not contain enough detail to reach 240 KB at high quality. People run into the size limit when they submit a wide shot at 1200 x 1200 - the extra pixels and the extra background are what push it over. If you are fighting the cap, crop tighter before you reduce quality.",
+    note: "This is an illustrative outcome, not a predicted file size or acceptance result. DV entry dimensions stay at exactly 600 x 600 pixels; do not choose the 1200-pixel general visa preset. Review composition and the current application instructions as well as the exported file.",
   },
   limitations: [
     "It checks dimensions and file size. It cannot assess head position, background uniformity, expression, lighting or glasses glare, and it cannot predict whether an application will be accepted.",
-    "Only two presets are verified against an issuing authority. The others are common standards and may not match your specific document, exam or country.",
+    "US presets link to official sources, but the tool does not verify every photo requirement. Other presets are unverified examples and may not match your document, exam or country.",
     "Specifications change without notice, sometimes between sessions of the same exam. Read the current requirements before submitting; do not rely on a number cached in a tool.",
     "Output is JPEG with a white background behind any transparency. There is no PNG option, because almost no document system accepts one.",
     "There is no background removal or replacement. If your background is patterned or dark, retake the photo — editing it is the kind of alteration most authorities explicitly prohibit.",
