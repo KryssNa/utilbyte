@@ -187,7 +187,7 @@ export default function ImageOCR() {
     },
     {
       question: "Which languages are supported?",
-      answer: "We support major languages including English, Spanish, French, German, Chinese, Japanese, Korean, Arabic, and many more.",
+      answer: "Choose from 13 language options: English, Spanish, French, German, Italian, Portuguese, Russian, Japanese, simplified or traditional Chinese, Korean, Arabic and Hindi.",
     },
     {
       question: "Is my image processed on a server?",
@@ -289,7 +289,7 @@ export default function ImageOCR() {
             <div className="mt-8 grid grid-cols-3 gap-4">
               {[
                 { icon: Type, label: "Accurate OCR", desc: "High precision text extraction" },
-                { icon: Globe, label: "Multi-language", desc: "20+ languages supported" },
+                { icon: Globe, label: "Multi-language", desc: "13 language options" },
                 { icon: Sparkles, label: "Client-side", desc: "No server uploads" },
               ].map((item) => (
                 <div
@@ -411,7 +411,7 @@ export default function ImageOCR() {
                     <div className="space-y-2 text-sm text-muted-foreground">
                       <p>• Powered by Tesseract.js</p>
                       <p>• Runs entirely in your browser</p>
-                      <p>• No data sent to servers</p>
+                      <p>• Your selected image is processed locally</p>
                       <p>• <strong>First use:</strong> Downloads language models (~20MB)</p>
                       <p>• <strong>Subsequent uses:</strong> Much faster</p>
                       <p>• Best with clear, high-contrast text</p>

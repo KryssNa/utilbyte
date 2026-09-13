@@ -1,7 +1,9 @@
+import PageStructuredData from "@/components/shared/PageStructuredData";
+import { withPageMetadata } from "@/lib/page-metadata";
 import { AlertTriangle, FileText, Heart, Scale, Shield, Users } from "lucide-react";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/terms", {
   title: "Terms of Service",
   description: "Read UtilByte's terms of service and usage guidelines. Understand your rights and responsibilities when using our tools.",
   keywords: "terms of service, terms and conditions, user agreement, UtilByte terms",
@@ -19,11 +21,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/terms",
   },
-};
+});
 
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-background">
+      <PageStructuredData route="/terms" name={String(metadata.title)} description={metadata.description!} type="WebPage" />
       {/* Header */}
       <div className="border-b border-border bg-gradient-to-b from-transparent to-violet-50/30 dark:to-violet-950/10">
         <div className="container mx-auto px-4 py-16 lg:px-8">

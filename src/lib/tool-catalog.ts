@@ -289,7 +289,7 @@ const definitions = [
       {
         "title": "Online Compiler",
         "href": "/dev-tools/online-compiler",
-        "desc": "Run code live",
+        "desc": "Run JavaScript and Python examples",
         "aliases": []
       },
       {
@@ -436,7 +436,7 @@ const processing: Record<string, { mode: ProcessingMode; note: string }> = {
   "request-catcher": { mode: "hosted", note: "Incoming requests are stored in a hosted Supabase database, including body, query, headers (except Authorization), and IP address. Anyone with the bin ID can read or clear it. The supplied database policies also permit broad anonymous access. No automatic retention cleanup is implemented in the supplied source. Clear deletes the bin's request rows; infrastructure logs/backups are outside this control. Use synthetic test data only." },
   "local-proxy": { mode: "hosted", note: "Requests are stored by the hosted Request Catcher, then forwarded to the configured URL when enabled. Bin IDs are shared with Request Catcher and saved in this browser. Anyone with an ID can change forwarding settings; no owner authentication is implemented. No automatic retention cleanup is implemented. Use synthetic test data only." },
   "websocket-client": { mode: "direct-network", note: "Connects directly from this browser to the WebSocket URL you enter. Messages are sent to that server; its retention policy applies." },
-  "online-compiler": { mode: "local", note: "Code executes in this browser. Python downloads Pyodide from jsDelivr on first use. Code you run may itself make network requests; do not run untrusted code." },
+  "online-compiler": { mode: "local", note: "JavaScript and Python execute in this browser; TypeScript is not transpiled. Python downloads Pyodide from jsDelivr on first use. Code can access browser capabilities and make network requests. There is no isolated security sandbox or execution timeout; run only code you trust." },
   "markdown-renderer": { mode: "local", note: "Markdown renders in your browser. Remote images embedded in the document can contact their source servers." },
   "ocr": { mode: "local", note: "Recognition runs in this browser. The OCR worker and language models may be downloaded from external hosts; image processing remains local." },
 };

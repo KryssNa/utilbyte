@@ -4,7 +4,7 @@ export const qrCodeArticle: ToolArticleContent = {
   intro: [
     "QR codes went from a joke to infrastructure in about two years, and most people making them still treat them as a black box that turns a link into a square.",
     "They are worth understanding slightly better than that, because the decisions you make when generating one - what you encode, how much error correction you allow, how big you print it - decide whether it scans reliably in the real world or fails in a way nobody reports back to you.",
-    "This generator handles the common payload types, exports to PNG, SVG or JPEG, and lets you set the error correction level and drop a logo in the middle. All of it happens in your browser.",
+    "This generator handles common payload types and exports PNG, SVG or JPEG in your browser. Colors and error correction are configurable. Logo overlays are available for PNG and JPEG. Disable the logo option to export an SVG QR pattern.",
   ],
   sections: [
     {
@@ -25,7 +25,7 @@ export const qrCodeArticle: ToolArticleContent = {
       heading: "Error correction, and the logo trade-off",
       body: [
         "QR codes carry redundant data so they still scan when part of the code is dirty, torn, curved or covered. That redundancy comes in four levels, conventionally described as tolerating roughly 7, 15, 25 and 30 percent damage.",
-        "Higher correction is not free. The redundancy is more data, more data means a denser pattern at the same physical size, and a denser pattern is harder for a camera to resolve. Pushing to the highest level for a code that will be viewed on a clean screen makes it worse, not better.",
+        "Higher correction can increase the number of modules needed for the same payload. Leave enough printed space for the resulting pattern and test the exported image under the conditions where people will use it.",
         "The one case where high correction genuinely earns its place is a logo in the middle. That logo is damage as far as the decoder is concerned - you are deliberately destroying part of the code and relying on the redundancy to survive it. Keep the logo small, well under the fraction the level tolerates, and centred, because the corner alignment patterns must stay intact.",
         "Whatever you do, scan the result with more than one phone before it goes to print. A code with a logo that scans on your device and fails on a five year old Android is a failure mode you will never hear about.",
       ],
@@ -36,7 +36,7 @@ export const qrCodeArticle: ToolArticleContent = {
         "Three things break printed QR codes, and all three are avoidable.",
         "The quiet zone is the blank margin around the code. The specification asks for a border equal to four modules - four of the smallest squares - and decoders genuinely need it to find the code's edges. Designers crop it constantly. Do not.",
         "Contrast has to be dark-on-light. Not light-on-dark, which some decoders refuse outright, and not a low-contrast pair of brand colours. If you must tint it, keep the dark modules genuinely dark and the background genuinely light.",
-        "Size follows scanning distance. A workable rule of thumb is that the code should be about a tenth of the distance it will be scanned from - so a code read from a metre away wants to be around ten centimetres across. On a restaurant table, three centimetres is fine. On a wall poster, three centimetres is decoration.",
+        "Size depends on scanning distance, payload density, print quality, lighting and the reader. Print a sample at the intended size and test it from the expected distance; this generator does not certify a minimum size or scanning range.",
       ],
     },
     {
@@ -49,10 +49,10 @@ export const qrCodeArticle: ToolArticleContent = {
     },
   ],
   example: {
-    title: "The same link at two error correction levels",
-    input: 'Payload: https://utilbyte.app/utility-tools/qr-code\n47 characters, URL type\nExport: SVG',
-    output: "Level M (~15% recovery)  -> 33 x 33 modules, sparse, scans from ~40 cm at 4 cm printed\nLevel H (~30% recovery)  -> 41 x 41 modules, dense, needs ~5 cm printed for the same distance\n\nWith a logo covering ~8% of the area:\n  Level M -> intermittent failures on older cameras\n  Level H -> reliable",
-    note: "Going from M to H added eight modules in each direction for identical content. On a clean screen that is a downgrade - more to resolve, no benefit. The moment you punch a logo into the middle it becomes necessary. That is the whole trade: correction level should follow how much abuse the code will actually take, not be maxed out by default.",
+    title: "Check a code before printing",
+    input: 'Payload: https://utilbyte.app/utility-tools/qr-code\nType: URL\nExport: PNG',
+    output: "Generate the code with a clear margin and dark modules on a light background.\nScan the exported image and verify the exact destination.\nPrint a sample and scan it at the intended distance.",
+    note: "This is a review workflow, not a measured scanning benchmark. Adding a logo, changing colors or resizing the image means testing the exported result again.",
   },
   limitations: [
     "The code is generated from what you type. If the URL is wrong, the code is wrong - test every one before printing.",

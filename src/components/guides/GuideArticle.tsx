@@ -22,12 +22,15 @@ export default function GuideArticle({ guide }: { guide: Guide }) {
       <header className="border-b border-[rgb(var(--border))]">
         <div className="container mx-auto px-4 py-10 lg:px-8 lg:py-14">
           <div className="mx-auto max-w-3xl">
-            <Link
-              href="/guides"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              ← All guides
-            </Link>
+            <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
+              <ol className="flex flex-wrap items-center gap-2">
+                <li><Link href="/" className="hover:text-foreground">Home</Link></li>
+                <li aria-hidden="true">/</li>
+                <li><Link href="/guides" className="hover:text-foreground">Guides</Link></li>
+                <li aria-hidden="true">/</li>
+                <li aria-current="page">{guide.title}</li>
+              </ol>
+            </nav>
 
             <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight sm:text-4xl">
               {guide.title}
@@ -38,6 +41,7 @@ export default function GuideArticle({ guide }: { guide: Guide }) {
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+              <Link href="/about" rel="author" className="underline underline-offset-4">By UtilByte</Link>
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
                 {guide.readingMinutes} min read

@@ -3,7 +3,7 @@ import type { ToolArticleContent } from "@/components/shared/ToolArticle";
 export const requestCatcherArticle: ToolArticleContent = {
   intro: [
     "Something is supposed to be sending you an HTTP request and you cannot tell whether it is. A webhook from a payment provider, a callback from an OAuth flow, an alert from a monitoring system.",
-    "A request catcher gives you a public URL that accepts anything and records exactly what arrived - method, headers, query string, body. Point the sender at it and you can see the truth rather than guessing.",
+    "A request catcher provides a public URL for inspecting incoming HTTP methods, headers, query parameters and text bodies. This implementation omits Authorization headers and handles OPTIONS as a preflight rather than a stored request.",
     "This one necessarily runs on a server, because a public URL has to exist somewhere. That has privacy consequences, covered below.",
   ],
   sections: [
@@ -21,15 +21,15 @@ export const requestCatcherArticle: ToolArticleContent = {
       body: [
         "The body is what you came for, but the headers are where the answers usually are.",
         "Content-Type tells you what the provider actually sent. A surprising number send form-encoded data when their documentation says JSON, and a handler expecting JSON will fail on it in a confusing way.",
-        "Signature headers matter for anything security-relevant. Most serious webhook providers sign their payloads - a header containing an HMAC of the body and a timestamp. Seeing the exact header name and format is the fastest route to implementing verification correctly, and the raw body you see here is what you must verify against.",
+        "Signature headers can help you understand a webhook integration. The catcher displays the received header values and a decoded text body, but this display is not a byte-preserving capture for cryptographic verification. Verify signatures against the original request bytes in your own handler.",
         "User-Agent identifies the sender, which is useful when several systems could be calling the same endpoint.",
-        "And the raw body matters, not the parsed version. Signature verification is computed over the exact bytes, so a handler that parses and re-serialises before verifying will always fail.",
+        "For signature verification, use the exact request bytes required by the sender protocol. Parsing and re-serializing a payload can change those bytes; the catcher is for inspection rather than proving signature validity.",
       ],
       bullets: [
         "Content-Type - is it really JSON?",
         "Signature and timestamp headers - the shape you need to verify.",
         "User-Agent - who is actually calling.",
-        "Raw body - the bytes signatures are computed over.",
+        "Text body - useful for inspection; verify signatures using original bytes in your own handler.",
       ],
     },
     {
@@ -37,7 +37,7 @@ export const requestCatcherArticle: ToolArticleContent = {
       body: [
         "This is the part to be careful about. A catcher URL is unauthenticated by design - anything can post to it, which is exactly what makes it useful.",
         "It also means whatever is sent there is stored on a server, and anyone who learns the URL can read it. A webhook payload frequently contains personal data, transaction details, or identifiers you would not want in a third-party system.",
-        "So: point test and sandbox integrations at a catcher, not live ones. Most payment and messaging providers have a sandbox mode precisely for this. If you must inspect a real payload, do it once, get what you need, and clear the bin.",
+        "Use synthetic data and sandbox integrations. Clearing a bin deletes its request rows but does not establish deletion from hosting logs or backups. No automatic retention cleanup is implemented in the supplied service.",
         "Do not leave a production webhook pointed at a catcher and forget about it. That is a slow leak.",
       ],
     },
@@ -57,10 +57,10 @@ export const requestCatcherArticle: ToolArticleContent = {
     note: "The documentation was wrong, or described a different API version. The JSON is there, but URL-encoded inside a form field rather than sent as the body - so a handler calling json() on the request gets nothing and reports a malformed payload. You would not find this from your own logs, because the handler failed before logging anything useful. Note also the signature format: comma-separated timestamp and version, which tells you exactly how to build the string to verify.",
   },
   limitations: [
-    "Requests are received and stored on a server. Anyone with the URL can read them - use sandbox integrations, and clear the bin afterwards.",
+    "Requests are stored in a hosted Supabase database. Bin IDs are not authenticated ownership: anyone with an ID can read or clear its requests, and the supplied database policies permit broad anonymous access. Use synthetic data only.",
     "The endpoint returns a generic success response. You cannot test behaviour that depends on your own reply, including retry and idempotency logic.",
-    "Received requests are retained for a limited time and a limited count. This is for inspection, not for archival.",
-    "Very large payloads may be truncated.",
-    "It cannot forward to your local machine. For that you need a tunnel, which is a different tool.",
+    "No automatic expiry or storage-count cleanup is implemented. Listing recent requests has a count limit; that is not a retention policy.",
+    "Bodies are captured as text rather than a binary archive. Hosting limits apply, and the tool is not suitable for verifying the original bytes of a binary payload.",
+    "Local Proxy can configure forwarding to a public URL, including a tunnel to your local service. Forwarding removes some headers and can time out; it does not transparently reproduce every request.",
   ],
 };

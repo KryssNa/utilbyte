@@ -98,7 +98,7 @@ export default function PDFCompress() {
     const initPdfJs = async () => {
       try {
         pdfjsLib = (await import('pdfjs-dist')).default;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
         setIsPdfJsReady(true);
       } catch (error) {
         console.error('Failed to initialize PDF.js:', error);
@@ -417,7 +417,7 @@ export default function PDFCompress() {
     <ToolLayout
       article={compressPdfArticle}
       title="Compress PDF"
-      description="Reduce PDF file size while maintaining quality. Choose from multiple compression levels for optimal results."
+      description="Rebuild PDF structure and optionally clear metadata in your browser. Savings vary; embedded images are not downsampled or re-encoded."
       category="pdf"
       categoryLabel="PDF Tools"
       icon={Zap}

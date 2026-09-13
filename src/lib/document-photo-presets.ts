@@ -33,51 +33,35 @@ export interface DocumentPhotoPreset {
 export const DOCUMENT_PHOTO_PRESETS: DocumentPhotoPreset[] = [
   {
     id: "us-visa-dv",
-    label: "US visa / Diversity Visa",
+    label: "Diversity Visa / US visa (600 x 600)",
     region: "United States",
     width: 600,
     height: 600,
     maxBytes: 240 * 1024,
     printSize: "2 x 2 in (51 x 51 mm) if scanned at 300 ppi",
     notes: [
-      "Square. Minimum 600 x 600 px, maximum 1200 x 1200 px.",
+      "Diversity Visa entry photos must be exactly 600 x 600 px. This preset also meets the general US visa minimum dimensions.",
       "JPEG only, 240 KB or less, colour at 24 bits per pixel in sRGB.",
-      "Compression ratio must be 20:1 or lower.",
+      "The general US digital-image guidance specifies compression of 20:1 or lower; this tool does not verify that ratio or photo composition.",
     ],
     verified: true,
     sourceUrl:
-      "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html",
+      "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html",
   },
   {
-    id: "us-visa-dv-max",
-    label: "US visa / DV (maximum resolution)",
+    id: "us-visa-max",
+    label: "US visa (1200 x 1200, not DV)",
     region: "United States",
     width: 1200,
     height: 1200,
     maxBytes: 240 * 1024,
     notes: [
-      "The largest size the US system accepts. Use this when your source photo is sharp enough to justify it.",
+      "General US visa guidance allows up to 1200 x 1200 px. This is not a Diversity Visa entry preset: DV requires exactly 600 x 600 px. Confirm your application instructions.",
       "Still capped at 240 KB, so the extra pixels cost quality. If the result looks worse than the 600 x 600 version, use that instead.",
     ],
     verified: true,
     sourceUrl:
       "https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html",
-  },
-  {
-    id: "uk-passport",
-    label: "UK passport (digital)",
-    region: "United Kingdom",
-    width: 900,
-    height: 1125,
-    maxBytes: 10 * 1024 * 1024,
-    minBytes: 50 * 1024,
-    notes: [
-      "At least 600 px wide and 750 px tall. This preset uses 900 x 1125, the same 4:5 shape with more detail.",
-      "File must be between 50 KB and 10 MB.",
-      "Plain light-coloured background, in focus, in colour, not edited.",
-    ],
-    verified: true,
-    sourceUrl: "https://www.gov.uk/photos-for-passports",
   },
   {
     id: "iso-35x45-300dpi",

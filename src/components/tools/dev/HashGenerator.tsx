@@ -154,7 +154,7 @@ export default function HashGenerator() {
     "SHA-256": {
       description: "SHA-256 is part of the SHA-2 family and produces a 256-bit hash. It's widely used for security applications.",
       security: "Strong - resistant to collision attacks",
-      useCase: "Digital signatures, blockchain, password hashing"
+      useCase: "Checksums and data fingerprints; not password storage"
     },
     "SHA-384": {
       description: "SHA-384 produces a 384-bit hash and is more secure than SHA-256 but slower.",
@@ -189,7 +189,7 @@ export default function HashGenerator() {
     <ToolLayout
       article={hashGeneratorArticle}
       title="Hash Generator"
-      description="Generate cryptographic hashes using MD5, SHA-1, SHA-256, SHA-384, and SHA-512 algorithms. Perfect for password hashing and data integrity."
+      description="Generate cryptographic hashes using MD5, SHA-1, SHA-256, SHA-384, and SHA-512 algorithms. Compare checksums and data fingerprints. Plain hashes are not suitable for password storage."
       category="dev"
       categoryLabel="Developer Tools"
       icon={Hash}

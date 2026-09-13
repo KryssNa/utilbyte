@@ -43,7 +43,7 @@ export const documentsForOnlineFormsGuide: Guide = {
     {
       heading: "The order of operations",
       body: [
-        "Each step below reduces information, and no later step gets it back. The sequence runs from decisions about what the file contains to decisions about how many bytes it takes to say it. Working in another order is the most common cause of an upload that passes the checks and looks terrible.",
+        "Work on copies and follow the portal’s actual instructions. Some image operations discard detail; file renaming and some PDF structural operations do not. This sequence is a practical starting point, not a rule that every application permits.",
       ],
       table: {
         columns: ["Step", "What you do", "Why it belongs here"],
@@ -107,7 +107,7 @@ export const documentsForOnlineFormsGuide: Guide = {
       ],
       callout: {
         tone: "info",
-        text: "When one PDF has to hold several scanned pages under a cap, divide the cap by the page count before compressing anything and take ten percent off for overhead. Hitting that target on each image first is the only approach that reliably lands under the limit, because nothing you do to the assembled PDF shrinks the pictures inside it.",
+        text: "Dividing a total size budget across scanned pages can help plan an export, but it is only an estimate and overhead varies. Some PDF tools also downsample embedded images or rasterize pages later. Check the final document’s actual size and readability.",
       },
     },
     {
@@ -135,7 +135,7 @@ export const documentsForOnlineFormsGuide: Guide = {
       ],
       callout: {
         tone: "warning",
-        text: "If a PDF was issued to you with a password, remove the protection before doing anything else. Most PDF tools, browser-based ones included, cannot open an encrypted file at all, and they fail with an error that never mentions a password. It is the most common reason a bank statement will not upload.",
+        text: "If a PDF is encrypted, check whether the portal accepts it and whether you are authorized to create an unprotected copy. Some tools cannot process encrypted documents. Keep the issuer’s original, and request an acceptable version if removal would conflict with the document requirements.",
       },
     },
     {

@@ -122,7 +122,7 @@ export default function CaseConverter() {
     },
     {
       question: "Does it preserve special characters?",
-      answer: "Yes, special characters, numbers, and punctuation are preserved. Only letter casing is changed.",
+      answer: "Uppercase and lowercase primarily change letter casing. Identifier styles such as camelCase and PascalCase can remove separators or punctuation; snake_case and kebab-case replace some separators. Review the result before using it as an identifier.",
     },
   ];
 

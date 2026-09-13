@@ -1,3 +1,4 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import GuideArticle from "@/components/guides/GuideArticle";
 import { getGuide, GUIDES } from "@/content/guides";
 import type { Metadata } from "next";
@@ -19,7 +20,7 @@ export async function generateMetadata({
 
   if (!guide) return { title: "Guide not found" };
 
-  return {
+  return withPageMetadata(`/guides/${guide.slug}`, {
     title: guide.metaTitle,
     description: guide.metaDescription,
     keywords: guide.keywords,
@@ -37,7 +38,7 @@ export async function generateMetadata({
       description: guide.metaDescription,
     },
     alternates: { canonical: `/guides/${guide.slug}` },
-  };
+  });
 }
 
 export default async function GuidePage({
@@ -55,12 +56,13 @@ export default async function GuidePage({
     "@graph": [
       {
         "@type": "Article",
-        headline: guide.metaTitle,
+        headline: guide.title,
+        inLanguage: "en",
         description: guide.metaDescription,
         datePublished: guide.published,
         dateModified: guide.updated ?? guide.published,
-        author: { "@type": "Organization", name: "UtilByte", url: BASE_URL },
-        publisher: { "@type": "Organization", name: "UtilByte", url: BASE_URL },
+        author: { "@id": `${BASE_URL}/#organization`, "@type": "Organization", name: "UtilByte", url: `${BASE_URL}/about` },
+        publisher: { "@id": `${BASE_URL}/#organization` },
         mainEntityOfPage: {
           "@type": "WebPage",
           "@id": `${BASE_URL}/guides/${guide.slug}`,

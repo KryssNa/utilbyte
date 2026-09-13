@@ -82,6 +82,7 @@ export default function ToolArticle({ content, toolName }: ToolArticleProps) {
 
           {example && (
             <div className="mt-10 rounded-xl border border-border bg-card p-6">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">Illustrative example</p>
               <h3 className="text-lg font-semibold mb-4">{example.title}</h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>

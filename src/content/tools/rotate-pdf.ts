@@ -11,8 +11,8 @@ export const rotatePdfArticle: ToolArticleContent = {
       heading: "Visual rotation and stored rotation are different things",
       body: [
         "Inside a PDF, the content of a page is drawn into a fixed coordinate system that has an origin, a width and a height, and none of that changes when you rotate. What changes is a separate entry on the page object called Rotate, which holds a single integer: 0, 90, 180 or 270. It is an instruction to the viewer, saying turn this clockwise by that many degrees before you show it to anyone.",
-        "So a page can be sideways in two different senses. The pixels of a scan can be physically sideways, in which case the file is honestly recording a sideways picture and Rotate is 0. Or the content can be upright with Rotate set to 90, and any viewer that reads the entry presents it turned. Both look identical on screen, and only the second changes when you use this tool, because all it does is add to that integer and save again.",
-        "That is why rotating is lossless. There is no decode and re-encode step, no resampling, no quality setting, because the bytes describing the page are copied across untouched. The output file comes back within a few hundred bytes of the input, and applying the opposite angle later returns you exactly to where you started.",
+        "So a page can be sideways in two different senses. The pixels of a scan can be physically sideways, in which case the file is honestly recording a sideways picture and Rotate is 0. Or the content can be upright with Rotate set to 90, and any viewer that reads the entry presents it turned. Changing the rotation entry changes how either page is displayed in a viewer that honors it; it does not physically rewrite the scanned pixels.",
+        "The tool changes the page rotation without rasterizing the page or re-encoding its images. Saving rewrites the PDF structure, so the output size and bytes can change. Applying the opposite angle can restore the displayed orientation, not the original file byte for byte.",
       ],
     },
     {

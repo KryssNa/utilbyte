@@ -17,6 +17,7 @@ export const heicExplainedGuide: Guide = {
     "convert heic",
   ],
   published: "2026-08-24",
+  updated: "2026-09-12",
   summary:
     "HEIC is the format iPhones have used for photos since 2017. It stores a picture in roughly half the space of a JPEG, and it fails to open on a large share of the computers you might send it to. Here is what the format is, exactly where it breaks, the setting that stops your phone producing it, and what conversion can and cannot do.",
   readingMinutes: 7,
@@ -37,7 +38,7 @@ export const heicExplainedGuide: Guide = {
     {
       heading: "Where it opens, and where it does not",
       body: [
-        "A format is only as portable as its decoder, and the HEVC decoder is genuinely not everywhere. Underneath the patchiness sits patent licensing: HEVC is covered by patents administered through more than one pool, which has made browser vendors and open-source projects cautious about shipping a decoder at all. JPEG's patents expired a long time ago, which is the real reason it remains the format that everything understands.",
+        "A format is only as portable as its decoder, and the HEVC decoder is genuinely not everywhere. Underneath the patchiness sits patent licensing: HEVC is covered by patents administered through more than one pool, which has made browser vendors and open-source projects cautious about shipping a decoder at all. JPEG's patents expired a long time ago, while JPEG has broad compatibility. Format support still depends on the application.",
       ],
       table: {
         columns: ["Where the file ends up", "Does a .heic open?", "What is going on"],
@@ -60,12 +61,12 @@ export const heicExplainedGuide: Guide = {
           [
             "Safari",
             "Yes",
-            "It borrows the decoder the operating system already has.",
+            "Supported combinations can use native decoding; a particular file can still fail.",
           ],
           [
             "Chrome, Firefox, Edge",
             "Historically no",
-            "No built-in HEIC decoder, so a web page cannot simply put one in an image tag and hope.",
+            "Support depends on the browser version, operating system and file. Test the actual environment rather than relying on this historical summary.",
           ],
           [
             "Upload forms",
@@ -123,20 +124,20 @@ export const heicExplainedGuide: Guide = {
     {
       heading: "Converting the files you already have",
       body: [
-        "For photos already taken, conversion is the only route, and it is worth being honest about how it works in a browser rather than overselling it. Safari can decode HEIC because macOS and iOS already have the decoder and lend it to the browser. Chrome and Firefox historically do not ship one, for the licensing reasons described earlier.",
-        "So a browser-based converter has to bring its own decoder. Libraries such as libheif get compiled to WebAssembly, downloaded as part of the page and run on your own processor inside the tab. That means a megabyte or two of code arrives before anything can happen, and decoding a twelve megapixel HEVC still takes noticeably longer than opening a JPEG of the same picture. The compensation is that the file never leaves your machine, which for photographs of passports and bank statements is the entire point.",
-        "It also means these converters are not uniformly reliable, and anyone claiming otherwise is not being straight with you. Ten-bit files, depth maps, image sequences and newer encoding profiles all trip WebAssembly decoders, and Apple ships new capture modes faster than the decoders catch up. If one photo in thirty fails while the rest work, that is normally the reason. Open the file on a Mac and export from there, or switch the phone to Most Compatible and retake it.",
+        "For an existing HEIC file, a compatible viewer may open it directly. Convert a copy when the receiving application requires another format. The available decoder depends on the browser, operating system and particular file.",
+        "Some browser converters bundle a WebAssembly decoder; others use the browser’s native decoding support or send files to a server. UtilByte uses the browser decoder and does not bundle a HEIC decoder. If the browser cannot decode the source, the tool reports failure rather than uploading it.",
+        "Unsupported encoding variants, corrupt input and device memory limits can all cause failure. Try opening the original in a compatible photo application and exporting a JPEG copy. Do not assume that a different extension or a browser update will fix every file.",
       ],
       callout: {
         tone: "warning",
-        text: "Browser support for decoding HEIC is inconsistent and will always lag behind what Apple's cameras produce. If your photos are heading for a Windows machine, a print shop or an upload form, the dependable fix is to set Formats to Most Compatible before you take them. Converting afterwards is the fallback, not the plan.",
+        text: "HEIC compatibility varies. Apple documents exporting a HEIF image from Photos or Preview on a Mac through File > Export, choosing JPEG or PNG. See https://support.apple.com/en-us/116944 for supported devices, sharing behavior and capture settings.",
       },
     },
     {
       heading: "What conversion costs you",
       body: [
-        "Both formats are lossy, so converting is a transcode rather than a repackaging. The file is decoded back to pixels and then re-encoded by a different lossy codec that discards a slightly different set of details. That is generation loss, and it is real, though at a sensible quality setting it is not something anyone notices in a single pass. You also drop from ten bits per channel to eight, which shows up as faint banding across a clear sky more often than anywhere else.",
-        "The file also gets bigger, which surprises people who expect conversion to be a tidying-up step. A 2 MB HEIC commonly lands somewhere around 3 to 4 MB as a high-quality JPEG, because you are asking a thirty-year-old codec to carry the same picture. If the destination has a size limit, that is a second problem to solve after the format one.",
+        "Exporting JPEG decodes the source and then applies lossy encoding. The amount of visible change depends on the image, decoder and quality setting; source bit depth is not always the same. Retain the HEIC original and inspect color, detail and metadata in the exported copy.",
+        "The JPEG can be larger or smaller depending on source encoding, dimensions and selected quality. There is no fixed multiplier. Compare the actual file size, particularly when the receiving application also imposes a byte limit.",
         "Live Photos lose the most. A Live Photo is not one file but a still image paired with a short video clip, shown as a single item in the Photos app. Convert it and you keep the key frame; the motion and its audio do not travel. For a document scan or a receipt that is exactly what you wanted. For a picture of a child mid-run, the frame the phone picked may not be the moment you had in mind.",
         "None of this should stop you converting. A file that will not open has a quality of zero to the person who needs it. Keep the HEIC as your original, export a fresh JPEG from it each time you need one, and never convert a conversion.",
       ],
@@ -172,22 +173,22 @@ export const heicExplainedGuide: Guide = {
     {
       question: "Why will this website not accept my iPhone photo?",
       answer:
-        "Almost always because the file ends in .heic and the form only accepts jpg, jpeg, png or pdf. The form is checking the extension rather than looking at the image, so the rejection happens before anything examines your photo. Convert it to JPEG and the same picture uploads without complaint.",
+        "The receiving application may not accept HEIC, or it may reject the dimensions, size or file contents. Check its stated requirements and export a supported format where needed. Converting to JPEG does not guarantee that all other requirements are met.",
     },
     {
       question: "How do I make my iPhone take JPGs instead?",
       answer:
-        "Settings, then Camera, then Formats, then Most Compatible. From that point the camera writes JPEG stills and H.264 video. It does not change photos you have already taken, and it roughly doubles the storage each new photo uses. Also check Settings, then Photos, then Transfer to Mac or PC, and set it to Automatic if you want existing HEIC files converted when you plug the phone in.",
+        "On supported iPhones or iPads, open Settings, Camera, Formats and select Most Compatible for future captures. Existing photos are unchanged. Apple’s current instructions explain sharing and USB conversion separately: https://support.apple.com/en-us/116944",
     },
     {
       question: "Does converting HEIC to JPEG lose quality?",
       answer:
-        "A little. Both formats are lossy, so converting means decoding and re-encoding, and you drop from ten bits per colour channel to eight. At a good quality setting the difference is not visible in a single pass. Keep the HEIC as the original and export a fresh JPEG from it whenever you need one, rather than converting an earlier conversion.",
+        "JPEG export uses lossy encoding, so detail can change. Source properties and the quality setting determine how visible that is; there is no guaranteed invisible conversion. Preserve the original and make fresh copies from it.",
     },
     {
       question: "Why did the converter fail on one photo but work on the rest?",
       answer:
-        "Browser-based converters use a WebAssembly decoder rather than the one built into your operating system, and those decoders do not handle every variant. Ten-bit files, Portrait depth maps, burst sequences and newer capture modes are the usual causes. Opening that photo on a Mac and exporting as JPEG, or retaking it with Formats set to Most Compatible, will get you past it.",
+        "Different converters use different decoders. UtilByte relies on your browser’s native image decoding, which may not support the particular file. Corruption and memory limits can also cause failure. Try a compatible photo application to inspect and export the original.",
     },
   ],
 };

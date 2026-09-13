@@ -150,7 +150,7 @@ export const imageFormatsComparedGuide: Guide = {
       heading: "HEIC is in the table for a different reason",
       body: [
         "HEIC is what an iPhone camera has produced by default since 2017. It stores a picture in roughly half the space of a JPEG at comparable quality, holds ten bits per colour channel, supports transparency, and can carry a depth map and a burst of frames in one file.",
-        "It also fails to open on a large share of the machines you might send it to. Safari renders it, Chrome and Firefox do not, and Windows needs a codec that is not always installed. So HEIC is not a format you choose. It is one you are handed, and what to do about it has its own guide, linked below.",
+        "HEIC support varies by browser, operating system and application, so test the actual receiving environment. UtilByte’s converter relies on native browser decoding and reports unsupported files rather than supplying an additional HEIC decoder.",
       ],
     },
     {
@@ -203,7 +203,7 @@ export const imageFormatsComparedGuide: Guide = {
     {
       question: "Which image format should I use by default?",
       answer:
-        "JPEG for photographs and PNG for anything with flat colour and hard edges. Those two open everywhere and will never be the reason something fails. Move to WebP or AVIF when you control the page the image appears on and the saving is worth the compatibility risk.",
+        "JPEG is often useful for photographs, while PNG is useful for transparency and lossless encoding of decoded pixels. Both are widely supported, but the receiving application can impose additional constraints. WebP or AVIF may be useful when compatibility is verified.",
     },
     {
       question: "Is WebP better than JPEG?",

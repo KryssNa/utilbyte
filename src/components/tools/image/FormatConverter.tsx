@@ -26,13 +26,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatConverterArticle } from "@/content/tools/format-converter";
 
-const OUTPUT_FORMATS = [
+export const OUTPUT_FORMATS = [
   { value: "png", label: "PNG", desc: "Lossless, transparency", mime: "image/png" },
   { value: "jpeg", label: "JPEG", desc: "Smaller size, photos", mime: "image/jpeg" },
   { value: "webp", label: "WebP", desc: "Modern, best compression", mime: "image/webp" },
-  { value: "gif", label: "GIF", desc: "Simple graphics", mime: "image/gif" },
-  { value: "bmp", label: "BMP", desc: "Uncompressed", mime: "image/bmp" },
-  { value: "svg", label: "SVG", desc: "Vector wrapper, scalable", mime: "image/svg+xml" },
+  { value: "svg", label: "SVG", desc: "Embedded raster image, not vector tracing", mime: "image/svg+xml" },
 ];
 
 export default function FormatConverter() {
@@ -42,6 +40,7 @@ export default function FormatConverter() {
   const [outputFormat, setOutputFormat] = useState<string>("png");
   const [quality, setQuality] = useState(90);
   const [convertedImage, setConvertedImage] = useState<string | null>(null);
+  const [resultFormat, setResultFormat] = useState("png");
   const [convertedSize, setConvertedSize] = useState(0);
   const [estimatedSize, setEstimatedSize] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -127,15 +126,15 @@ export default function FormatConverter() {
 
       const format = OUTPUT_FORMATS.find(f => f.value === outputFormat);
       const mimeType = format?.mime || "image/png";
-      const exportQuality = outputFormat === "png" || outputFormat === "gif" || outputFormat === "bmp"
+      const exportQuality = outputFormat === "png"
         ? undefined
         : quality / 100;
 
       canvas.toBlob(
         (blob) => {
-          if (blob) {
+          if (blob && blob.type === mimeType) {
             setEstimatedSize(blob.size);
-          }
+          } else setEstimatedSize(0);
           setIsEstimating(false);
         },
         mimeType,
@@ -197,6 +196,7 @@ export default function FormatConverter() {
                   const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
                   const svgUrl = URL.createObjectURL(svgBlob);
                   setConvertedImage(svgUrl);
+                  setResultFormat("svg");
                   setConvertedSize(svgBlob.size);
                   toast.success("Converted to SVG successfully!");
                   setIsProcessing(false);
@@ -213,23 +213,28 @@ export default function FormatConverter() {
 
         const format = OUTPUT_FORMATS.find(f => f.value === outputFormat);
         const mimeType = format?.mime || "image/png";
-        const exportQuality = outputFormat === "png" || outputFormat === "gif" || outputFormat === "bmp"
+        const exportQuality = outputFormat === "png"
           ? undefined
           : quality / 100;
 
         canvas.toBlob(
           (blob) => {
-            if (blob) {
+            if (blob && blob.type === mimeType) {
               const convertedUrl = URL.createObjectURL(blob);
               setConvertedImage(convertedUrl);
+              setResultFormat(outputFormat);
               setConvertedSize(blob.size);
               toast.success(`Converted to ${outputFormat.toUpperCase()} successfully!`);
-            }
+            } else toast.error(`Your browser could not encode ${outputFormat.toUpperCase()}. Try PNG or JPEG.`);
             setIsProcessing(false);
           },
           mimeType,
           exportQuality
         );
+      };
+      img.onerror = () => {
+        toast.error("This image could not be decoded. Try a supported image file.");
+        setIsProcessing(false);
       };
       img.src = imageUrl;
     } catch {
@@ -242,12 +247,12 @@ export default function FormatConverter() {
     if (!convertedImage) return;
     const link = document.createElement("a");
     const baseName = image?.name?.replace(/\.[^/.]+$/, "") || "image";
-    const ext = outputFormat === "jpeg" ? "jpg" : outputFormat;
+    const ext = resultFormat === "jpeg" ? "jpg" : resultFormat;
     link.download = `${baseName}.${ext}`;
     link.href = convertedImage;
     link.click();
     toast.success("Download started!");
-  }, [convertedImage, image?.name, outputFormat]);
+  }, [convertedImage, image?.name, resultFormat]);
 
   const handleReset = useCallback(() => {
     setImage(null);
@@ -268,11 +273,11 @@ export default function FormatConverter() {
   const faqs = [
     {
       question: "Which format should I choose?",
-      answer: "PNG for transparency and screenshots, JPEG for photos, WebP for web (best compression), GIF for simple graphics.",
+      answer: "Choose PNG for transparency and screenshots, JPEG for photos, or WebP for a compact web image. SVG output embeds the raster image and does not trace editable vector shapes. GIF and BMP are not offered as output formats.",
     },
     {
       question: "Does converting affect quality?",
-      answer: "PNG and GIF are lossless. JPEG and WebP use compression - higher quality = larger file size.",
+      answer: "PNG preserves the decoded pixels. JPEG and WebP use lossy compression here; higher quality usually produces a larger file. Converting cannot restore detail already missing from the original. Animated inputs become a single still image.",
     },
     {
       question: "Are my images uploaded anywhere?",
@@ -284,7 +289,7 @@ export default function FormatConverter() {
     <ToolLayout
       article={formatConverterArticle}
       title="Format Converter"
-      description="Convert images between PNG, JPEG, WebP, GIF, and BMP formats. Adjust quality and download instantly."
+      description="Convert browser-readable images to PNG, JPEG or WebP, or embed them in an SVG wrapper. Adjust quality and download the result."
       category="image"
       categoryLabel="Image Tools"
       icon={RefreshCw}
@@ -561,7 +566,7 @@ export default function FormatConverter() {
                             Converted Successfully!
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {getSourceFormat().toUpperCase()} → {outputFormat.toUpperCase()} • {formatFileSize(convertedSize)}
+                            {getSourceFormat().toUpperCase()} → {resultFormat.toUpperCase()} • {formatFileSize(convertedSize)}
                           </p>
                         </div>
                       </div>
@@ -603,7 +608,7 @@ export default function FormatConverter() {
                                 <ImageIcon className="h-3.5 w-3.5 text-violet-400" />
                                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Format</span>
                               </div>
-                              <p className="text-sm font-semibold uppercase">{outputFormat}</p>
+                              <p className="text-sm font-semibold uppercase">{resultFormat}</p>
                             </div>
                             <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                               <div className="flex items-center gap-2 mb-1">
@@ -623,7 +628,7 @@ export default function FormatConverter() {
                               className="w-full h-12 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 shadow-lg shadow-emerald-500/20 transition-all hover:shadow-emerald-500/30 hover:scale-[1.02]"
                             >
                               <Download className="h-4 w-4 mr-2" />
-                              Download {outputFormat.toUpperCase()}
+                              Download {resultFormat.toUpperCase()}
                               <ArrowRight className="h-4 w-4 ml-2" />
                             </Button>
                           </motion.div>
@@ -650,4 +655,3 @@ export default function FormatConverter() {
     </ToolLayout>
   );
 }
-

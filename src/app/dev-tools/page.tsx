@@ -1,7 +1,8 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/dev-tools", {
   title: "Developer Tools - Free Online Dev Utilities",
   description:
     "Use free browser-based developer tools including JSON Formatter, Base64 Encoder, JWT Decoder, Regex Tester, API Client, UUID Generator, and more.",
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Free browser-based dev utilities for JSON, Base64, JWT, Regex, SQL, and API workflows.",
   },
-};
+});
 
 export default function DevToolsCategoryPage() {
   return (

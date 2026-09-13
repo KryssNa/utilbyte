@@ -1,11 +1,10 @@
-import ToolStructuredData from "@/components/shared/ToolStructuredData";
-import LocalProxy from "@/components/tools/dev/LocalProxy";
-import { Metadata } from "next";
+import { createToolMetadata } from "@/lib/tool-metadata";
 
-export const metadata: Metadata = {
+import LocalProxy from "@/components/tools/dev/LocalProxy";
+
+export const metadata = createToolMetadata("/dev-tools/local-proxy", {
   title: "Local Proxy - Forward Requests to Localhost",
-  description:
-    "Forward public webhook requests to your localhost via ngrok, localtunnel, or cloudflared. Debug integrations directly on your local machine in real-time.",
+  description: "Configure forwarding for hosted Request Catcher bins to a reachable destination, including a local development tunnel. Use synthetic requests; bins have no owner authentication.",
   keywords: [
     "local proxy",
     "ngrok alternative",
@@ -16,18 +15,8 @@ export const metadata: Metadata = {
     "local development proxy",
     "request forwarding",
   ],
-  openGraph: {
-    title: "Local Proxy - Forward Requests to Localhost",
-    description:
-      "Forward webhook requests from a public URL to your localhost. Works with ngrok, localtunnel, and cloudflared.",
-    type: "website",
-    locale: "en_US",
-  },
-  alternates: {
-    canonical: "/dev-tools/local-proxy",
-  },
-};
+});
 
 export default function LocalProxyPage() {
-  return <><ToolStructuredData href="/dev-tools/local-proxy" /><LocalProxy /></>;
+  return <LocalProxy />;
 }

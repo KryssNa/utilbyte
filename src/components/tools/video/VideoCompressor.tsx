@@ -11,12 +11,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFfmpegEngine } from "@/hooks/use-ffmpeg-engine";
 import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Settings, Upload, Zap } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { compressVideoArticle } from "@/content/tools/compress-video";
 
 type VideoFormat = "mp4" | "webm" | "avi";
 type QualityPreset = "low" | "medium" | "high" | "custom";
+
+export const VIDEO_ENCODINGS = {
+  mp4: { videoCodec: "libx264", audioCodec: "aac", mime: "video/mp4" },
+  webm: { videoCodec: "libvpx-vp9", audioCodec: "libopus", mime: "video/webm" },
+  avi: { videoCodec: "libx264", audioCodec: "aac", mime: "video/x-msvideo" },
+} as const;
 
 interface CompressionSettings {
   format: VideoFormat;
@@ -42,6 +48,8 @@ export default function VideoCompressor() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [compressedVideo, setCompressedVideo] = useState<string | null>(null);
+  const [resultFormat, setResultFormat] = useState<VideoFormat>("mp4");
+  useEffect(() => () => { if (compressedVideo) URL.revokeObjectURL(compressedVideo); }, [compressedVideo]);
   const [compressionStats, setCompressionStats] = useState<{
     originalSize: number;
     compressedSize: number;
@@ -131,32 +139,35 @@ export default function VideoCompressor() {
 
       const outputFile = `output.${settings.format}`;
       const resolution = getResolutionDimensions(compressionSettings.resolution);
+      const encoding = VIDEO_ENCODINGS[settings.format];
 
       // Build FFmpeg command based on settings
       const command = [
         "-i", "input.mp4",
         "-vf", `scale=${resolution}:force_original_aspect_ratio=decrease,pad=${resolution}:(ow-iw)/2:(oh-ih)/2`,
-        "-c:v", settings.format === "webm" ? "libvpx-vp9" : "libx264",
+        "-c:v", encoding.videoCodec,
         "-b:v", compressionSettings.bitrate,
         "-maxrate", compressionSettings.bitrate,
         "-bufsize", `${parseInt(compressionSettings.bitrate) * 2}k`,
         "-r", compressionSettings.fps.toString(),
-        "-c:a", "aac",
+        "-c:a", encoding.audioCodec,
         "-b:a", "128k",
         "-y",
         outputFile
       ];
 
       // Execute compression
-      await ffmpeg.exec(command);
+      const exitCode = await ffmpeg.exec(command);
+      if (exitCode !== 0) throw new Error("The selected video could not be encoded.");
 
       // Read the output file
       const data = await ffmpeg.readFile(outputFile);
       if (ffmpegRef.current !== ffmpeg || !ffmpeg.loaded) return;
-      const blob = new Blob([data as unknown as BlobPart], { type: `video/${settings.format}` });
+      const blob = new Blob([data as unknown as BlobPart], { type: encoding.mime });
       const url = URL.createObjectURL(blob);
 
       setCompressedVideo(url);
+      setResultFormat(settings.format);
       setCompressionStats({
         originalSize: videoFile.size,
         compressedSize: blob.size,
@@ -183,13 +194,13 @@ export default function VideoCompressor() {
 
     const link = document.createElement('a');
     link.href = compressedVideo;
-    link.download = `compressed-video.${settings.format}`;
+    link.download = `compressed-video.${resultFormat}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast.success("Video downloaded!");
-  }, [compressedVideo, settings.format]);
+  }, [compressedVideo, resultFormat]);
 
   const resetTool = () => {
     setVideoFile(null);
@@ -226,7 +237,7 @@ export default function VideoCompressor() {
   const faqs = [
     {
       question: "How much can I reduce video file size?",
-      answer: "Compression depends on quality settings. Typically 30-80% size reduction is possible while maintaining good quality.",
+      answer: "The result depends on the source, duration, resolution and bitrate you choose. Some inputs become larger. Compare the output size and preview before replacing your original.",
     },
     {
       question: "Will video quality be affected?",
@@ -234,7 +245,7 @@ export default function VideoCompressor() {
     },
     {
       question: "What video formats are supported?",
-      answer: "Most common formats including MP4, AVI, MOV, MKV, WMV, FLV, and WebM are supported for compression.",
+      answer: "The tool exports MP4, WebM and AVI. Input compatibility depends on the codecs supported by the bundled FFmpeg engine; a familiar file extension alone does not guarantee compatibility.",
     },
     {
       question: "Is my video data secure?",
@@ -447,8 +458,8 @@ export default function VideoCompressor() {
 
                   {/* Preview */}
                   <div className="bg-muted/30 rounded-lg p-4">
-                    <video controls className="w-full max-h-64 rounded">
-                      <source src={compressedVideo} type={`video/${settings.format}`} />
+                    <video key={compressedVideo} controls className="w-full max-h-64 rounded">
+                      <source src={compressedVideo} type={VIDEO_ENCODINGS[resultFormat].mime} />
                       Your browser does not support the video element.
                     </video>
                   </div>
@@ -456,7 +467,7 @@ export default function VideoCompressor() {
                   <div className="flex gap-2">
                     <Button onClick={downloadVideo} className="flex-1">
                       <Download className="h-4 w-4 mr-2" />
-                      Download {settings.format.toUpperCase()}
+                      Download {resultFormat.toUpperCase()}
                     </Button>
                     <Button onClick={resetTool} variant="outline">
                       Compress Another Video

@@ -9,11 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFfmpegEngine } from "@/hooks/use-ffmpeg-engine";
 import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Music, Upload } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { videoToAudioArticle } from "@/content/tools/video-to-audio";
 
 type AudioFormat = "mp3" | "wav" | "aac" | "ogg" | "m4a";
+
+export const AUDIO_ENCODINGS = {
+  mp3: { codec: "libmp3lame", muxer: "mp3", mime: "audio/mpeg" },
+  wav: { codec: "pcm_s16le", muxer: "wav", mime: "audio/wav" },
+  aac: { codec: "aac", muxer: "adts", mime: "audio/aac" },
+  ogg: { codec: "libvorbis", muxer: "ogg", mime: "audio/ogg" },
+  m4a: { codec: "aac", muxer: "ipod", mime: "audio/mp4" },
+} as const;
 
 export default function VideoToAudio() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -21,6 +29,8 @@ export default function VideoToAudio() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [processedAudio, setProcessedAudio] = useState<string | null>(null);
+  const [resultFormat, setResultFormat] = useState<AudioFormat>("mp3");
+  useEffect(() => () => { if (processedAudio) URL.revokeObjectURL(processedAudio); }, [processedAudio]);
   const [error, setError] = useState<string>("");
   const { ffmpegRef, ffmpegLoaded, ffmpegLoading, loadAttempts, loadFFmpeg, cancelEngine } = useFfmpegEngine(setError, setProgress);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,51 +71,30 @@ export default function VideoToAudio() {
       // Write input file to FFmpeg file system
       await ffmpeg.writeFile("input.mp4", await fetchFile(videoFile));
 
-      // Determine output format and codec
-      let outputFile = "output.mp3";
-      let codec = "libmp3lame";
-
-      switch (audioFormat) {
-        case "mp3":
-          outputFile = "output.mp3";
-          codec = "libmp3lame";
-          break;
-        case "wav":
-          outputFile = "output.wav";
-          codec = "pcm_s16le";
-          break;
-        case "aac":
-          outputFile = "output.m4a";
-          codec = "aac";
-          break;
-        case "ogg":
-          outputFile = "output.ogg";
-          codec = "libvorbis";
-          break;
-        case "m4a":
-          outputFile = "output.m4a";
-          codec = "aac";
-          break;
-      }
+      const outputFile = `output.${audioFormat}`;
+      const encoding = AUDIO_ENCODINGS[audioFormat];
 
       // Extract audio using FFmpeg
-      await ffmpeg.exec([
+      const exitCode = await ffmpeg.exec([
         "-i", "input.mp4",
         "-vn", // No video
-        "-acodec", codec,
+        "-acodec", encoding.codec,
         "-ab", "192k", // Bitrate
         "-ar", "44100", // Sample rate
+        "-f", encoding.muxer,
         "-y", // Overwrite output
         outputFile
       ]);
+      if (exitCode !== 0) throw new Error("The selected audio could not be encoded.");
 
       // Read the output file
       const data = await ffmpeg.readFile(outputFile);
       if (ffmpegRef.current !== ffmpeg || !ffmpeg.loaded) return;
-      const blob = new Blob([data as unknown as BlobPart], { type: `audio/${audioFormat}` });
+      const blob = new Blob([data as unknown as BlobPart], { type: encoding.mime });
       const url = URL.createObjectURL(blob);
 
       setProcessedAudio(url);
+      setResultFormat(audioFormat);
       toast.success(`Audio extracted successfully as ${audioFormat.toUpperCase()}!`);
 
       // Clean up
@@ -126,13 +115,13 @@ export default function VideoToAudio() {
 
     const link = document.createElement('a');
     link.href = processedAudio;
-    link.download = `extracted-audio.${audioFormat}`;
+    link.download = `extracted-audio.${resultFormat}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast.success("Audio downloaded!");
-  }, [processedAudio, audioFormat]);
+  }, [processedAudio, resultFormat]);
 
   const resetTool = () => {
     setVideoFile(null);
@@ -154,8 +143,8 @@ export default function VideoToAudio() {
 
   const audioFormats = [
     { value: "mp3", label: "MP3", description: "Universal format, good quality" },
-    { value: "wav", label: "WAV", description: "Uncompressed, highest quality" },
-    { value: "aac", label: "AAC", description: "Good quality, smaller files" },
+    { value: "wav", label: "WAV", description: "16-bit PCM at 44.1 kHz" },
+    { value: "aac", label: "AAC", description: "AAC audio in an ADTS file" },
     { value: "ogg", label: "OGG", description: "Open format, good compression" },
     { value: "m4a", label: "M4A", description: "Container for AAC audio" },
   ];
@@ -163,7 +152,7 @@ export default function VideoToAudio() {
   const faqs = [
     {
       question: "What video formats are supported?",
-      answer: "Most common video formats are supported including MP4, AVI, MOV, MKV, WMV, FLV, and more. The tool works entirely in your browser.",
+      answer: "Input support depends on the audio and video codecs available in the bundled FFmpeg engine. A video needs a decodable audio track; a familiar file extension alone does not guarantee compatibility.",
     },
     {
       question: "How long does processing take?",
@@ -175,7 +164,7 @@ export default function VideoToAudio() {
     },
     {
       question: "What audio quality can I expect?",
-      answer: "Audio is extracted at high quality (192kbps for MP3, 44.1kHz sample rate). WAV format provides lossless quality.",
+      answer: "The tool resamples to 44.1 kHz. Compressed formats target 192 kbps; WAV uses uncompressed 16-bit PCM. Converting cannot recover detail missing from the source, and resampling can change the original samples.",
     },
   ];
 
@@ -297,7 +286,7 @@ export default function VideoToAudio() {
           </Card>
         )}
 
-        {/* Error Display */}￼Advanced Settings
+        {/* Error Display */}
 
         {error && (
           <Alert variant="destructive">
@@ -315,13 +304,13 @@ export default function VideoToAudio() {
                 Audio Extracted Successfully
               </CardTitle>
               <CardDescription>
-                Your audio has been extracted as {audioFormat.toUpperCase()}
+                Your audio has been extracted as {resultFormat.toUpperCase()}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/30 rounded-lg p-4">
-                <audio controls className="w-full">
-                  <source src={processedAudio} type={`audio/${audioFormat}`} />
+                <audio key={processedAudio} controls className="w-full">
+                  <source src={processedAudio} type={AUDIO_ENCODINGS[resultFormat].mime} />
                   Your browser does not support the audio element.
                 </audio>
               </div>
@@ -329,7 +318,7 @@ export default function VideoToAudio() {
               <div className="flex gap-2">
                 <Button onClick={downloadAudio} className="flex-1">
                   <Download className="h-4 w-4 mr-2" />
-                  Download {audioFormat.toUpperCase()}
+                  Download {resultFormat.toUpperCase()}
                 </Button>
                 <Button onClick={resetTool} variant="outline">
                   Process Another Video

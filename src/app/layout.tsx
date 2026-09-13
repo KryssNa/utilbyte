@@ -1,3 +1,4 @@
+import { SOCIAL_CARD } from "@/lib/social-card";
 import WorkspaceLayout from "@/components/layout/WorkspaceLayout";
 import { NavigationSafety } from "@/components/shared/NavigationSafety";
 import Footer from "@/components/layout/Footer";
@@ -74,20 +75,13 @@ export const metadata: Metadata = {
     description:
       "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
     siteName: "UtilByte",
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "UtilByte - Free Online Tools",
-      },
-    ],
+    images: [SOCIAL_CARD],
   },
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
     description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
-    images: ["/opengraph-image"],
+    images: [SOCIAL_CARD],
   },
   robots: {
     index: true,
@@ -141,6 +135,12 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
       </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org", "@graph": [
+            { "@type": "WebSite", "@id": "https://utilbyte.app/#website", url: "https://utilbyte.app", name: "UtilByte", inLanguage: "en", publisher: { "@id": "https://utilbyte.app/#organization" } },
+            { "@type": "Organization", "@id": "https://utilbyte.app/#organization", name: "UtilByte", url: "https://utilbyte.app", logo: "https://utilbyte.app/logo.svg", sameAs: ["https://github.com/KryssNa/utilbyte"] },
+          ],
+        }) }} />
         <Script src="/tool-preferences.js" strategy="beforeInteractive" />
         <Script
           async

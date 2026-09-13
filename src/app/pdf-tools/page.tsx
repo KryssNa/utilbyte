@@ -1,12 +1,13 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/pdf-tools", {
   title: "PDF Tools - Merge, Split, Compress & Convert PDFs",
   description:
     "Free PDF tools to merge, split, compress, edit, rotate, and convert PDF files in your browser with privacy-first processing.",
   alternates: { canonical: "/pdf-tools" },
-};
+});
 
 export default function PdfToolsCategoryPage() {
   return (

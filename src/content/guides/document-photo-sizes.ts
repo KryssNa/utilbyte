@@ -15,6 +15,7 @@ export const documentPhotoSizesGuide: Guide = {
     "mm to pixels 300 dpi",
   ],
   published: "2026-08-24",
+  updated: "2026-09-12",
   summary:
     "A reference for document photo specifications and, more usefully, a method for reading one you have never seen before. Two specifications here are quoted from the issuing authority and linked. Everything else is either arithmetic, which is safe anywhere, or a convention that you have to confirm before you rely on it.",
   readingMinutes: 7,
@@ -27,8 +28,8 @@ export const documentPhotoSizesGuide: Guide = {
     {
       heading: "The two specifications on this page that were checked at source",
       body: [
-        "The US visa and Diversity Visa digital photo is square. It must be at least 600 by 600 pixels and no more than 1200 by 1200. It must be JPEG, 240 KB or less, in colour at 24 bits per pixel in sRGB, with a compression ratio of 20:1 or lower. If you are scanning a printed photo instead, the print is 2 by 2 inches, which is 51 by 51 mm, scanned at 300 ppi. The page is at https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html, and it carries example images no amount of text substitutes for.",
-        "The UK passport digital photo must be at least 600 pixels wide and 750 pixels tall, with the file between 50 KB and 10 MB. It must be in colour, in focus, against a plain light-coloured background, and not altered in any way. Those requirements are published at https://www.gov.uk/photos-for-passports, and that page is the only version of them that counts.",
+        "The general US visa digital-image specification is square; the DV entry instructions have a more specific dimension requirement. It must be at least 600 by 600 pixels and no more than 1200 by 1200. It must be JPEG, 240 KB or less, in colour at 24 bits per pixel in sRGB, with a compression ratio of 20:1 or lower. If you are scanning a printed photo instead, the print is 2 by 2 inches, which is 51 by 51 mm, scanned at 300 ppi. The general specification is at https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos/digital-image-requirements.html. The DV entry section at https://travel.state.gov/content/travel/en/us-visas/visa-information-resources/photos.html specifies exactly 600 by 600 pixels; do not substitute the general range.",
+        "The UK passport digital photo must be at least 600 pixels wide and 750 pixels tall, with the file between 50 KB and 10 MB. It must be in colour, in focus, against a plain light-coloured background, and not altered in any way. GOV.UK also says not to crop a photo taken on your own device for the digital application; the application will crop it. Follow https://www.gov.uk/photos-for-passports rather than preparing a generic cropped passport image.",
         "Two things are worth pulling out. Neither is the 35 by 45 mm rectangle people expect a passport photo to be: the US is square, and the UK digital rule is expressed as pixel minimums and never mentions millimetres. And both specify more than a size - a format, a colour instruction, and a file size range with a bottom as well as a top.",
       ],
     },
@@ -41,7 +42,7 @@ export const documentPhotoSizesGuide: Guide = {
         columns: ["Photo", "Stated size", "Other stated constraints", "Status"],
         rows: [
           [
-            "US visa and Diversity Visa, digital",
+            "General US visa digital image (DV entry: exactly 600 × 600)",
             "Square, 600 x 600 px minimum, 1200 x 1200 px maximum",
             "JPEG only, 240 KB or less, colour at 24 bits per pixel in sRGB, compression ratio 20:1 or lower",
             "Verified at travel.state.gov",
@@ -94,7 +95,7 @@ export const documentPhotoSizesGuide: Guide = {
     {
       heading: "The 35 by 45 mm rectangle, and why no country is named beside it",
       body: [
-        "The 35 by 45 mm print size derives from the ICAO travel document standard and is the size most often quoted outside the United States - Schengen visa applications, Indian and Nepali documents and a long list of others are commonly described as using it. At 300 dpi it is 413 by 531 pixels.",
+        "A 35 by 45 mm print size appears in some document specifications. It is not a universal national or international rule. At 300 pixels per inch, rounding to the nearest pixel gives 413 by 531 pixels; verify the actual size and rounding required by the receiving authority.",
         "It is not, though, any particular country's rule. Authorities that share a print size still differ on background colour, on how much of the frame the head must fill, and on what their online system wants, which is often nothing like the print size.",
         "The UK is the clean illustration. A printed UK passport photo is usually given as the familiar 35 by 45 mm rectangle, while the digital application asks for at least 600 by 750 pixels and a file between 50 KB and 10 MB. Assume the print size is the requirement and produce 413 by 531, and you are under the digital minimum on both axes.",
       ],
@@ -103,7 +104,7 @@ export const documentPhotoSizesGuide: Guide = {
       heading: "Millimetres, inches and pixels are three different things",
       body: [
         "A print size describes ink on paper. A digital image has no physical size at all - it has a pixel count, and a pixel has no width until something decides to print it. The bridge between them is a resolution figure in dots or pixels per inch.",
-        "The conversion is one line. There are 25.4 millimetres in an inch, so pixels equals millimetres divided by 25.4, times the dpi. For 35 by 45 mm at 300 dpi: 35 divided by 25.4 is 1.378 inches, times 300 is 413.4, so 413 pixels wide. The height comes out at 531.5, so 531 tall. At 600 dpi the same rectangle is 827 by 1063.",
+        "The conversion is one line. There are 25.4 millimetres in an inch, so pixels equals millimetres divided by 25.4, times the dpi. For 35 by 45 mm at 300 dpi: 35 divided by 25.4 is 1.378 inches, times 300 is 413.4, so 413 pixels wide. The height comes out at approximately 531.496, so 531 tall when rounded to the nearest whole pixel. At 600 dpi the same rectangle is 827 by 1063.",
         "Two notes on rounding. Fractional pixels do not exist, so round to the nearest whole one - but where a form states a minimum, round up, because 413.4 rounded down is short. And two inches is 50.8 mm, not 51. Specifications quoting 51 mm are rounding for convenience, harmless on paper and 602 pixels if you convert it literally.",
       ],
     },
@@ -138,7 +139,7 @@ export const documentPhotoSizesGuide: Guide = {
       heading: "Head height and background, the parts a tool cannot fix",
       body: [
         "Head height rules get quoted wrongly more often than any other number here, partly because authorities express them in incompatible ways. Some give a millimetre range from chin to crown, some a percentage of the frame height, and some publish a diagram with two arrows and no numbers in the text.",
-        "Read that requirement on your own authority's page and compose to it when the photo is taken. It is the one thing you cannot fix afterwards. If the head was too small in the frame, cropping in throws away resolution you may need for a pixel minimum, and cropping out is impossible once the top of the head is at the edge.",
+        "Read that requirement on your own authority's page and compose to it when the photo is taken. Whether later cropping is permitted depends on the application. If the head was too small in the frame, cropping in throws away resolution you may need for a pixel minimum, and cropping out is impossible once the top of the head is at the edge.",
         "Background is the same kind of problem. Plain and light-coloured is a photography instruction, not an editing one - replacing a background digitally is what unaltered rules exist to exclude, and the result tends to be detectable at the hairline. Stand a metre or so from a plain wall so your shadow falls behind you.",
       ],
     },
@@ -147,7 +148,7 @@ export const documentPhotoSizesGuide: Guide = {
       body: [
         "The routine is short. Find the requirements page on the issuing authority's own domain, not an aggregator and not a photo shop. Read it in full rather than skimming for the size, because format, colour and file size rules sit in separate sentences from the dimensions. Then check your file against every constraint, including the ones that are words rather than numbers.",
         "Where the authority publishes example photos, look at them. They resolve questions the text leaves open - how much shoulder to include, how close is too close - faster than any written description.",
-        "If a specification is genuinely ambiguous, take the stricter reading. A photo at the higher end of an allowed pixel range and comfortably inside a file size window passes either way. One sitting exactly on both boundaries passes only if your interpretation matches theirs.",
+        "If a specification is ambiguous, consult the issuing authority’s guidance or support. Choosing a larger image is not always safer: an application-specific exact dimension can override a general range. Do not assume a file will pass because one interpretation permits it.",
       ],
       callout: {
         tone: "warning",
@@ -160,7 +161,7 @@ export const documentPhotoSizesGuide: Guide = {
       label: "Document Photo Maker",
       href: "/image-tools/document-photo",
       description:
-        "Crop to a required document shape and produce the file at exact pixel dimensions, compressing to a stated cap without changing the size. Carries the two verified specifications above as presets.",
+        "Prepare copies using preset or custom dimensions where editing is permitted. Presets do not certify compliance; do not crop self-taken UK digital application photos contrary to GOV.UK instructions.",
     },
     {
       label: "Resize Image",
@@ -172,13 +173,13 @@ export const documentPhotoSizesGuide: Guide = {
       label: "Crop Image",
       href: "/image-tools/crop-image",
       description:
-        "Set the aspect ratio the specification asks for before you touch the pixel numbers. Square for a US visa photo, portrait for a UK digital passport photo.",
+        "Set a crop shape only where the application permits it. The UK digital application instructs users not to crop self-taken photos.",
     },
     {
       label: "Compress to Size",
       href: "/image-tools/compress-to-size",
       description:
-        "State the byte limit and it finds the highest quality that fits under it, which is the second half of the minimum-pixels-against-maximum-kilobytes problem.",
+        "Try reducing a permitted image copy below a byte limit. Check final dimensions and quality; some targets cannot be reached without compromising a requirement.",
     },
     {
       label: "Image Compressor",

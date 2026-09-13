@@ -3,8 +3,8 @@ import type { ToolArticleContent } from "@/components/shared/ToolArticle";
 export const textFormatterArticle: ToolArticleContent = {
   intro: [
     "Somebody has handed you a wall of text that is meant to be structured. A JSON blob copied out of a log line with every newline stripped. A SQL query written as one 400-character sentence. A block of minified CSS you need to read.",
-    "Formatting it does not change what it means. It re-indents and line-breaks it so a human can see the structure, which is the only thing standing between you and understanding it.",
-    "This handles JSON, XML, SQL, CSS, JavaScript and TypeScript, and tells you when the input is broken rather than silently producing nonsense.",
+    "Formatting aims to make structure easier to read. This tool uses basic text rules outside JSON, so keep the original and check that the result still means the same thing.",
+    "This offers JSON, XML, SQL, CSS, JavaScript and TypeScript modes. Only JSON is parsed and checked for syntax errors; the other modes are not validators.",
   ],
   sections: [
     {
@@ -13,7 +13,7 @@ export const textFormatterArticle: ToolArticleContent = {
         "These are different operations that overlap in a useful way.",
         "For JSON, formatting requires parsing, and parsing requires the input to be valid. So a formatter is a validator by side effect: if it produces output, your JSON is syntactically correct, and if it errors, it tells you where. That error position is often the fastest way to find a missing comma in a large document.",
         "For SQL and CSS the relationship is weaker. Both can be re-indented on a fairly shallow reading of the text, so a formatter will happily lay out a query that references a table which does not exist, or CSS with a property name that means nothing. Formatting tells you the shape is plausible. It does not tell you it works.",
-        "The practical upshot: if JSON formats, it is valid JSON. If SQL formats, you have learned only that the brackets balance.",
+        "The practical upshot: JSON must parse to produce output. Formatting SQL does not establish syntax validity, balanced brackets or correct query behavior.",
       ],
     },
     {
@@ -60,11 +60,11 @@ export const textFormatterArticle: ToolArticleContent = {
     note: "Identical data, and now you can see that meta.source is null and that roles is an array rather than a string - two things that are almost impossible to spot in the single-line form and that change how you write the code consuming it. Also note lastSeen: ten digits, so it is Unix seconds, not milliseconds. Formatting is what makes those details visible.",
   },
   limitations: [
-    "Formatting changes layout, never meaning. If the input is wrong, the output is neatly laid out and still wrong.",
+    "The non-JSON modes apply text substitutions and can alter strings, comments or code incorrectly. Review the result; formatting success does not prove correctness.",
     "Only JSON is genuinely validated by the process. SQL and CSS can format cleanly while being semantically nonsense.",
     "The JavaScript and TypeScript handling is indentation, not a full formatter. For a codebase, use the project's own formatter so everyone's output matches.",
     "Comments and blank lines may be moved or lost, since they carry no structural meaning to a formatter.",
     "Minified code gets its line breaks back but not its original variable names - those were discarded by the minifier.",
-    "Everything runs in the browser, so very large documents are limited by memory rather than by the tool.",
+    "JSON uses native JSON.parse here, so duplicate keys can be discarded and unsafe numbers can round. Use the dedicated JSON Formatter when you need its duplicate-key and numeric-safety checks. Large documents also depend on available browser memory.",
   ],
 };

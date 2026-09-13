@@ -287,7 +287,12 @@ export default function DocumentPhoto() {
         {
           question: "Why is my file smaller than the stated minimum?",
           answer:
-            "Some authorities set a lower bound as well as an upper one. If your crop is a plain, low-detail image it can encode below that floor. Use a larger pixel size or a less aggressive crop, and the tool will warn you when it happens.",
+            "Some authorities set a lower bound as well as an upper one. If your crop is a plain, low-detail image it can encode below that floor. The tool warns when this happens. Change pixel dimensions only if your application allows it; Diversity Visa entries require exactly 600 x 600 pixels.",
+        },
+        {
+          question: "Can I prepare a UK digital passport photo here?",
+          answer:
+            "Use the official GOV.UK passport workflow for a photo taken on your own device. Its guidance says not to crop the photo because the application handles cropping, and requires it to be unaltered by computer software. There is no UK digital passport cropping preset here.",
         },
         {
           question: "Does my photo get uploaded?",
@@ -302,7 +307,11 @@ export default function DocumentPhoto() {
           <p className="text-sm text-muted-foreground">
             This tool handles dimensions and file size. It does not check head position,
             background, expression or lighting, and specifications change. Always read the
-            current requirements from the authority you are applying to before you submit.
+            current requirements from the authority you are applying to before you submit. For UK digital
+            passport applications, follow the{" "}
+            <a className="underline underline-offset-4" href="https://www.gov.uk/photos-for-passports" target="_blank" rel="noopener noreferrer">
+              official instructions to upload your own-device photo without cropping
+            </a>.
           </p>
         </div>
 

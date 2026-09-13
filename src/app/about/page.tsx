@@ -1,11 +1,13 @@
+import PageStructuredData from "@/components/shared/PageStructuredData";
+import { withPageMetadata } from "@/lib/page-metadata";
 import { catalog, catalogCategories } from "@/lib/tool-catalog";
 import { Code2, FileText, Globe, Heart, Image, Lock, Shield, Sparkles, Target, Type, Users, Video, Wrench, Zap } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/about", {
   title: "About Us",
-  description: "Learn about UtilByte - free, privacy-first online tools for images, PDFs, text and developers. No sign-ups, and file processing that happens in your browser rather than on a server.",
+  description: "Meet UtilByte: free tools for images, PDFs, text and developers. Local file processing, clearly disclosed network services, no sign-up, and open-source code.",
   keywords: "about utilbyte, free online tools, privacy first tools, browser based tools",
   openGraph: {
     title: "About Us | UtilByte",
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/about",
   },
-};
+});
 
 const stats = [
   { number: String(catalog.length), label: "Free Tools", icon: Wrench },
@@ -65,6 +67,7 @@ const values = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
+      <PageStructuredData route="/about" name={String(metadata.title)} description={metadata.description!} type="AboutPage" />
       {/* Header */}
       <div className="border-b border-border bg-gradient-to-b from-transparent to-violet-50/30 dark:to-violet-950/10">
         <div className="container mx-auto px-4 py-16 lg:px-8">
