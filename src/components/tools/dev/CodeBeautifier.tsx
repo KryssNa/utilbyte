@@ -9,6 +9,7 @@ import { Code2, Check, Copy, RotateCcw } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { codeBeautifierArticle } from "@/content/tools/code-beautifier";
 type CodeType = "html" | "css" | "javascript";
 
 export default function CodeBeautifier() {
@@ -94,6 +95,7 @@ export default function CodeBeautifier() {
 
   return (
     <ToolLayout
+      article={codeBeautifierArticle}
       title="Code Beautifier"
       description="Format and beautify HTML, CSS, and JavaScript code online with proper indentation."
       category="dev"

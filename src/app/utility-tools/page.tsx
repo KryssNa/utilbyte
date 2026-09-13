@@ -1,12 +1,13 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/utility-tools", {
   title: "Utility Tools - QR, Barcode, Password, Time & Conversion",
   description:
     "Free utility tools including QR code generator, barcode creator, password generator, timestamp converter, countdown timer, and more.",
   alternates: { canonical: "/utility-tools" },
-};
+});
 
 export default function UtilityToolsCategoryPage() {
   return (

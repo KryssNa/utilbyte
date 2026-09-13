@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { AlertCircle, Calendar, CheckCircle, Clock, FileText } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
+import { cronParserArticle } from "@/content/tools/cron-parser";
 interface CronField {
   name: string;
   value: string;
@@ -297,6 +298,7 @@ export default function CronParser() {
 
   return (
     <ToolLayout
+      article={cronParserArticle}
       title="Cron Parser"
       description="Parse and understand cron expressions. See when your scheduled jobs will run next with human-readable explanations."
       category="dev"

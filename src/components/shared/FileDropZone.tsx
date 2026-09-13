@@ -1,5 +1,6 @@
 "use client";
 
+import { validateFile } from "@/lib/file-validation";
 import { Button } from "@/components/ui/button";
 import { cn, formatFileSize } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -37,35 +38,9 @@ export default function FileDropZone({
   const validateFiles = useCallback(
     (fileList: File[]): File[] => {
       const validFiles: File[] = [];
-      const acceptedTypes = accept.split(",").map((t) => t.trim());
-
       for (const file of fileList) {
-        if (file.size > maxSize) {
-          setError(
-            `File "${file.name}" exceeds maximum size of ${Math.round(maxSize / 1024 / 1024)}MB`
-          );
-          continue;
-        }
-
-        if (accept !== "*") {
-          const fileType = file.type;
-          const fileExt = `.${file.name.split(".").pop()?.toLowerCase()}`;
-          const isAccepted = acceptedTypes.some((type) => {
-            if (type.startsWith(".")) {
-              return fileExt === type.toLowerCase();
-            }
-            if (type.endsWith("/*")) {
-              return fileType.startsWith(type.replace("/*", "/"));
-            }
-            return fileType === type;
-          });
-
-          if (!isAccepted) {
-            setError(`File "${file.name}" is not an accepted file type`);
-            continue;
-          }
-        }
-
+        const message = validateFile(file, accept, maxSize);
+        if (message) { setError(message); continue; }
         validFiles.push(file);
       }
 
@@ -78,6 +53,8 @@ export default function FileDropZone({
   const processDroppedFiles = useCallback(
     (droppedFiles: File[]) => {
       setError(null);
+      if (!droppedFiles.length) return;
+      if (multiple && files.length + droppedFiles.length > maxFiles) { setError(`Select at most ${maxFiles} files in total.`); return; }
       const filesToAdd = multiple ? droppedFiles.slice(0, maxFiles) : [droppedFiles[0]];
       const validFiles = validateFiles(filesToAdd);
 
@@ -293,7 +270,7 @@ export default function FileDropZone({
               >
                 <motion.div
                   className={cn(
-                    "mb-8 p-6 rounded-2xl transition-colors duration-200",
+                    "mb-4 p-3 rounded-2xl transition-colors duration-200",
                     isDragActive || isPageDrag ? "bg-primary/10" : "bg-muted"
                   )}
                   animate={isDragActive || isPageDrag ? { scale: [1, 1.1, 1] } : {}}
@@ -301,17 +278,18 @@ export default function FileDropZone({
                 >
                   <Upload
                     className={cn(
-                      "h-14 w-14 sm:h-16 sm:w-16 transition-colors duration-200",
+                      "h-8 w-8 sm:h-10 sm:w-10 transition-colors duration-200",
                       isDragActive || isPageDrag ? "text-primary" : "text-muted-foreground"
                     )}
                     strokeWidth={1.5}
                   />
                 </motion.div>
-                <p className="text-2xl sm:text-3xl font-semibold mb-3">
+                <p className="mb-2 text-lg font-semibold sm:text-xl">
                   {isDragActive || isPageDrag ? "Drop files here" : "Drag & drop files here"}
                 </p>
-                <p className="text-lg text-muted-foreground mb-5">or click to browse • paste images (Ctrl+V)</p>
-                <p className="text-base text-muted-foreground">
+                <button type="button" data-file-picker onClick={event => { event.stopPropagation(); inputRef.current?.click(); }} className="mb-3 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">{multiple ? "Choose files" : "Choose file"}</button>
+                <p className="mb-2 hidden text-xs text-muted-foreground sm:block">You can also paste an image from your clipboard.</p>
+                <p className="text-xs text-muted-foreground">
                   {multiple ? `Up to ${maxFiles} files, ` : ""}
                   max {Math.round(maxSize / 1024 / 1024)}MB each
                 </p>
@@ -333,9 +311,7 @@ export default function FileDropZone({
                 <p className="text-center text-sm font-medium mb-4">
                   {files.length} file{files.length !== 1 ? "s" : ""} selected
                 </p>
-                <p className="text-center text-xs text-muted-foreground">
-                  Click, drag, or paste (Ctrl+V) to add more files
-                </p>
+                <button type="button" data-file-picker onClick={event => { event.stopPropagation(); inputRef.current?.click(); }} className="mx-auto flex min-h-11 items-center rounded-lg border px-4 text-sm font-medium hover:bg-muted">{multiple ? "Choose more files" : "Replace file"}</button>
               </motion.div>
             )}
           </AnimatePresence>

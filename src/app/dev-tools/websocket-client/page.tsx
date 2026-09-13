@@ -1,10 +1,10 @@
-import WebSocketClient from "@/components/tools/dev/WebSocketClient";
-import { Metadata } from "next";
+import { createToolMetadata } from "@/lib/tool-metadata";
 
-export const metadata: Metadata = {
+import WebSocketClient from "@/components/tools/dev/WebSocketClient";
+
+export const metadata = createToolMetadata("/dev-tools/websocket-client", {
   title: "WebSocket Client Online Free - Test WebSocket Connections",
-  description:
-    "Connect to any WebSocket server, send and receive messages in real-time. Debug WebSocket APIs, test real-time connections, and inspect message payloads.",
+  description: "Connect directly from your browser to a compatible WebSocket server, send messages and inspect replies. Connections depend on browser and server security policies.",
   keywords: [
     "websocket client online",
     "websocket tester",
@@ -17,17 +17,7 @@ export const metadata: Metadata = {
     "wss client",
     "websocket inspector",
   ],
-  openGraph: {
-    title: "WebSocket Client Online Free - Test Real-Time Connections",
-    description:
-      "Connect to WebSocket servers, send and receive messages in real-time. Debug and test WebSocket APIs.",
-    type: "website",
-    locale: "en_US",
-  },
-  alternates: {
-    canonical: "/dev-tools/websocket-client",
-  },
-};
+});
 
 export default function WebSocketClientPage() {
   return <WebSocketClient />;

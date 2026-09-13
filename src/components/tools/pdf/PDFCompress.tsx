@@ -29,6 +29,7 @@ import { PDFDocument } from "pdf-lib";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { compressPdfArticle } from "@/content/tools/compress-pdf";
 // Dynamic import for PDF.js to avoid SSR issues
 let pdfjsLib: any = null;
 
@@ -97,7 +98,7 @@ export default function PDFCompress() {
     const initPdfJs = async () => {
       try {
         pdfjsLib = (await import('pdfjs-dist')).default;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
         setIsPdfJsReady(true);
       } catch (error) {
         console.error('Failed to initialize PDF.js:', error);
@@ -393,11 +394,11 @@ export default function PDFCompress() {
   const faqs = [
     {
       question: "How much can I compress PDFs?",
-      answer: "Compression depends on the PDF content. Text-heavy PDFs compress less than image-heavy ones. Typical savings: 20-50%.",
+      answer: "Savings depend on the original PDF structure. This tool rewrites pages with object streams; already optimized PDFs may not shrink and can become larger.",
     },
     {
       question: "Does compression affect quality?",
-      answer: "Yes, higher compression reduces quality. Choose based on your needs - low compression for quality, maximum for smallest files.",
+      answer: "The current implementation rewrites PDF structure without downsampling or re-encoding embedded images. Always review the output before replacing your original.",
     },
     {
       question: "What types of compression are used?",
@@ -414,8 +415,9 @@ export default function PDFCompress() {
 
   return (
     <ToolLayout
+      article={compressPdfArticle}
       title="Compress PDF"
-      description="Reduce PDF file size while maintaining quality. Choose from multiple compression levels for optimal results."
+      description="Rebuild PDF structure and optionally clear metadata in your browser. Savings vary; embedded images are not downsampled or re-encoded."
       category="pdf"
       categoryLabel="PDF Tools"
       icon={Zap}

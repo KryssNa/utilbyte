@@ -1,5 +1,9 @@
 "use client";
 
+import { recordToolEvent } from "@/lib/tool-events";
+import { sortJsonKeys } from "@/lib/json-safe";
+import NextStepActions from "@/components/shared/NextStepActions";
+import { takeHandoff } from "@/lib/local-handoff";
 import ContentCluster from "@/components/shared/ContentCluster";
 import ToolLayout from "@/components/shared/ToolLayout";
 import { Button } from "@/components/ui/button";
@@ -28,6 +32,7 @@ import JsonTreeView from "./json-formatter/JsonTreeView";
 import { SAMPLE_JSON, type ViewTab } from "./json-formatter/types";
 import { useJsonFormatter } from "./json-formatter/useJsonFormatter";
 
+import { jsonFormatterArticle } from "@/content/tools/json-formatter";
 export default function JSONFormatter() {
   const [input, setInput] = useState("");
   const [compareInput, setCompareInput] = useState("");
@@ -43,6 +48,14 @@ export default function JSONFormatter() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { formatted, error, isValid, stats, parsed } = useJsonFormatter(input, indentSize);
+
+  useEffect(() => { const value = takeHandoff("/dev-tools/json-formatter"); if (value !== undefined) setInput(value); }, []);
+
+  useEffect(() => {
+    if (!input.trim()) return;
+    const timer = setTimeout(() => recordToolEvent("dev-json-formatter", isValid ? "tool_run_succeeded" : "tool_run_failed", { size: input.length, ...(isValid ? {} : { error: "invalid_input" }) }), 600);
+    return () => clearTimeout(timer);
+  }, [input, isValid]);
 
   const compareResult = useJsonFormatter(compareInput, indentSize);
 
@@ -60,40 +73,29 @@ export default function JSONFormatter() {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     toast.success(`${label} copied!`);
+    recordToolEvent("dev-json-formatter", "result_copied");
     setTimeout(() => setCopied(false), 2000);
   }, []);
 
   const handleMinify = useCallback(() => {
-    if (!parsed) return;
+    if (!isValid || !input.trim()) return;
     const minified = JSON.stringify(parsed);
     setInput(minified);
     toast.success("JSON minified!");
-  }, [parsed]);
+  }, [parsed, isValid, input]);
 
   const handleSort = useCallback(() => {
-    if (!parsed) return;
+    if (!isValid || !input.trim()) return;
 
-    function sortKeys(obj: unknown): unknown {
-      if (Array.isArray(obj)) return obj.map(sortKeys);
-      if (typeof obj === "object" && obj !== null) {
-        return Object.keys(obj as Record<string, unknown>)
-          .sort()
-          .reduce((acc: Record<string, unknown>, key) => {
-            acc[key] = sortKeys((obj as Record<string, unknown>)[key]);
-            return acc;
-          }, {});
-      }
-      return obj;
-    }
-
-    const sorted = JSON.stringify(sortKeys(parsed), null, indentSize);
+    const sorted = JSON.stringify(sortJsonKeys(parsed), null, indentSize);
     setInput(sorted);
     toast.success("Keys sorted alphabetically!");
-  }, [parsed, indentSize]);
+  }, [parsed, indentSize, isValid, input]);
 
   const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 1_000_000) { toast.error("JSON import is limited to 1 MB."); return; }
     const reader = new FileReader();
     reader.onload = (ev) => {
       setInput(ev.target?.result as string);
@@ -118,6 +120,7 @@ export default function JSONFormatter() {
       URL.revokeObjectURL(url);
       toast.success(`${type === "minified" ? "Minified" : "Formatted"} JSON downloaded!`);
       setShowExport(false);
+      recordToolEvent("dev-json-formatter", "result_downloaded");
     },
     [formatted, parsed]
   );
@@ -126,7 +129,7 @@ export default function JSONFormatter() {
     if (!formatted) return null;
 
     return formatted.split("\n").map((line, i) => {
-      let highlighted = line;
+      let highlighted = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       highlighted = highlighted.replace(
         /("(?:[^"\\]|\\.)*")(\s*:)/g,
         '<span class="text-sky-400">$1</span>$2'
@@ -206,6 +209,8 @@ export default function JSONFormatter() {
 
   return (
     <ToolLayout
+      hasDraft={!!input || !!compareInput}
+      article={jsonFormatterArticle}
       title="JSON Formatter"
       description="Format, validate, minify, compare, and explore JSON with syntax highlighting, tree view, and JSON Path queries."
       category="dev"
@@ -218,6 +223,7 @@ export default function JSONFormatter() {
         { title: "Diff Checker", description: "Compare text & code", href: "/dev-tools/diff-checker", icon: Braces, category: "dev" },
       ]}
     >
+      <p className="mb-4 text-sm text-muted-foreground">Strict JSON only; no automatic repairs. Duplicate keys, unsafe numbers, and nesting beyond 64 levels are rejected before processing. Comparison shows a line-by-line difference of formatted text; it is not structural equivalence or JSON Schema validation.</p>
       <div className="space-y-3">
         <input
           ref={fileInputRef}
@@ -469,13 +475,13 @@ export default function JSONFormatter() {
           </button>
           <button
             onClick={() => setActiveTab("tree")}
-            disabled={!parsed}
+            disabled={parsed === null}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all",
               activeTab === "tree"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
-              !parsed && "opacity-40 cursor-not-allowed"
+              parsed === null && "opacity-40 cursor-not-allowed"
             )}
           >
             <TreePine className="h-3.5 w-3.5" />
@@ -602,6 +608,7 @@ export default function JSONFormatter() {
         </div>
       </div>
 
+      <NextStepActions href="/dev-tools/json-formatter" output={formatted} />
       <ContentCluster
         category="dev"
         title="Complete Developer Tools Suite"

@@ -27,6 +27,7 @@ import {
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { resizeImageArticle } from "@/content/tools/resize-image";
 const PRESET_SIZES = [
   { label: "HD", width: 1280, height: 720 },
   { label: "Full HD", width: 1920, height: 1080 },
@@ -178,6 +179,7 @@ export default function ImageResizer() {
 
   return (
     <ToolLayout
+      article={resizeImageArticle}
       title="Image Resizer"
       description="Resize images to any dimension. Maintain aspect ratio or use preset sizes for social media and web."
       category="image"

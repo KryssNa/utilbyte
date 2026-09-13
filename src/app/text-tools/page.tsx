@@ -1,12 +1,13 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/text-tools", {
   title: "Text Tools - Count, Format, Convert & Clean Text",
   description:
     "Free text tools for case conversion, word counting, text formatting, lorem ipsum generation, and duplicate removal.",
   alternates: { canonical: "/text-tools" },
-};
+});
 
 export default function TextToolsCategoryPage() {
   return (

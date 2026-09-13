@@ -11,7 +11,7 @@ const faqs = [
   },
   {
     question: "Is my data safe?",
-    answer: "Absolutely. All file processing happens directly in your browser. Your files never leave your device or get uploaded to our servers. This ensures maximum privacy and security.",
+    answer: "Local file tools process selected files on your device. Network tools and MCP send data to the services described on their pages. Contact messages are sent to our team; see the privacy policy for details.",
   },
   {
     question: "Do I need to create an account?",
@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     question: "Can I use these tools offline?",
-    answer: "Once a tool page is loaded, many of our tools work offline since all processing happens in your browser. However, you'll need an internet connection to initially load the page.",
+    answer: "Some local tools can work after their resources have loaded. Tools that download runtimes or models may still need a connection, and network tools and MCP require internet access. Offline availability varies by tool and browser.",
   },
   {
     question: "How can I report a bug?",
@@ -252,7 +252,18 @@ export default function ContactPage() {
                   </h3>
                   <p className="text-amber-700 dark:text-amber-300">
                     We aim to respond to all inquiries within <strong>24-48 hours</strong> during business days.
-                    For urgent issues, please include "URGENT" in your message.
+                    For urgent issues, please include &quot;URGENT&quot; in your message.
+                  </p>
+                  <p className="text-amber-700 dark:text-amber-300 mt-3">
+                    If you would rather not use the form, email{" "}
+                    <a
+                      href="mailto:hello@utilbyte.app"
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      hello@utilbyte.app
+                    </a>{" "}
+                    directly. Privacy questions, takedown requests and advertising
+                    enquiries all reach the same inbox.
                   </p>
                 </div>
               </div>

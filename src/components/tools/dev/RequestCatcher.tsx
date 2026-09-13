@@ -23,6 +23,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { requestCatcherArticle } from "@/content/tools/request-catcher";
 interface CaughtRequest {
   id: string;
   bin_id: string;
@@ -246,7 +247,7 @@ export default function RequestCatcher() {
     },
     {
       question: "Will my endpoint survive a page refresh?",
-      answer: "Yes. Your endpoint ID is saved in browser local storage and automatically restored. All captured requests are also restored.",
+      answer: "Your endpoint ID is saved in browser local storage and restored when available. The tool then loads recent request records from the hosted service; clearing browser data removes the saved ID, not the server records.",
     },
     {
       question: "Can I customize the endpoint URL?",
@@ -254,16 +255,17 @@ export default function RequestCatcher() {
     },
     {
       question: "What HTTP methods are supported?",
-      answer: "All standard HTTP methods: GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.",
+      answer: "GET, POST, PUT, PATCH, DELETE and HEAD can be captured. OPTIONS is answered as a CORS preflight and is not stored as a captured request.",
     },
     {
       question: "Can I forward captured requests to my local server?",
-      answer: "Yes. Use the Local Proxy tool to configure a forward target URL. Every request will be captured here AND forwarded to your local server via ngrok or any tunnel.",
+      answer: "Use Local Proxy to configure an enabled public forwarding URL, such as a tunnel to your local server. Supported requests are recorded and forwarding is attempted; connection errors or timeouts can prevent delivery.",
     },
   ];
 
   return (
     <ToolLayout
+      article={requestCatcherArticle}
       title="Request Catcher"
       description="Capture and inspect incoming HTTP requests in real-time. Perfect for testing webhooks, API callbacks, and debugging integrations."
       category="dev"

@@ -1,7 +1,8 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/dev-tools", {
   title: "Developer Tools - Free Online Dev Utilities",
   description:
     "Use free browser-based developer tools including JSON Formatter, Base64 Encoder, JWT Decoder, Regex Tester, API Client, UUID Generator, and more.",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Developer Tools - Free Online Dev Utilities",
     description:
-      "17 privacy-first developer tools that run in your browser. No sign-up and no file uploads required.",
+      "Free developer tools for formatting, conversion, validation, and HTTP workflows. See each tool for local or hosted processing details.",
     type: "website",
     url: "https://utilbyte.app/dev-tools",
   },
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Free browser-based dev utilities for JSON, Base64, JWT, Regex, SQL, and API workflows.",
   },
-};
+});
 
 export default function DevToolsCategoryPage() {
   return (
@@ -39,7 +40,7 @@ export default function DevToolsCategoryPage() {
       categoryTitle="Dev"
       badgeLabel="Developer Tools"
       heading="All Developer Tools"
-      description="Utilities built for daily developer workflows. Everything runs client-side for speed and privacy."
+      description="Format and inspect code, convert structured data, or test HTTP workflows. Most tools process locally; network tools explain which services receive requests."
       accentClassName="border-amber-500/30 bg-amber-500/10 text-amber-400"
     />
   );

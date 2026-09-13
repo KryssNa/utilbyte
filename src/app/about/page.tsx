@@ -1,10 +1,13 @@
+import PageStructuredData from "@/components/shared/PageStructuredData";
+import { withPageMetadata } from "@/lib/page-metadata";
+import { catalog, catalogCategories } from "@/lib/tool-catalog";
 import { Code2, FileText, Globe, Heart, Image, Lock, Shield, Sparkles, Target, Type, Users, Video, Wrench, Zap } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "About Us | UtilByte",
-  description: "Learn about UtilByte - free, privacy-first online tools for images, PDFs, text, and developers. No uploads, no sign-ups, 100% browser-based.",
+export const metadata: Metadata = withPageMetadata("/about", {
+  title: "About Us",
+  description: "Meet UtilByte: free tools for images, PDFs, text and developers. Local file processing, clearly disclosed network services, no sign-up, and open-source code.",
   keywords: "about utilbyte, free online tools, privacy first tools, browser based tools",
   openGraph: {
     title: "About Us | UtilByte",
@@ -20,29 +23,29 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/about",
   },
-};
+});
 
 const stats = [
-  { number: "37+", label: "Free Tools", icon: Wrench },
-  { number: "100%", label: "Browser-Based", icon: Globe },
-  { number: "0", label: "Data Uploads", icon: Lock },
-  { number: "24/7", label: "Available", icon: Zap },
+  { number: String(catalog.length), label: "Free Tools", icon: Wrench },
+  { number: String(catalogCategories.length), label: "Tool Categories", icon: Globe },
+  { number: "0", label: "Accounts Required", icon: Lock },
+  { number: "MIT", label: "Open Source", icon: Code2 },
 ];
 
 const toolCategories = [
-  { name: "Image Tools", count: 7, icon: Image, description: "Compress, crop, resize, convert formats, remove backgrounds, and more" },
-  { name: "PDF Tools", count: 6, icon: FileText, description: "Merge, split, compress, convert, and rotate PDF documents" },
-  { name: "Text Tools", count: 5, icon: Type, description: "Word counter, case converter, text formatter, and more" },
-  { name: "Dev Tools", count: 9, icon: Code2, description: "JSON formatter, Base64, JWT decoder, hash generator, regex tester" },
-  { name: "Utility Tools", count: 7, icon: Wrench, description: "QR codes, barcodes, password generator, color converter" },
-  { name: "Video Tools", count: 3, icon: Video, description: "Compress videos, extract audio, create GIFs" },
+  { name: "Image Tools", count: catalog.filter(tool => tool.category === "Image").length, icon: Image, description: "Compress, crop, resize, convert formats, remove backgrounds, and more" },
+  { name: "PDF Tools", count: catalog.filter(tool => tool.category === "PDF").length, icon: FileText, description: "Merge, split, compress, convert, and rotate PDF documents" },
+  { name: "Text Tools", count: catalog.filter(tool => tool.category === "Text").length, icon: Type, description: "Word counter, case converter, text formatter, and more" },
+  { name: "Dev Tools", count: catalog.filter(tool => tool.category === "Dev").length, icon: Code2, description: "JSON formatter, Base64, JWT decoder, hash generator, regex tester" },
+  { name: "Utility Tools", count: catalog.filter(tool => tool.category === "Utility").length, icon: Wrench, description: "QR codes, barcodes, password generator, color converter" },
+  { name: "Video Tools", count: catalog.filter(tool => tool.category === "Video").length, icon: Video, description: "Compress videos, extract audio, create GIFs" },
 ];
 
 const values = [
   {
     icon: Shield,
     title: "Privacy First",
-    description: "Your files never leave your device. All processing happens locally in your browser, ensuring complete privacy.",
+    description: "Local file tools process on your device. Network tools and MCP explain where your data is sent before you choose to use them.",
   },
   {
     icon: Zap,
@@ -64,6 +67,7 @@ const values = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
+      <PageStructuredData route="/about" name={String(metadata.title)} description={metadata.description!} type="AboutPage" />
       {/* Header */}
       <div className="border-b border-border bg-gradient-to-b from-transparent to-violet-50/30 dark:to-violet-950/10">
         <div className="container mx-auto px-4 py-16 lg:px-8">
@@ -79,8 +83,8 @@ export default function AboutPage() {
               </span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              UtilByte provides free, privacy-focused online tools that work entirely in your browser.
-              No uploads, no accounts, no compromise on your data.
+              UtilByte provides free tools for images, PDFs, text, code, and everyday tasks.
+              No account is required. Local file tools process on your device; network tools explain where data is sent.
             </p>
           </div>
         </div>
@@ -117,10 +121,17 @@ export default function AboutPage() {
                 that respect your privacy. We believe that essential utilities should be accessible to everyone,
                 without the need for expensive software subscriptions or concerns about data security.
               </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Local image, PDF, text and video tools process selected files in your browser using
+                canvas, pdf-lib and WebAssembly libraries. Some tools first download a runtime or model;
+                offline availability depends on what has loaded and on browser support.
+              </p>
               <p className="text-muted-foreground leading-relaxed">
-                Every tool on UtilByte processes your data directly in your browser using modern web technologies.
-                This means your files, images, and documents never leave your device — they're processed locally,
-                ensuring maximum privacy and security.
+                API Client sends requests through a proxy. Request Catcher and Local Proxy use hosted
+                request storage, while WebSocket Client connects directly to your chosen server.
+                MCP text operations run on our server. Each tool explains its data handling; see our{" "}
+                <Link href="/privacy" className="underline underline-offset-4">privacy policy</Link>{" "}
+                for site analytics, advertising, feedback and service details.
               </p>
             </div>
           </section>
@@ -185,28 +196,28 @@ export default function AboutPage() {
                 <Shield className="h-8 w-8 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">
-                    100% Client-Side Processing
+                    Local processing, with clear exceptions
                   </h3>
                   <p className="text-emerald-700 dark:text-emerald-300 mb-4">
-                    Unlike many online tools that upload your files to remote servers, UtilByte processes
-                    everything directly in your web browser using JavaScript and WebAssembly technologies.
+                    Use the processing disclosure on each tool to see how it handles your input.
+                    File tools run locally; network services and MCP have separate processing paths.
                   </p>
                   <ul className="space-y-2 text-sm text-emerald-700 dark:text-emerald-300">
                     <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      Your files stay on your device
+                      Local file transformations happen on your device
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      No data is sent to any server
+                      Network destinations are disclosed on each tool
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      Works offline once loaded
+                      Some tools download runtimes before processing
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      Maximum privacy and security
+                      Review outputs and keep a copy of your originals
                     </li>
                   </ul>
                 </div>

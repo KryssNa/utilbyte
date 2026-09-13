@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { GitCompare, RotateCcw, ArrowLeftRight } from "lucide-react";
 import { useState, useMemo } from "react";
 
+import { diffCheckerArticle } from "@/content/tools/diff-checker";
 interface DiffLine {
   type: 'added' | 'removed' | 'unchanged';
   content: string;
@@ -97,6 +98,7 @@ const result = greet(user);`);
 
   return (
     <ToolLayout
+      article={diffCheckerArticle}
       title="Diff Checker"
       description="Compare two text files or code snippets side by side. Spot changes instantly with line-by-line diff."
       category="dev"

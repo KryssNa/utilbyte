@@ -18,6 +18,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { websocketClientArticle } from "@/content/tools/websocket-client";
 type ConnectionState = "disconnected" | "connecting" | "connected" | "error";
 
 interface WsMessage {
@@ -230,6 +231,7 @@ export default function WebSocketClient() {
 
   return (
     <ToolLayout
+      article={websocketClientArticle}
       title="WebSocket Client"
       description="Connect to any WebSocket server, send and receive messages in real-time. Perfect for debugging WebSocket APIs and testing real-time connections."
       category="dev"

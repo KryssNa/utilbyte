@@ -11,6 +11,7 @@ import { Check, Copy, FileText, RotateCcw } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { loremIpsumArticle } from "@/content/tools/lorem-ipsum";
 type OutputFormat = "paragraphs" | "sentences" | "words";
 type HtmlFormat = "plain" | "p" | "div" | "span";
 
@@ -184,6 +185,7 @@ export default function LoremIpsum() {
 
   return (
     <ToolLayout
+      article={loremIpsumArticle}
       title="Lorem Ipsum Generator"
       description="Generate placeholder text for your designs and layouts. Customize paragraphs, sentences, or word count with optional HTML formatting."
       category="text"

@@ -8,6 +8,7 @@ import { Check, Copy, Eye, RotateCcw, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { removeDuplicatesArticle } from "@/content/tools/remove-duplicates";
 type RemoveMode = "lines" | "words";
 
 export default function RemoveDuplicates() {
@@ -146,6 +147,7 @@ export default function RemoveDuplicates() {
 
   return (
     <ToolLayout
+      article={removeDuplicatesArticle}
       title="Remove Duplicates"
       description="Remove duplicate lines or words from text. Clean up lists, remove repeated entries, and get statistics on duplicates found."
       category="text"

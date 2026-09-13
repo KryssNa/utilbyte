@@ -8,14 +8,21 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { useFfmpegEngine } from "@/hooks/use-ffmpeg-engine";
 import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Settings, Upload, Zap } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { compressVideoArticle } from "@/content/tools/compress-video";
 
 type VideoFormat = "mp4" | "webm" | "avi";
 type QualityPreset = "low" | "medium" | "high" | "custom";
+
+export const VIDEO_ENCODINGS = {
+  mp4: { videoCodec: "libx264", audioCodec: "aac", mime: "video/mp4" },
+  webm: { videoCodec: "libvpx-vp9", audioCodec: "libopus", mime: "video/webm" },
+  avi: { videoCodec: "libx264", audioCodec: "aac", mime: "video/x-msvideo" },
+} as const;
 
 interface CompressionSettings {
   format: VideoFormat;
@@ -41,154 +48,16 @@ export default function VideoCompressor() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [compressedVideo, setCompressedVideo] = useState<string | null>(null);
+  const [resultFormat, setResultFormat] = useState<VideoFormat>("mp4");
+  useEffect(() => () => { if (compressedVideo) URL.revokeObjectURL(compressedVideo); }, [compressedVideo]);
   const [compressionStats, setCompressionStats] = useState<{
     originalSize: number;
     compressedSize: number;
     compressionRatio: number;
   } | null>(null);
   const [error, setError] = useState<string>("");
-  const [ffmpegLoaded, setFfmpegLoaded] = useState<boolean>(false);
-  const [ffmpegLoading, setFfmpegLoading] = useState<boolean>(false);
-  const [loadAttempts, setLoadAttempts] = useState<number>(0);
-
+  const { ffmpegRef, ffmpegLoaded, ffmpegLoading, loadAttempts, loadFFmpeg, cancelEngine } = useFfmpegEngine(setError, setProgress);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ffmpegRef = useRef<FFmpeg | null>(null);
-
-  // Initialize FFmpeg with improved error handling
-  const loadFFmpeg = useCallback(async (retryCount = 0) => {
-    if (ffmpegLoaded || ffmpegRef.current) return;
-
-    setFfmpegLoading(true);
-    setError("");
-
-    try {
-      const ffmpeg = new FFmpeg();
-      ffmpegRef.current = ffmpeg;
-
-      // Try multiple CDNs for better reliability - using different CDNs to avoid QUIC issues
-      const cdns = [
-        "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd",
-        "https://unpkg.com/@ffmpeg/core@0.12.4/dist/umd",
-        "https://esm.run/@ffmpeg/core@0.12.4/dist/umd",
-        "https://fastly.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd"
-      ];
-
-      const baseURL = cdns[retryCount % cdns.length];
-      console.log(`Attempting to load FFmpeg from: ${baseURL} (attempt ${retryCount + 1})`);
-
-      ffmpeg.on("log", ({ message }) => {
-        console.log("FFmpeg log:", message);
-      });
-      ffmpeg.on("progress", ({ progress: prog }) => {
-        const percent = Math.round(prog * 100);
-        setProgress(percent);
-        console.log(`FFmpeg loading progress: ${percent}%`);
-      });
-
-      // Try loading with different strategies
-      let loadPromise;
-
-      try {
-        console.log("Testing CDN availability and downloading files...");
-        console.log("Testing URL:", `${baseURL}/ffmpeg-core.js`);
-
-        // First test if the CDN is reachable
-        const testResponse = await fetch(`${baseURL}/ffmpeg-core.js`, {
-          method: 'HEAD',
-          mode: 'cors'
-        });
-
-        if (!testResponse.ok) {
-          throw new Error(`CDN not reachable: ${testResponse.status}`);
-        }
-
-        console.log("CDN is reachable, downloading FFmpeg files...");
-
-        // Try fetchFile first, then fallback to regular fetch if it fails
-        let coreFile, wasmFile;
-        try {
-          console.log("Trying fetchFile approach...");
-          const coreFilePromise = fetchFile(`${baseURL}/ffmpeg-core.js`);
-          const wasmFilePromise = fetchFile(`${baseURL}/ffmpeg-core.wasm`);
-
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("File download timeout")), 25000);
-          });
-
-          [coreFile, wasmFile] = await Promise.race([
-            Promise.all([coreFilePromise, wasmFilePromise]),
-            timeoutPromise.then(() => { throw new Error("Timeout"); })
-          ]);
-
-          console.log("fetchFile successful, sizes:", coreFile.length, wasmFile.length);
-        } catch (fetchFileError) {
-          console.log("fetchFile failed, trying regular fetch...", fetchFileError);
-
-          // Fallback to regular fetch
-          const coreResponse = await fetch(`${baseURL}/ffmpeg-core.js`);
-          const wasmResponse = await fetch(`${baseURL}/ffmpeg-core.wasm`);
-
-          if (!coreResponse.ok || !wasmResponse.ok) {
-            throw new Error(`Fetch failed: core=${coreResponse.status}, wasm=${wasmResponse.status}`);
-          }
-
-          coreFile = new Uint8Array(await coreResponse.arrayBuffer());
-          wasmFile = new Uint8Array(await wasmResponse.arrayBuffer());
-
-          console.log("Regular fetch successful, sizes:", coreFile.length, wasmFile.length);
-        }
-
-        console.log("Loading FFmpeg with downloaded files...");
-        loadPromise = ffmpeg.load({
-          coreURL: URL.createObjectURL(new Blob([coreFile as any], { type: 'text/javascript' })),
-          wasmURL: URL.createObjectURL(new Blob([wasmFile as any], { type: 'application/wasm' })),
-        });
-      } catch (downloadError) {
-        console.error("File download failed:", downloadError);
-
-        // Try direct loading as fallback
-        console.log("Trying direct loading as fallback...");
-        try {
-          console.log("Using direct URLs for fallback loading");
-          loadPromise = ffmpeg.load({
-            coreURL: `${baseURL}/ffmpeg-core.js`,
-            wasmURL: `${baseURL}/ffmpeg-core.wasm`,
-          });
-        } catch (directError) {
-          console.error("Direct loading also failed:", directError);
-          throw new Error(`Loading failed: ${downloadError instanceof Error ? downloadError.message : 'Unknown error'}`);
-        }
-      }
-
-      // Shorter timeout for faster feedback
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Loading timeout after 45 seconds")), 45000);
-      });
-
-      console.log("Starting FFmpeg load with timeout...");
-      await Promise.race([loadPromise, timeoutPromise]);
-
-      console.log("FFmpeg loaded successfully!");
-      setFfmpegLoaded(true);
-      setFfmpegLoading(false);
-      setLoadAttempts(0);
-      toast.success("Video processing engine loaded successfully!");
-    } catch (err) {
-      console.error("Failed to load FFmpeg:", err);
-      setFfmpegLoading(false);
-
-      if (retryCount < 2) {
-        console.log(`Retrying FFmpeg load (attempt ${retryCount + 1})...`);
-        setLoadAttempts(retryCount + 1);
-        setTimeout(() => loadFFmpeg(retryCount + 1), 1000);
-      } else {
-        const errorMsg = `Failed to load video processing engine after ${retryCount + 1} attempts. This might be due to network issues, browser restrictions, or CDN problems. Please try refreshing the page or using a different browser.`;
-        setError(errorMsg);
-        console.error("All FFmpeg loading attempts failed:", err);
-        setLoadAttempts(0);
-      }
-    }
-  }, [ffmpegLoaded]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -270,31 +139,35 @@ export default function VideoCompressor() {
 
       const outputFile = `output.${settings.format}`;
       const resolution = getResolutionDimensions(compressionSettings.resolution);
+      const encoding = VIDEO_ENCODINGS[settings.format];
 
       // Build FFmpeg command based on settings
       const command = [
         "-i", "input.mp4",
         "-vf", `scale=${resolution}:force_original_aspect_ratio=decrease,pad=${resolution}:(ow-iw)/2:(oh-ih)/2`,
-        "-c:v", settings.format === "webm" ? "libvpx-vp9" : "libx264",
+        "-c:v", encoding.videoCodec,
         "-b:v", compressionSettings.bitrate,
         "-maxrate", compressionSettings.bitrate,
         "-bufsize", `${parseInt(compressionSettings.bitrate) * 2}k`,
         "-r", compressionSettings.fps.toString(),
-        "-c:a", "aac",
+        "-c:a", encoding.audioCodec,
         "-b:a", "128k",
         "-y",
         outputFile
       ];
 
       // Execute compression
-      await ffmpeg.exec(command);
+      const exitCode = await ffmpeg.exec(command);
+      if (exitCode !== 0) throw new Error("The selected video could not be encoded.");
 
       // Read the output file
       const data = await ffmpeg.readFile(outputFile);
-      const blob = new Blob([data as unknown as BlobPart], { type: `video/${settings.format}` });
+      if (ffmpegRef.current !== ffmpeg || !ffmpeg.loaded) return;
+      const blob = new Blob([data as unknown as BlobPart], { type: encoding.mime });
       const url = URL.createObjectURL(blob);
 
       setCompressedVideo(url);
+      setResultFormat(settings.format);
       setCompressionStats({
         originalSize: videoFile.size,
         compressedSize: blob.size,
@@ -321,13 +194,13 @@ export default function VideoCompressor() {
 
     const link = document.createElement('a');
     link.href = compressedVideo;
-    link.download = `compressed-video.${settings.format}`;
+    link.download = `compressed-video.${resultFormat}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast.success("Video downloaded!");
-  }, [compressedVideo, settings.format]);
+  }, [compressedVideo, resultFormat]);
 
   const resetTool = () => {
     setVideoFile(null);
@@ -364,7 +237,7 @@ export default function VideoCompressor() {
   const faqs = [
     {
       question: "How much can I reduce video file size?",
-      answer: "Compression depends on quality settings. Typically 30-80% size reduction is possible while maintaining good quality.",
+      answer: "The result depends on the source, duration, resolution and bitrate you choose. Some inputs become larger. Compare the output size and preview before replacing your original.",
     },
     {
       question: "Will video quality be affected?",
@@ -372,7 +245,7 @@ export default function VideoCompressor() {
     },
     {
       question: "What video formats are supported?",
-      answer: "Most common formats including MP4, AVI, MOV, MKV, WMV, FLV, and WebM are supported for compression.",
+      answer: "The tool exports MP4, WebM and AVI. Input compatibility depends on the codecs supported by the bundled FFmpeg engine; a familiar file extension alone does not guarantee compatibility.",
     },
     {
       question: "Is my video data secure?",
@@ -382,6 +255,7 @@ export default function VideoCompressor() {
 
   return (
     <ToolLayout
+      article={compressVideoArticle}
       title="Video Compressor"
       description="Compress video files to reduce size while maintaining quality. Support for MP4, WebM, AVI formats with customizable quality settings."
       category="video"
@@ -394,6 +268,7 @@ export default function VideoCompressor() {
         { title: "Image Compressor", description: "Compress images", href: "/image-tools/compress-image", icon: Zap, category: "video" },
       ]}
     >
+      {(ffmpegLoading || isProcessing) && <Button variant="outline" className="mb-4" onClick={() => { cancelEngine(); setIsProcessing(false); setError("Cancelled. Your selected file is unchanged. Reload the engine to try again."); }}>Cancel processing</Button>}
       <div className="max-w-4xl mx-auto space-y-6">
         <Tabs defaultValue="compress" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -583,8 +458,8 @@ export default function VideoCompressor() {
 
                   {/* Preview */}
                   <div className="bg-muted/30 rounded-lg p-4">
-                    <video controls className="w-full max-h-64 rounded">
-                      <source src={compressedVideo} type={`video/${settings.format}`} />
+                    <video key={compressedVideo} controls className="w-full max-h-64 rounded">
+                      <source src={compressedVideo} type={VIDEO_ENCODINGS[resultFormat].mime} />
                       Your browser does not support the video element.
                     </video>
                   </div>
@@ -592,7 +467,7 @@ export default function VideoCompressor() {
                   <div className="flex gap-2">
                     <Button onClick={downloadVideo} className="flex-1">
                       <Download className="h-4 w-4 mr-2" />
-                      Download {settings.format.toUpperCase()}
+                      Download {resultFormat.toUpperCase()}
                     </Button>
                     <Button onClick={resetTool} variant="outline">
                       Compress Another Video

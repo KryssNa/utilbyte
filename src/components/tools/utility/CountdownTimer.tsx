@@ -12,6 +12,7 @@ import { Bell, BellOff, Pause, Play, RotateCcw, Timer } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { countdownArticle } from "@/content/tools/countdown";
 interface TimerPreset {
   name: string;
   duration: number; // in seconds
@@ -188,7 +189,7 @@ export default function CountdownTimer() {
   const faqs = [
     {
       question: "How accurate is the countdown timer?",
-      answer: "The timer is accurate to within 1 second and runs in the browser using JavaScript intervals.",
+      answer: "The timer decreases its counter on JavaScript interval callbacks. Delayed callbacks can make it drift, especially in background tabs or when a device sleeps. It is not a precision alarm.",
     },
     {
       question: "Does the timer work when the browser tab is not active?",
@@ -202,6 +203,7 @@ export default function CountdownTimer() {
 
   return (
     <ToolLayout
+      article={countdownArticle}
       title="Countdown Timer"
       description="Set customizable countdown timers with visual progress indicators, sound alerts, and preset durations for productivity and time management."
       category="utility"

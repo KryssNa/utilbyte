@@ -1,8 +1,10 @@
+import PageStructuredData from "@/components/shared/PageStructuredData";
+import { withPageMetadata } from "@/lib/page-metadata";
 import { Cookie, Database, Eye, Lock, Mail, Shield } from "lucide-react";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | UtilByte",
+export const metadata: Metadata = withPageMetadata("/privacy", {
+  title: "Privacy Policy",
   description: "Learn about how UtilByte protects your privacy and handles your data. We believe in transparency and user control.",
   keywords: "privacy policy, data protection, user privacy, UtilByte privacy",
   openGraph: {
@@ -19,11 +21,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/privacy",
   },
-};
+});
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
+      <PageStructuredData route="/privacy" name={String(metadata.title)} description={metadata.description!} type="WebPage" />
       {/* Header */}
       <div className="border-b border-border bg-gradient-to-b from-transparent to-violet-50/30 dark:to-violet-950/10">
         <div className="container mx-auto px-4 py-16 lg:px-8">
@@ -39,7 +42,7 @@ export default function PrivacyPage() {
               Your privacy is our top priority. This policy explains how we collect, use, and protect your information.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              Last updated: September 12, 2026
             </p>
           </div>
         </div>
@@ -64,6 +67,19 @@ export default function PrivacyPage() {
               </p>
             </section>
 
+            <section className="mb-12 rounded-xl border p-5">
+              <h2 className="mb-3 text-xl font-semibold">Tool processing and optional measurements</h2>
+              <p className="mb-3 text-muted-foreground">Each tool explains whether it processes locally, connects directly to an endpoint, or uses a hosted service. Request Catcher stores requests and Local Proxy can forward them; clearing a bin removes its request rows but does not control provider logs or backups. No automatic expiry is implemented in the supplied service code.</p>
+              <p className="mb-3 text-muted-foreground">Pins, recent tool IDs, and layout preferences are stored in your browser. Tool inputs are not saved in those preferences. Explicit transfers between local JSON tools are held briefly in memory and are not placed in URLs.</p>
+              <p className="text-muted-foreground">Optional tool-outcome metrics use tool IDs, fixed event and error names, and coarse size/duration buckets. They do not include input, filenames, tokens, free-text searches, or copied results. Runtime session replay, console capture, and error-event delivery are disabled. Site analytics and advertising are described below.</p>
+            </section>
+
+            <section className="mb-12 rounded-xl border p-5">
+              <h2 className="mb-3 text-xl font-semibold">MCP, contact and feedback</h2>
+              <p className="mb-3 text-muted-foreground">Connecting an assistant to MCP sends protocol requests to UtilByte. Text supplied to formatting and conversion operations is processed on our server. The MCP handler does not intentionally persist or log input or output; hosting providers may retain standard request metadata. Your assistant provider has its own data practices. For local processing, use the browser tool instead.</p>
+              <p className="text-muted-foreground">Contact messages and tool feedback are forwarded to our Slack workspace so we can respond or improve the tools. Feedback includes the comment and tool page, not the tool’s input or selected files. Please omit sensitive information from comments. Messages may remain in Slack until removed; no automatic deletion period is implemented.</p>
+            </section>
+
             {/* Information We Collect */}
             <section className="mb-12">
               <h2 className="flex items-center gap-3 font-display text-2xl font-bold tracking-tight text-foreground mb-6">
@@ -73,7 +89,8 @@ export default function PrivacyPage() {
 
               <h3 className="font-semibold text-lg text-foreground mb-4">Information You Provide</h3>
               <ul className="list-disc list-inside text-muted-foreground space-y-2 mb-6">
-                <li>Files you upload for processing (images, PDFs, documents)</li>
+                <li>Files selected in local image and PDF tools are processed in your browser, rather than collected as uploads.</li>
+                <li>Requests you submit using network tools are sent to the endpoints or hosted services used by those tools. The online compiler runs code in your browser and downloads the Python runtime when needed.</li>
                 <li>Usage data and preferences</li>
                 <li>Feedback and support requests</li>
               </ul>
@@ -93,8 +110,14 @@ export default function PrivacyPage() {
                   <div>
                     <h4 className="font-semibold text-amber-800 dark:text-amber-200">Cookies</h4>
                     <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                      We use cookies for analytics, functionality, and to improve your experience.
-                      You can control cookie preferences through your browser settings.
+                      We use cookies for analytics, for site functionality, and — on pages
+                      that carry advertising — for ad serving and measurement. Third parties,
+                      including Google, may place and read cookies on your browser, or use web
+                      beacons or your IP address to collect information, as a result of ads
+                      being served on this site. See{" "}
+                      <a href="#advertising" className="underline underline-offset-2">Advertising</a>{" "}
+                      below for the detail and for how to opt out. You can also control cookies
+                      through your browser settings.
                     </p>
                   </div>
                 </div>
@@ -140,19 +163,19 @@ export default function PrivacyPage() {
                   <Shield className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                   <div>
                     <h3 className="font-semibold text-emerald-800 dark:text-emerald-200 mb-2">
-                      Client-Side Processing Only
+                      Processing Depends on the Tool
                     </h3>
                     <p className="text-emerald-700 dark:text-emerald-300 mb-4">
-                      All file processing happens in your browser. Your files never leave your device or get uploaded to our servers.
+                      Image, PDF, text and video transformations run in your browser. Network tools send data to the endpoints described in each tool’s processing disclosure.
                     </p>
                     <div className="grid gap-4 md:grid-cols-2 text-sm">
                       <div>
                         <strong className="text-emerald-800 dark:text-emerald-200">Data Location:</strong>
-                        <p className="text-emerald-700 dark:text-emerald-300">Your device only</p>
+                        <p className="text-emerald-700 dark:text-emerald-300">Your device for local tools; disclosed endpoints for network tools</p>
                       </div>
                       <div>
                         <strong className="text-emerald-800 dark:text-emerald-200">Processing:</strong>
-                        <p className="text-emerald-700 dark:text-emerald-300">Browser-based</p>
+                        <p className="text-emerald-700 dark:text-emerald-300">Browser, network or server-based MCP, as labeled</p>
                       </div>
                     </div>
                   </div>
@@ -168,23 +191,84 @@ export default function PrivacyPage() {
 
               <div className="space-y-6">
                 <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">We Do NOT Share Your Data</p>
+                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">Local processing and third-party services</p>
                   <p className="text-red-700 dark:text-red-300 text-sm">
-                    We do not sell, trade, or share your personal information with third parties for marketing purposes.
+                    We do not sell or trade your personal information. Local file tools do not intentionally upload selected file contents. API Client,
+                    Request Catcher, Local Proxy and WebSocket Client transmit data as disclosed. Analytics and advertising partners receive
+                    standard technical data about your visit — described below.
                   </p>
                 </div>
 
                 <div>
                   <h3 className="font-semibold text-lg text-foreground mb-4">Analytics Services</h3>
                   <p className="text-muted-foreground mb-4">
-                    We use Google Analytics to understand how our website is used. This helps us improve our services.
-                    Google Analytics may collect information about your use of our website.
+                    Vercel Analytics is integrated for page analytics. Google Analytics and Tag Manager load when configured. These services may collect technical information about your visit.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     For more information about how Google Analytics collects and processes data, please visit
                     <a href="https://policies.google.com/privacy" className="text-violet-600 hover:text-violet-700 ml-1">
                       Google's Privacy Policy
                     </a>.
+                  </p>
+                </div>
+
+                <div id="advertising" className="scroll-mt-24">
+                  <h3 className="font-semibold text-lg text-foreground mb-4">Advertising</h3>
+                  <p className="text-muted-foreground mb-4">
+                    UtilByte is free to use and is supported by advertising on some pages. We
+                    work with Google, which uses the DoubleClick advertising cookie, and may
+                    work with other advertising partners in future. Any additional partner will
+                    be named here before it goes live.
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
+                    <li>
+                      Third party vendors, including Google, use cookies to serve ads based on a
+                      user&apos;s prior visits to this website or other websites.
+                    </li>
+                    <li>
+                      Google&apos;s use of advertising cookies enables it and its partners to serve
+                      ads to you based on your visit to this site and/or other sites on the internet.
+                    </li>
+                    <li>
+                      Advertising partners may also use web beacons, your IP address, or similar
+                      identifiers to collect information as a result of ads being served here.
+                    </li>
+                    <li>
+                      Ad serving never involves the files you process. Those stay in your browser.
+                    </li>
+                  </ul>
+                  <h4 className="font-semibold text-foreground mb-2">How to opt out</h4>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
+                    <li>
+                      Opt out of personalised advertising by Google at{" "}
+                      <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                        Google Ads Settings
+                      </a>.
+                    </li>
+                    <li>
+                      Opt out of a third-party vendor&apos;s use of cookies for personalised
+                      advertising at{" "}
+                      <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                        www.aboutads.info
+                      </a>{" "}
+                      or, in Europe, at{" "}
+                      <a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                        youronlinechoices.eu
+                      </a>.
+                    </li>
+                    <li>
+                      Opting out of personalised advertising does not remove ads. You will still
+                      see ads, they will simply be less relevant to you.
+                    </li>
+                  </ul>
+                  <h4 className="font-semibold text-foreground mb-2">Consent in the EEA, UK and Switzerland</h4>
+                  <p className="text-muted-foreground">
+                    If you are visiting from the European Economic Area, the United Kingdom or
+                    Switzerland, we ask for your consent before any advertising or analytics
+                    cookies are set, through a Google-certified consent management platform
+                    integrated with the IAB Transparency and Consent Framework. You can change
+                    or withdraw that choice at any time using the privacy settings link in the
+                    site footer.
                   </p>
                 </div>
               </div>
@@ -201,8 +285,8 @@ export default function PrivacyPage() {
                   <h3 className="font-semibold text-foreground">Security Measures</h3>
                   <ul className="text-muted-foreground space-y-2">
                     <li>HTTPS encryption for all connections</li>
-                    <li>Client-side processing only</li>
-                    <li>No data storage on our servers</li>
+                    <li>Local file processing, with disclosed network and MCP services</li>
+                    <li>Local file tools do not store your files on our servers; hosted developer tools handle submitted requests separately.</li>
                     <li>Regular security updates</li>
                   </ul>
                 </div>

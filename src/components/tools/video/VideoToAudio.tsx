@@ -6,13 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { useFfmpegEngine } from "@/hooks/use-ffmpeg-engine";
 import { fetchFile } from "@ffmpeg/util";
 import { AlertCircle, CheckCircle, Download, FileVideo, Music, Upload } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { videoToAudioArticle } from "@/content/tools/video-to-audio";
 
 type AudioFormat = "mp3" | "wav" | "aac" | "ogg" | "m4a";
+
+export const AUDIO_ENCODINGS = {
+  mp3: { codec: "libmp3lame", muxer: "mp3", mime: "audio/mpeg" },
+  wav: { codec: "pcm_s16le", muxer: "wav", mime: "audio/wav" },
+  aac: { codec: "aac", muxer: "adts", mime: "audio/aac" },
+  ogg: { codec: "libvorbis", muxer: "ogg", mime: "audio/ogg" },
+  m4a: { codec: "aac", muxer: "ipod", mime: "audio/mp4" },
+} as const;
 
 export default function VideoToAudio() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -20,149 +29,11 @@ export default function VideoToAudio() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [processedAudio, setProcessedAudio] = useState<string | null>(null);
+  const [resultFormat, setResultFormat] = useState<AudioFormat>("mp3");
+  useEffect(() => () => { if (processedAudio) URL.revokeObjectURL(processedAudio); }, [processedAudio]);
   const [error, setError] = useState<string>("");
-  const [ffmpegLoaded, setFfmpegLoaded] = useState<boolean>(false);
-  const [ffmpegLoading, setFfmpegLoading] = useState<boolean>(false);
-  const [loadAttempts, setLoadAttempts] = useState<number>(0);
-
+  const { ffmpegRef, ffmpegLoaded, ffmpegLoading, loadAttempts, loadFFmpeg, cancelEngine } = useFfmpegEngine(setError, setProgress);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ffmpegRef = useRef<FFmpeg | null>(null);
-
-  // Initialize FFmpeg with improved error handling
-  const loadFFmpeg = useCallback(async (retryCount = 0) => {
-    if (ffmpegLoaded || ffmpegRef.current) return;
-
-    setFfmpegLoading(true);
-    setError("");
-
-    try {
-      const ffmpeg = new FFmpeg();
-      ffmpegRef.current = ffmpeg;
-
-      // Try multiple CDNs for better reliability - using different CDNs to avoid QUIC issues
-      const cdns = [
-        "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd",
-        "https://unpkg.com/@ffmpeg/core@0.12.4/dist/umd",
-        "https://esm.run/@ffmpeg/core@0.12.4/dist/umd",
-        "https://fastly.jsdelivr.net/npm/@ffmpeg/core@0.12.4/dist/umd"
-      ];
-
-      const baseURL = cdns[retryCount % cdns.length];
-      console.log(`Attempting to load FFmpeg from: ${baseURL} (attempt ${retryCount + 1})`);
-
-      ffmpeg.on("log", ({ message }) => {
-        console.log("FFmpeg log:", message);
-      });
-      ffmpeg.on("progress", ({ progress: prog }) => {
-        const percent = Math.round(prog * 100);
-        setProgress(percent);
-        console.log(`FFmpeg loading progress: ${percent}%`);
-      });
-
-      // Try loading with different strategies
-      let loadPromise;
-
-      try {
-        console.log("Testing CDN availability and downloading files...");
-        console.log("Testing URL:", `${baseURL}/ffmpeg-core.js`);
-
-        // First test if the CDN is reachable
-        const testResponse = await fetch(`${baseURL}/ffmpeg-core.js`, {
-          method: 'HEAD',
-          mode: 'cors'
-        });
-
-        if (!testResponse.ok) {
-          throw new Error(`CDN not reachable: ${testResponse.status}`);
-        }
-
-        console.log("CDN is reachable, downloading FFmpeg files...");
-
-        // Try fetchFile first, then fallback to regular fetch if it fails
-        let coreFile, wasmFile;
-        try {
-          console.log("Trying fetchFile approach...");
-          const coreFilePromise = fetchFile(`${baseURL}/ffmpeg-core.js`);
-          const wasmFilePromise = fetchFile(`${baseURL}/ffmpeg-core.wasm`);
-
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("File download timeout")), 25000);
-          });
-
-          [coreFile, wasmFile] = await Promise.race([
-            Promise.all([coreFilePromise, wasmFilePromise]),
-            timeoutPromise.then(() => { throw new Error("Timeout"); })
-          ]);
-
-          console.log("fetchFile successful, sizes:", coreFile.length, wasmFile.length);
-        } catch (fetchFileError) {
-          console.log("fetchFile failed, trying regular fetch...", fetchFileError);
-
-          // Fallback to regular fetch
-          const coreResponse = await fetch(`${baseURL}/ffmpeg-core.js`);
-          const wasmResponse = await fetch(`${baseURL}/ffmpeg-core.wasm`);
-
-          if (!coreResponse.ok || !wasmResponse.ok) {
-            throw new Error(`Fetch failed: core=${coreResponse.status}, wasm=${wasmResponse.status}`);
-          }
-
-          coreFile = new Uint8Array(await coreResponse.arrayBuffer());
-          wasmFile = new Uint8Array(await wasmResponse.arrayBuffer());
-
-          console.log("Regular fetch successful, sizes:", coreFile.length, wasmFile.length);
-        }
-
-        console.log("Loading FFmpeg with downloaded files...");
-        loadPromise = ffmpeg.load({
-          coreURL: URL.createObjectURL(new Blob([coreFile as any], { type: 'text/javascript' })),
-          wasmURL: URL.createObjectURL(new Blob([wasmFile as any], { type: 'application/wasm' })),
-        });
-      } catch (downloadError) {
-        console.error("File download failed:", downloadError);
-
-        // Try direct loading as fallback
-        console.log("Trying direct loading as fallback...");
-        try {
-          console.log("Using direct URLs for fallback loading");
-          loadPromise = ffmpeg.load({
-            coreURL: `${baseURL}/ffmpeg-core.js`,
-            wasmURL: `${baseURL}/ffmpeg-core.wasm`,
-          });
-        } catch (directError) {
-          console.error("Direct loading also failed:", directError);
-          throw new Error(`Loading failed: ${downloadError instanceof Error ? downloadError.message : 'Unknown error'}`);
-        }
-      }
-
-      // Shorter timeout for faster feedback
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Loading timeout after 45 seconds")), 45000);
-      });
-
-      console.log("Starting FFmpeg load with timeout...");
-      await Promise.race([loadPromise, timeoutPromise]);
-
-      console.log("FFmpeg loaded successfully!");
-      setFfmpegLoaded(true);
-      setFfmpegLoading(false);
-      setLoadAttempts(0);
-      toast.success("Video processing engine loaded successfully!");
-    } catch (err) {
-      console.error("Failed to load FFmpeg:", err);
-      setFfmpegLoading(false);
-
-      if (retryCount < 2) {
-        console.log(`Retrying FFmpeg load (attempt ${retryCount + 1})...`);
-        setLoadAttempts(retryCount + 1);
-        setTimeout(() => loadFFmpeg(retryCount + 1), 1000);
-      } else {
-        const errorMsg = `Failed to load video processing engine after ${retryCount + 1} attempts. This might be due to network issues, browser restrictions, or CDN problems. Please try refreshing the page or using a different browser.`;
-        setError(errorMsg);
-        console.error("All FFmpeg loading attempts failed:", err);
-        setLoadAttempts(0);
-      }
-    }
-  }, [ffmpegLoaded]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -200,50 +71,30 @@ export default function VideoToAudio() {
       // Write input file to FFmpeg file system
       await ffmpeg.writeFile("input.mp4", await fetchFile(videoFile));
 
-      // Determine output format and codec
-      let outputFile = "output.mp3";
-      let codec = "libmp3lame";
-
-      switch (audioFormat) {
-        case "mp3":
-          outputFile = "output.mp3";
-          codec = "libmp3lame";
-          break;
-        case "wav":
-          outputFile = "output.wav";
-          codec = "pcm_s16le";
-          break;
-        case "aac":
-          outputFile = "output.m4a";
-          codec = "aac";
-          break;
-        case "ogg":
-          outputFile = "output.ogg";
-          codec = "libvorbis";
-          break;
-        case "m4a":
-          outputFile = "output.m4a";
-          codec = "aac";
-          break;
-      }
+      const outputFile = `output.${audioFormat}`;
+      const encoding = AUDIO_ENCODINGS[audioFormat];
 
       // Extract audio using FFmpeg
-      await ffmpeg.exec([
+      const exitCode = await ffmpeg.exec([
         "-i", "input.mp4",
         "-vn", // No video
-        "-acodec", codec,
+        "-acodec", encoding.codec,
         "-ab", "192k", // Bitrate
         "-ar", "44100", // Sample rate
+        "-f", encoding.muxer,
         "-y", // Overwrite output
         outputFile
       ]);
+      if (exitCode !== 0) throw new Error("The selected audio could not be encoded.");
 
       // Read the output file
       const data = await ffmpeg.readFile(outputFile);
-      const blob = new Blob([data as unknown as BlobPart], { type: `audio/${audioFormat}` });
+      if (ffmpegRef.current !== ffmpeg || !ffmpeg.loaded) return;
+      const blob = new Blob([data as unknown as BlobPart], { type: encoding.mime });
       const url = URL.createObjectURL(blob);
 
       setProcessedAudio(url);
+      setResultFormat(audioFormat);
       toast.success(`Audio extracted successfully as ${audioFormat.toUpperCase()}!`);
 
       // Clean up
@@ -264,13 +115,13 @@ export default function VideoToAudio() {
 
     const link = document.createElement('a');
     link.href = processedAudio;
-    link.download = `extracted-audio.${audioFormat}`;
+    link.download = `extracted-audio.${resultFormat}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast.success("Audio downloaded!");
-  }, [processedAudio, audioFormat]);
+  }, [processedAudio, resultFormat]);
 
   const resetTool = () => {
     setVideoFile(null);
@@ -292,8 +143,8 @@ export default function VideoToAudio() {
 
   const audioFormats = [
     { value: "mp3", label: "MP3", description: "Universal format, good quality" },
-    { value: "wav", label: "WAV", description: "Uncompressed, highest quality" },
-    { value: "aac", label: "AAC", description: "Good quality, smaller files" },
+    { value: "wav", label: "WAV", description: "16-bit PCM at 44.1 kHz" },
+    { value: "aac", label: "AAC", description: "AAC audio in an ADTS file" },
     { value: "ogg", label: "OGG", description: "Open format, good compression" },
     { value: "m4a", label: "M4A", description: "Container for AAC audio" },
   ];
@@ -301,7 +152,7 @@ export default function VideoToAudio() {
   const faqs = [
     {
       question: "What video formats are supported?",
-      answer: "Most common video formats are supported including MP4, AVI, MOV, MKV, WMV, FLV, and more. The tool works entirely in your browser.",
+      answer: "Input support depends on the audio and video codecs available in the bundled FFmpeg engine. A video needs a decodable audio track; a familiar file extension alone does not guarantee compatibility.",
     },
     {
       question: "How long does processing take?",
@@ -313,12 +164,13 @@ export default function VideoToAudio() {
     },
     {
       question: "What audio quality can I expect?",
-      answer: "Audio is extracted at high quality (192kbps for MP3, 44.1kHz sample rate). WAV format provides lossless quality.",
+      answer: "The tool resamples to 44.1 kHz. Compressed formats target 192 kbps; WAV uses uncompressed 16-bit PCM. Converting cannot recover detail missing from the source, and resampling can change the original samples.",
     },
   ];
 
   return (
     <ToolLayout
+      article={videoToAudioArticle}
       title="Video to Audio Converter"
       description="Extract audio tracks from video files. Convert videos to MP3, WAV, AAC, OGG, and M4A formats with high quality audio extraction."
       category="video"
@@ -331,6 +183,7 @@ export default function VideoToAudio() {
         { title: "QR Code", description: "Generate QR codes", href: "/utility-tools/qr-code", icon: Music, category: "video" },
       ]}
     >
+      {(ffmpegLoading || isProcessing) && <Button variant="outline" className="mb-4" onClick={() => { cancelEngine(); setIsProcessing(false); setError("Cancelled. Your selected file is unchanged. Reload the engine to try again."); }}>Cancel processing</Button>}
       <div className="max-w-4xl mx-auto space-y-6">
         {/* File Upload */}
         <Card>
@@ -433,7 +286,7 @@ export default function VideoToAudio() {
           </Card>
         )}
 
-        {/* Error Display */}￼Advanced Settings
+        {/* Error Display */}
 
         {error && (
           <Alert variant="destructive">
@@ -451,13 +304,13 @@ export default function VideoToAudio() {
                 Audio Extracted Successfully
               </CardTitle>
               <CardDescription>
-                Your audio has been extracted as {audioFormat.toUpperCase()}
+                Your audio has been extracted as {resultFormat.toUpperCase()}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/30 rounded-lg p-4">
-                <audio controls className="w-full">
-                  <source src={processedAudio} type={`audio/${audioFormat}`} />
+                <audio key={processedAudio} controls className="w-full">
+                  <source src={processedAudio} type={AUDIO_ENCODINGS[resultFormat].mime} />
                   Your browser does not support the audio element.
                 </audio>
               </div>
@@ -465,7 +318,7 @@ export default function VideoToAudio() {
               <div className="flex gap-2">
                 <Button onClick={downloadAudio} className="flex-1">
                   <Download className="h-4 w-4 mr-2" />
-                  Download {audioFormat.toUpperCase()}
+                  Download {resultFormat.toUpperCase()}
                 </Button>
                 <Button onClick={resetTool} variant="outline">
                   Process Another Video

@@ -7,6 +7,7 @@ import { Check, Copy, RotateCcw, Type } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { caseConverterArticle } from "@/content/tools/case-converter";
 type CaseType =
   | "uppercase"
   | "lowercase"
@@ -121,12 +122,13 @@ export default function CaseConverter() {
     },
     {
       question: "Does it preserve special characters?",
-      answer: "Yes, special characters, numbers, and punctuation are preserved. Only letter casing is changed.",
+      answer: "Uppercase and lowercase primarily change letter casing. Identifier styles such as camelCase and PascalCase can remove separators or punctuation; snake_case and kebab-case replace some separators. Review the result before using it as an identifier.",
     },
   ];
 
   return (
     <ToolLayout
+      article={caseConverterArticle}
       title="Case Converter"
       description="Convert text between different case styles: uppercase, lowercase, title case, camelCase, PascalCase, snake_case, and more."
       category="text"

@@ -26,6 +26,7 @@ import { toast } from "sonner";
 
 import "highlight.js/styles/github-dark.css";
 
+import { markdownRendererArticle } from "@/content/tools/markdown-renderer";
 type ViewMode = "split" | "editor" | "preview";
 
 export default function MarkdownRenderer() {
@@ -273,12 +274,13 @@ export default function MarkdownRenderer() {
     {
       question: "Is my data private?",
       answer:
-        "Everything runs 100% in your browser. Your markdown content is never sent to any server or stored anywhere.",
+        "Markdown rendering happens in your browser and the tool does not upload your document. Images referenced by remote URLs can contact their source servers. Site analytics and advertising are separate from document processing.",
     },
   ];
 
   return (
     <ToolLayout
+      article={markdownRendererArticle}
       title="Markdown Renderer"
       description="Advanced markdown editor with live preview, formatting toolbar, syntax highlighting, table of contents, and multiple export formats."
       category="dev"

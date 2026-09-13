@@ -43,7 +43,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
-                type="text"
+                aria-label="Search tools in menu"
+                type="search"
                 placeholder="Search tools..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

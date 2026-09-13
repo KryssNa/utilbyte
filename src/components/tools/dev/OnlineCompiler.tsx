@@ -22,6 +22,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { onlineCompilerArticle } from "@/content/tools/online-compiler";
 type RunnerType = "js" | "html" | "css" | "python";
 
 interface Language {
@@ -286,7 +287,7 @@ const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.27.5/full/";
 const faqs = [
   {
     question: "What languages are supported?",
-    answer: "JavaScript, TypeScript, Python, HTML, CSS, JSON, and Markdown. JavaScript and TypeScript run natively. Python runs via Pyodide (a WebAssembly-based Python interpreter).",
+    answer: "JavaScript runs directly and Python runs through Pyodide. HTML and CSS have previews. TypeScript mode currently uses the JavaScript evaluator without transpiling type syntax. JSON and Markdown are editor modes with limited preview behavior.",
   },
   {
     question: "Is Python execution real?",
@@ -294,11 +295,11 @@ const faqs = [
   },
   {
     question: "Are my files uploaded anywhere?",
-    answer: "No. All code runs entirely in your browser. Nothing is sent to any server. Your code stays private on your device.",
+    answer: "The runner does not submit your code to an execution server. Python downloads its runtime from jsDelivr. Code you run can access browser capabilities and make network requests; preview content can also load external resources. Do not run untrusted code or include secrets.",
   },
   {
     question: "What are the limitations?",
-    answer: "JavaScript/TypeScript run in a sandboxed environment without DOM access. Python runs via Pyodide with most stdlib available but no filesystem or network access. HTML/CSS render in a sandboxed iframe.",
+    answer: "JavaScript uses the page context and can access the DOM and network. Python runs in the page through Pyodide, including its virtual filesystem and browser bridge. Neither is an isolation boundary for untrusted code. TypeScript type syntax is not transpiled; long-running code can freeze the tab.",
   },
   {
     question: "Can I use keyboard shortcuts?",
@@ -306,7 +307,7 @@ const faqs = [
   },
   {
     question: "Why does Python take a moment to load?",
-    answer: "The Python interpreter (Pyodide) needs to be downloaded on first use (~6MB). After that it is cached in your browser for instant execution.",
+    answer: "Python downloads the Pyodide runtime from jsDelivr on first use. Download time and later cache reuse depend on your connection and browser. Additional Python packages can require further downloads.",
   },
 ];
 
@@ -550,8 +551,9 @@ sys.stderr = io.StringIO()
 
   return (
     <ToolLayout
+      article={onlineCompilerArticle}
       title="Online Compiler"
-      description="Write and run code instantly in your browser. Supports JavaScript, TypeScript, Python, HTML, CSS, and more. No setup required."
+      description="Run JavaScript and Python snippets in your browser, or preview HTML and CSS. Review the mode limits below before running code."
       category="dev"
       categoryLabel="Developer Tools"
       icon={Code2}

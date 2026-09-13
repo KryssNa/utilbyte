@@ -8,6 +8,7 @@ import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import KeyValueEditor from "./api-client/KeyValueEditor";
 import ResponseView from "./api-client/ResponseView";
+import { apiClientArticle } from "@/content/tools/api-client";
 import {
   ApiResponse,
   HTTP_METHODS,
@@ -119,12 +120,12 @@ export default function ApiClient() {
     {
       question: "What is an API client?",
       answer:
-        "An API client lets you send HTTP requests to any URL and inspect the response. It's like Postman or Insomnia, but runs directly in your browser with no installation required.",
+        "An API client lets you construct HTTP requests and inspect responses. This interface runs in your browser, while requests pass through the UtilByte server proxy to supported public HTTP or HTTPS destinations.",
     },
     {
       question: "Why does this use a proxy?",
       answer:
-        "Browsers enforce CORS restrictions that prevent direct cross-origin requests. The proxy forwards your request server-side to bypass these limitations while keeping your data secure.",
+        "Browsers restrict reading cross-origin responses unless a destination allows it. This tool forwards the URL, allowed headers and body through the UtilByte server proxy, so both the proxy and destination receive that data.",
     },
     {
       question: "What authentication methods are supported?",
@@ -134,14 +135,15 @@ export default function ApiClient() {
     {
       question: "Is my data secure?",
       answer:
-        "The proxy only forwards your request and returns the response. No data is stored or logged. The connection to the proxy uses HTTPS encryption.",
+        "Your request, including any credentials or body you enter, passes through the UtilByte proxy and destination server. The proxy handler does not explicitly save requests, but that does not establish a no-logging policy for hosting providers or destinations. Use synthetic data and test credentials.",
     },
   ];
 
   return (
     <ToolLayout
+      article={apiClientArticle}
       title="API Client"
-      description="Send HTTP requests to any API endpoint and inspect responses. A browser-based alternative to Postman and cURL."
+      description="Send requests through the UtilByte server proxy to public HTTP or HTTPS endpoints and inspect responses. Use test credentials and synthetic data."
       category="dev"
       categoryLabel="Developer Tools"
       icon={Send}

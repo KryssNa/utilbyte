@@ -1,10 +1,7 @@
+import type { CatalogTool } from "@/lib/tool-catalog";
 import { LucideIcon } from "lucide-react";
 
-export interface Tool {
-  title: string;
-  href: string;
-  desc: string;
-}
+export type Tool = CatalogTool;
 
 export interface ToolCategory {
   title: string;

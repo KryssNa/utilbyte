@@ -7,6 +7,7 @@ import { Check, Copy, Hash, RotateCcw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { wordCounterArticle } from "@/content/tools/word-counter";
 export default function WordCounter() {
   const [text, setText] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
@@ -71,6 +72,7 @@ Speaking time: ${stats.speakingTime} min`;
 
   return (
     <ToolLayout
+      article={wordCounterArticle}
       title="Word Counter"
       description="Count words, characters, sentences, and paragraphs instantly. Get reading and speaking time estimates."
       category="text"

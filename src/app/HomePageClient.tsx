@@ -2,6 +2,8 @@
 
 import { toolCategories } from "@/components/layout/navbar";
 import { toolIcons } from "@/components/layout/navbar/data";
+import { searchTools } from "@/lib/tool-search";
+import { allTools } from "@/components/layout/navbar/data";
 import SocialProof from "@/components/shared/SocialProof";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -22,12 +24,12 @@ import { useMemo, useState } from "react";
 const features = [
   {
     icon: Shield,
-    title: "100% Private",
+    title: "Local file tools",
     color: "text-emerald-500 dark:text-emerald-400",
   },
   {
     icon: Zap,
-    title: "Lightning Fast",
+    title: "Browser-based",
     color: "text-amber-500 dark:text-amber-400",
   },
   {
@@ -37,28 +39,28 @@ const features = [
   },
   {
     icon: Sparkles,
-    title: "Always Free",
+    title: "Free to use",
     color: "text-teal-500 dark:text-teal-400",
   },
 ];
 
-const popularTools = [
+const featuredTools = [
   {
     title: "PDF Editor",
     href: "/pdf-tools/edit-pdf",
-    desc: "Edit text, images, and annotations in any PDF",
+    desc: "Add text, images, and annotations to PDFs",
     category: "PDF",
   },
   {
     title: "Image Compressor",
     href: "/image-tools/compress-image",
-    desc: "Reduce file size without quality loss",
+    desc: "Reduce file size with adjustable quality",
     category: "Image",
   },
   {
     title: "Online Compiler",
     href: "/dev-tools/online-compiler",
-    desc: "Write and run code in 10+ languages",
+    desc: "Run JavaScript, Python, and HTML",
     category: "Dev",
   },
   {
@@ -70,7 +72,7 @@ const popularTools = [
   {
     title: "Background Remover",
     href: "/image-tools/remove-background",
-    desc: "AI-powered background removal",
+    desc: "Colour-based removal of plain backgrounds",
     category: "Image",
   },
   {
@@ -121,17 +123,12 @@ export default function HomePageClient() {
 
   const filteredCategories = useMemo(() => {
     if (!toolSearch.trim() && !activeCategory) return toolCategories;
-    const q = toolSearch.toLowerCase();
+    const matches = searchTools(allTools, toolSearch);
     return toolCategories
       .filter((cat) => !activeCategory || cat.title === activeCategory)
       .map((cat) => ({
         ...cat,
-        tools: cat.tools.filter(
-          (t) =>
-            !q ||
-            t.title.toLowerCase().includes(q) ||
-            t.desc.toLowerCase().includes(q),
-        ),
+        tools: matches.filter(tool => tool.category === cat.title),
       }))
       .filter((cat) => cat.tools.length > 0);
   }, [toolSearch, activeCategory]);
@@ -166,7 +163,7 @@ export default function HomePageClient() {
             <motion.div variants={itemVariants} className='mb-5'>
               <span className='inline-flex items-center gap-2 rounded-full border border-sky-300 dark:border-sky-500/30 bg-sky-100 dark:bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-700 dark:text-sky-300 backdrop-blur-sm'>
                 <Sparkles className='h-4 w-4' />
-                {totalTools} Free Tools &middot; 100% Private
+                {totalTools} Free Tools &middot; No sign-up
               </span>
             </motion.div>
 
@@ -187,9 +184,9 @@ export default function HomePageClient() {
             >
               Image, PDF, text & developer tools.{" "}
               <span className='text-foreground font-medium'>
-                No sign-up. No uploads.
+                No sign-up.
               </span>{" "}
-              Everything runs in your browser.
+              Local file processing, with clear data choices for network tools.
             </motion.p>
 
             <motion.div
@@ -240,7 +237,7 @@ export default function HomePageClient() {
         <div className='h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent' />
       </section>
 
-      {/* Popular Tools */}
+      {/* Featured Tools */}
       <section className='py-14 lg:py-20'>
         <div className='container mx-auto px-4 lg:px-8'>
           <motion.div
@@ -254,16 +251,16 @@ export default function HomePageClient() {
             </div>
             <div>
               <h2 className='font-display text-2xl font-bold tracking-tight'>
-                Popular Tools
+                Featured Tools
               </h2>
               <p className='text-sm text-muted-foreground'>
-                Most used tools by our community
+                Selected tools for common tasks
               </p>
             </div>
           </motion.div>
 
           <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
-            {popularTools.map((tool, i) => {
+            {featuredTools.map((tool, i) => {
               const Icon = toolIcons[tool.title] ?? Wrench;
               const { color, bg } = getCategoryMeta(tool.category);
               return (
@@ -317,8 +314,7 @@ export default function HomePageClient() {
               All {totalTools} Tools
             </h2>
             <p className='mt-3 text-muted-foreground text-lg max-w-2xl mx-auto'>
-              Everything you need, right in your browser. No downloads, no
-              sign-ups.
+              Choose a tool for your task. No installation or account required.
             </p>
           </motion.div>
 
@@ -327,7 +323,8 @@ export default function HomePageClient() {
               <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
               <input
                 type='text'
-                placeholder='Search tools...'
+                placeholder='Search tools or tasks...'
+                aria-label='Search the tool directory'
                 value={toolSearch}
                 onChange={(e) => setToolSearch(e.target.value)}
                 className='w-full pl-9 pr-3 py-2.5 rounded-lg border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30'
@@ -471,18 +468,20 @@ export default function HomePageClient() {
                   <Shield className='h-7 w-7 text-emerald-600 dark:text-emerald-400' />
                 </div>
                 <h2 className='font-display text-2xl font-bold tracking-tight sm:text-3xl mb-3'>
-                  Your Files Never Leave Your Device
+                  Local tools. Clear data choices.
                 </h2>
                 <p className='text-muted-foreground max-w-2xl mx-auto text-lg'>
-                  All processing happens locally in your browser using modern
-                  web technologies. Your files are never uploaded to any server.
+                  Image, PDF, text, and many developer tools process content in your browser.
+                  Network tools send requests to external services; some local tools download processing libraries.
+                  This site also uses analytics and advertising. Tool inputs are not included in the optional tool-outcome metrics.
                 </p>
 
+                <Link href='/privacy' className='mt-4 inline-block text-sm underline underline-offset-4'>Read how data is handled</Link>
                 <div className='mt-6 flex flex-wrap items-center justify-center gap-6 text-sm'>
                   {[
-                    "No server uploads",
-                    "No tracking",
-                    "No data collection",
+                    "Browser-based file tools",
+                    "No account required",
+                    "Open source",
                   ].map((text) => (
                     <div
                       key={text}

@@ -1,3 +1,4 @@
+import { parseSafeJson } from "@/lib/json-safe";
 import { useMemo } from "react";
 import type { JsonStats } from "./types";
 
@@ -14,11 +15,11 @@ function calculateDepth(obj: unknown, d = 0): number {
   if (typeof obj !== "object" || obj === null) return d;
   if (Array.isArray(obj)) {
     if (obj.length === 0) return d + 1;
-    return Math.max(...obj.map((v) => calculateDepth(v, d + 1)));
+    return obj.reduce<number>((max, value) => Math.max(max, calculateDepth(value, d + 1)), d + 1);
   }
   const vals = Object.values(obj);
   if (vals.length === 0) return d + 1;
-  return Math.max(...vals.map((v) => calculateDepth(v, d + 1)));
+  return vals.reduce<number>((max, value) => Math.max(max, calculateDepth(value, d + 1)), d + 1);
 }
 
 function collectStats(obj: unknown): Omit<JsonStats, "depth" | "size"> {
@@ -64,7 +65,7 @@ export function useJsonFormatter(input: string, indentSize: number): UseJsonForm
     }
 
     try {
-      const parsed = JSON.parse(trimmed);
+      const parsed = parseSafeJson(trimmed);
       const fmt = JSON.stringify(parsed, null, indentSize);
       const typeStats = collectStats(parsed);
 
@@ -122,7 +123,7 @@ export function queryJsonPath(parsed: unknown, path: string): { result: unknown;
       current = current[idx];
     } else if (typeof current === "object") {
       const obj = current as Record<string, unknown>;
-      if (!(part in obj)) {
+      if (!Object.prototype.hasOwnProperty.call(obj, part)) {
         return { result: undefined, error: `Key "${part}" not found` };
       }
       current = obj[part];

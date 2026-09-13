@@ -12,6 +12,7 @@ import { AlertCircle, Clock, Copy, RotateCcw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { timestampArticle } from "@/content/tools/timestamp";
 type TimestampFormat = "unix" | "iso" | "utc" | "locale" | "relative";
 
 export default function TimestampConverter() {
@@ -191,6 +192,7 @@ export default function TimestampConverter() {
 
   return (
     <ToolLayout
+      article={timestampArticle}
       title="Timestamp Converter"
       description="Convert between different timestamp formats: Unix, ISO 8601, UTC, and locale formats. Parse and format dates easily."
       category="utility"

@@ -1,12 +1,13 @@
+import { withPageMetadata } from "@/lib/page-metadata";
 import ToolCategoryPage from "@/components/shared/ToolCategoryPage";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withPageMetadata("/video-tools", {
   title: "Video Tools - Compress Video, Extract Audio, Convert to GIF",
   description:
     "Free browser-based video tools to compress videos, extract audio, and convert clips to GIFs with privacy-first local processing.",
   alternates: { canonical: "/video-tools" },
-};
+});
 
 export default function VideoToolsCategoryPage() {
   return (

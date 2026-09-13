@@ -22,6 +22,7 @@ import { PDFDocument } from "pdf-lib";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { imageToPdfArticle } from "@/content/tools/image-to-pdf";
 type PageSize = 'a4' | 'letter' | 'a3' | 'custom';
 type Orientation = 'portrait' | 'landscape';
 
@@ -362,6 +363,7 @@ export default function ImageToPDF() {
 
   return (
     <ToolLayout
+      article={imageToPdfArticle}
       title="Image to PDF"
       description="Convert multiple images into a single PDF document. Supports up to 50 images with custom page sizes and positioning."
       category="pdf"

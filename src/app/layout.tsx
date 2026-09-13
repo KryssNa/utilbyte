@@ -1,9 +1,13 @@
+import { SOCIAL_CARD } from "@/lib/social-card";
+import WorkspaceLayout from "@/components/layout/WorkspaceLayout";
+import { NavigationSafety } from "@/components/shared/NavigationSafety";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
@@ -33,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s | UtilByte",
   },
   description:
-    "Free online tools for image compression, PDF editing, text formatting & developer utilities. No login, no uploads required. 100% browser-based for complete privacy.",
+    "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
   keywords: [
     "free online tools",
     "image compressor",
@@ -69,22 +73,15 @@ export const metadata: Metadata = {
     url: "https://utilbyte.app",
     title: "UtilByte - Free Online Tools for Everyday Work",
     description:
-      "Free image, PDF, text & developer tools. No login. No uploads. 100% private.",
+      "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
     siteName: "UtilByte",
-    images: [
-      {
-        url: "/images/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "UtilByte - Free Online Tools",
-      },
-    ],
+    images: [SOCIAL_CARD],
   },
   twitter: {
     card: "summary_large_image",
     title: "UtilByte - Free Online Tools",
-    description: "Free online tools that respect your privacy. No uploads, no tracking.",
-    images: ["/images/og-image.jpg"],
+    description: "Free image, PDF, text and developer tools. No sign-up. Local file processing and clearly labeled network tools, with data-handling details on each tool.",
+    images: [SOCIAL_CARD],
   },
   robots: {
     index: true,
@@ -130,6 +127,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="UtilByte AI tool directory" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo_small.png" />
         <meta name="msapplication-TileColor" content="#000000" />
@@ -137,6 +135,13 @@ export default function RootLayout({
         <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
       </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org", "@graph": [
+            { "@type": "WebSite", "@id": "https://utilbyte.app/#website", url: "https://utilbyte.app", name: "UtilByte", inLanguage: "en", publisher: { "@id": "https://utilbyte.app/#organization" } },
+            { "@type": "Organization", "@id": "https://utilbyte.app/#organization", name: "UtilByte", url: "https://utilbyte.app", logo: "https://utilbyte.app/logo.svg", sameAs: ["https://github.com/KryssNa/utilbyte"] },
+          ],
+        }) }} />
+        <Script src="/tool-preferences.js" strategy="beforeInteractive" />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
@@ -151,12 +156,18 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:ring-2 focus:ring-primary">Skip to content</a>
+          <NavigationSafety>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <WorkspaceLayout>
+          <main id="main-content" tabIndex={-1} className="min-w-0 flex-1">{children}</main>
           <Footer />
+          </WorkspaceLayout>
+          </NavigationSafety>
           <Toaster position="bottom-right" richColors />
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

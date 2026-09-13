@@ -11,6 +11,7 @@ import { Copy, Palette, RotateCcw } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { colorConverterArticle } from "@/content/tools/color-converter";
 interface ColorValues {
   hex: string;
   rgb: { r: number; g: number; b: number; };
@@ -205,12 +206,13 @@ export default function ColorConverter() {
     },
     {
       question: "Are the conversions accurate?",
-      answer: "Yes, all color conversions use standard color space mathematics and are accurate for web and print use.",
+      answer: "Conversions use mathematical formulas with rounded output. CMYK values are approximate because this tool does not use printer or paper ICC profiles; confirm production print colors with a color-managed workflow.",
     },
   ];
 
   return (
     <ToolLayout
+      article={colorConverterArticle}
       title="Color Converter"
       description="Convert between different color formats: HEX, RGB, HSL, HSV, CMYK. Includes color picker and visual preview."
       category="utility"

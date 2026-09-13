@@ -1,10 +1,10 @@
-import OnlineCompiler from "@/components/tools/dev/OnlineCompiler";
-import { Metadata } from "next";
+import { createToolMetadata } from "@/lib/tool-metadata";
 
-export const metadata: Metadata = {
-  title: "Online Compiler & Code Runner - Run Code in 10+ Languages Free",
-  description:
-    "Write and run code online for free. Supports JavaScript, TypeScript, Python, HTML, CSS, and more. Instant output with syntax highlighting.",
+import OnlineCompiler from "@/components/tools/dev/OnlineCompiler";
+
+export const metadata = createToolMetadata("/dev-tools/online-compiler", {
+  title: "Online Code Runner - JavaScript and Python",
+  description: "Run JavaScript and Python examples in your browser, preview HTML and CSS, and format JSON. TypeScript syntax is not transpiled; run only code you trust.",
   keywords: [
     "online compiler",
     "code runner online",
@@ -15,21 +15,7 @@ export const metadata: Metadata = {
     "typescript playground",
     "online code editor",
   ],
-  openGraph: {
-    title: "Online Compiler - Run Code in 10+ Languages Free",
-    description: "Write and run code online for free. Supports JavaScript, TypeScript, Python, HTML, and more.",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Online Compiler - Code Runner",
-    description: "Write and run code online for free in 10+ programming languages.",
-  },
-  alternates: {
-    canonical: "/dev-tools/online-compiler",
-  },
-};
+});
 
 export default function OnlineCompilerPage() {
   return <OnlineCompiler />;

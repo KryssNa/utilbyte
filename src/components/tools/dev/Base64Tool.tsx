@@ -7,6 +7,10 @@ import { ArrowLeft, ArrowRight, Binary, Check, Copy } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+
+import { base64Article } from "@/content/tools/base64";
+import { encodeBase64, decodeBase64 } from "@/lib/encoding";
+
 type Mode = "encode" | "decode";
 
 export default function Base64Tool() {
@@ -15,21 +19,19 @@ export default function Base64Tool() {
   const [copied, setCopied] = useState<boolean>(false);
 
   const result = useMemo(() => {
-    if (!input.trim()) return "";
+    if (!input) return "";
 
     try {
-      if (mode === "encode") {
-        return btoa(input);
-      } else {
-        return atob(input);
-      }
+      return mode === "encode" ? encodeBase64(input) : decodeBase64(input);
     } catch (error) {
-      return "Invalid Base64 string";
+      return mode === "encode"
+        ? "Could not encode this input"
+        : "Invalid Base64 string";
     }
   }, [input, mode]);
 
   const handleCopy = useCallback(async () => {
-    if (!result || result === "Invalid Base64 string") return;
+    if (!result || result === "Invalid Base64 string" || result === "Could not encode this input") return;
     await navigator.clipboard.writeText(result);
     setCopied(true);
     toast.success("Result copied to clipboard!");
@@ -50,10 +52,10 @@ export default function Base64Tool() {
   };
 
   const isValidInput = useMemo(() => {
-    if (!input.trim()) return true;
-    if (mode === "decode") {
+    if (!input) return true;
+    {
       try {
-        atob(input);
+        if (mode === "decode") decodeBase64(input); else encodeBase64(input);
         return true;
       } catch {
         return false;
@@ -79,6 +81,7 @@ export default function Base64Tool() {
 
   return (
     <ToolLayout
+      article={base64Article}
       title="Base64 Encoder/Decoder"
       description="Encode text to Base64 or decode Base64 back to text. Perfect for developers working with APIs, data transmission, and encoding."
       category="dev"

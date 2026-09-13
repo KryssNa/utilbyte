@@ -1,0 +1,27 @@
+name: Quality checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package-manager: [npm, yarn]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: ${{ matrix.package-manager }}
+      - if: matrix.package-manager == 'npm'
+        run: npm ci
+      - if: matrix.package-manager == 'yarn'
+        run: yarn install --frozen-lockfile --non-interactive
+      - run: ${{ matrix.package-manager }} run test
+      - run: ${{ matrix.package-manager }} run type-check
+      - run: ${{ matrix.package-manager }} run build
+      - run: ${{ matrix.package-manager }} run audit:build

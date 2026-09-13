@@ -22,6 +22,7 @@ import {
 import { PDFDocument, PDFPage } from "pdf-lib";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { splitPdfArticle } from "@/content/tools/split-pdf";
 
 export default function PDFSplit() {
   const [file, setFile] = useState<File | null>(null);
@@ -206,6 +207,7 @@ export default function PDFSplit() {
 
   return (
     <ToolLayout
+      article={splitPdfArticle}
       title="Split PDF"
       description="Split PDF files into multiple documents. Specify page ranges to create separate PDFs from different sections."
       category="pdf"

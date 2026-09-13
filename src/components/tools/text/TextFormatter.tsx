@@ -9,6 +9,7 @@ import { AlertCircle, Check, CheckCircle, Copy, FileText, RotateCcw } from "luci
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
+import { textFormatterArticle } from "@/content/tools/text-formatter";
 type FormatType = "json" | "xml" | "sql" | "css" | "javascript" | "typescript";
 
 export default function TextFormatter() {
@@ -195,7 +196,7 @@ export default function TextFormatter() {
   const faqs = [
     {
       question: "What formats does this tool support?",
-      answer: "This tool can format JSON, XML, SQL, CSS, JavaScript, and TypeScript code with proper indentation and structure.",
+      answer: "JSON uses parsing and serialization. XML, SQL, CSS, JavaScript, and TypeScript use basic text formatting rules; review their output before use.",
     },
     {
       question: "Does it validate the input?",
@@ -203,12 +204,13 @@ export default function TextFormatter() {
     },
     {
       question: "Can I format minified code?",
-      answer: "Yes, this tool is perfect for beautifying minified or compressed code to make it more readable.",
+      answer: "It can make some minified input easier to read. The non-JSON modes use basic rules rather than language parsers and may change complex code incorrectly. Keep the original and review the result.",
     },
   ];
 
   return (
     <ToolLayout
+      article={textFormatterArticle}
       title="Text Formatter"
       description="Format and beautify code in multiple languages. Supports JSON, XML, SQL, CSS, JavaScript, and TypeScript formatting."
       category="text"

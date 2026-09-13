@@ -20,6 +20,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { localProxyArticle } from "@/content/tools/local-proxy";
 const STORAGE_KEY = "rc_bin_id";
 
 function generateBinId() {
@@ -152,7 +153,7 @@ export default function LocalProxy() {
   const faqs = [
     {
       question: "What is Local Proxy?",
-      answer: "Local Proxy forwards every request received at your Request Catcher URL to a target URL you specify — such as your ngrok tunnel pointing to localhost. It acts like a transparent reverse proxy.",
+      answer: "Local Proxy configures forwarding from a hosted Request Catcher endpoint to a public URL, such as a tunnel to localhost. It is a debugging relay, not a transparent proxy: some headers are removed and callers receive the catcher response.",
     },
     {
       question: "Why can't I just forward directly to localhost?",
@@ -168,12 +169,13 @@ export default function LocalProxy() {
     },
     {
       question: "Is there a request size or rate limit?",
-      answer: "Forwarding has a 15-second timeout per request. Response bodies over 10KB are truncated in the display but the full request is always forwarded to your server.",
+      answer: "The forwarding request has a 15-second timeout. Stored forward responses are truncated after 10,000 characters. Some headers, including Authorization, are removed; forwarding can fail and hosting limits still apply.",
     },
   ];
 
   return (
     <ToolLayout
+      article={localProxyArticle}
       title="Local Proxy"
       description="Forward requests from your public catcher URL to localhost via ngrok or any tunnel. Debug webhooks directly on your local machine."
       category="dev"
