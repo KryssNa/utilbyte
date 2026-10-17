@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Braces } from "lucide-react";
+import { Braces, FileCheck2, FileSpreadsheet } from "lucide-react";
 import ToolLayout from "@/components/shared/ToolLayout";
 import NextStepActions from "@/components/shared/NextStepActions";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,10 @@ import { takeHandoff } from "@/lib/local-handoff";
 import { recordToolEvent } from "@/lib/tool-events";
 import type { CsvMode } from "@/lib/data-workflows";
 import type { WorkflowRequest } from "@/workers/data-workflows.worker";
+import type { ToolArticleContent } from "@/components/shared/ToolArticle";
+import { jsonCsvArticle } from "@/content/tools/json-csv";
+import { jsonSchemaArticle } from "@/content/tools/json-schema";
+import { jsonToTypescriptArticle } from "@/content/tools/json-to-typescript";
 
 export type Workflow = "json-csv" | "json-schema" | "json-to-typescript";
 const sample = '[{"name":"Ada","active":true,"score":12},{"name":"Grace","active":false,"score":15}]';
@@ -24,6 +28,61 @@ const limitations: Record<Workflow, string[]> = {
   "json-schema": ["Supports JSON Schema draft-07 only, with strict schema compilation. Unknown keywords are rejected. Format annotations (email, dates, and similar) are not validated.", "Only local # references are supported. Remote schema retrieval is disabled. Defaults, type coercion, and removal of extra properties are disabled.", "A schema match is not proof that the data is correct for your business requirements. Only the first validation error is returned.", "Schemas are limited to 64,000 characters. Processing runs in a worker with a five-second timeout and Cancel control."],
   "json-to-typescript": ["Types reflect one sample, not every possible response. Missing fields, optional properties, enums, and dates cannot be inferred reliably from one example.", "Empty arrays become unknown[]. Mixed arrays become unions, including separate object shapes when keys differ. Property names are escaped JSON strings.", "This generates a type alias, not a runtime validator. Use JSON Schema validation when you need runtime data checks.", "Nesting is limited to 32 levels; arrays allow at most 30 distinct inferred shapes."],
 };
+const articles: Record<Workflow, ToolArticleContent> = {
+  "json-csv": jsonCsvArticle,
+  "json-schema": jsonSchemaArticle,
+  "json-to-typescript": jsonToTypescriptArticle,
+};
+const faqsByKind: Record<Workflow, Array<{ question: string; answer: string }>> = {
+  "json-csv": [
+    {
+      question: "What is the difference between Text mode and JSON-cell mode?",
+      answer: "Text mode writes flat primitive values as plain strings for spreadsheet compatibility and reads all CSV cells back as strings so leading zeros and large integers are preserved. JSON-cell mode encodes each header and present cell value as JSON so numbers, booleans, nulls, missing keys, and nested structures survive a round trip when imported in JSON-cell mode.",
+    },
+    {
+      question: "Why does Text mode add an apostrophe before some values?",
+      answer: "When 'Prefix formula-like cells for spreadsheets' is enabled, strings starting with =, +, - or @ are prefixed with a single quote (') so Excel and Google Sheets treat them as literal text instead of evaluating them as formulas. Disable the checkbox if a downstream parser needs raw text.",
+    },
+    {
+      question: "Why was my JSON rejected before conversion?",
+      answer: "Input is parsed with strict JSON checks that reject duplicate object keys, numbers outside IEEE-754 safe integer precision, and nesting deeper than 64 levels. In Text mode, nested objects and arrays are also rejected because flat spreadsheet columns cannot represent them losslessly.",
+    },
+  ],
+  "json-schema": [
+    {
+      question: "Which JSON Schema versions are supported?",
+      answer: "This validator supports JSON Schema draft-07 only, compiled in strict mode. Schemas declaring newer $schema URIs (such as 2019-09 or 2020-12) or containing unknown keywords are rejected so unsupported rules never fail silently.",
+    },
+    {
+      question: "Does the validator fetch remote $ref URLs or coerce types?",
+      answer: "No. Only local document references starting with # are resolved; external HTTP/HTTPS $ref URLs are blocked so validation stays completely local. Type coercion, default value insertion, and property stripping are also disabled.",
+    },
+    {
+      question: "Are format annotations like email or date-time validated?",
+      answer: "No. Format annotations are treated as descriptive metadata rather than enforced assertions here. Use an explicit regex pattern or enum in your draft-07 schema when a string format must be enforced.",
+    },
+  ],
+  "json-to-typescript": [
+    {
+      question: "Why are empty arrays typed as unknown[]?",
+      answer: "An empty array ([]) in a single JSON sample contains no element values to inspect. Emitting unknown[] instead of any[] forces consuming code to narrow or replace the element type explicitly rather than disabling TypeScript type checking.",
+    },
+    {
+      question: "How are arrays with different object shapes handled?",
+      answer: "When array items have different sets of keys or value types, the generator preserves each distinct shape in an Array<...> union (up to 30 distinct shapes) so TypeScript does not assume every property is present on every item.",
+    },
+    {
+      question: "Does the generated TypeScript type validate API responses at runtime?",
+      answer: "No. TypeScript types are erased at compile time and perform zero checks when JavaScript runs. Pair the generated type with the JSON Schema Validator when checking untrusted runtime payloads.",
+    },
+  ],
+};
+const relatedTools = [
+  { title: "JSON Formatter", description: "Format, minify, and inspect strict JSON", href: "/dev-tools/json-formatter", icon: Braces, category: "dev" as const },
+  { title: "JSON ↔ CSV", description: "Convert flat records and tables", href: "/dev-tools/json-csv", icon: FileSpreadsheet, category: "dev" as const },
+  { title: "JSON Schema Validator", description: "Validate JSON against a draft-07 schema", href: "/dev-tools/json-schema", icon: FileCheck2, category: "dev" as const },
+  { title: "JSON to TypeScript", description: "Infer types from a JSON example", href: "/dev-tools/json-to-typescript", icon: Braces, category: "dev" as const },
+];
 export default function DataWorkflow({ kind }: { kind: Workflow }) {
   const tool = getTool(`/dev-tools/${kind}`)!;
   const [input, setInput] = useState("");
@@ -70,7 +129,7 @@ export default function DataWorkflow({ kind }: { kind: Workflow }) {
     recordToolEvent(tool.id, "result_downloaded");
   }
   return <ToolLayout title={tool.title} description={descriptions[kind]} category="dev" categoryLabel="Developer Tools" icon={Braces} hasDraft={!!input}
-    article={{ intro: [descriptions[kind]], sections: [{ heading: "How to use this tool", body: ["Paste input or import a text file, select the options that match your data, and run the tool. Review the result before copying, downloading, or transferring it to another local tool."] }], limitations: limitations[kind] }}>
+    article={articles[kind]} faqs={faqsByKind[kind]} relatedTools={relatedTools}>
     <div className="mb-4 flex flex-wrap items-center gap-3">
       {kind === "json-csv" && <>
         <label className="text-sm">Direction <select aria-label="Conversion direction" className="min-h-11 rounded border bg-background px-2" value={String(reverse)} onChange={e => { invalidate(); setReverse(e.target.value === "true"); }}><option value="false">JSON to CSV</option><option value="true">CSV to JSON</option></select></label>

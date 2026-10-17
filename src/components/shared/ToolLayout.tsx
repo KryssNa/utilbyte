@@ -88,6 +88,9 @@ interface ToolLayoutProps {
   adSlots?: { inArticle?: string; footer?: string };
 }
 
+const DEFAULT_IN_ARTICLE_SLOT = process.env.NEXT_PUBLIC_ADSENSE_IN_ARTICLE_SLOT;
+const DEFAULT_FOOTER_SLOT = process.env.NEXT_PUBLIC_ADSENSE_FOOTER_SLOT;
+
 export default function ToolLayout({
   title,
   description,
@@ -104,9 +107,10 @@ export default function ToolLayout({
 }: ToolLayoutProps) {
   const colors = categoryColors[category] || categoryColors.utility;
   // No publisher content on the screen means no ad on the screen. Not a style
-  // choice — it is the inventory-value rule, and it is the thing that gets
-  // tool sites rejected.
+  // choice: this site limits manual units to pages with editorial content.
   const mayServeAds = Boolean(article);
+  const inArticleSlot = adSlots?.inArticle ?? DEFAULT_IN_ARTICLE_SLOT;
+  const footerSlot = adSlots?.footer ?? DEFAULT_FOOTER_SLOT;
 
   // Guides are the other half of the internal linking: a tool page should point
   // at the writing that explains it, and the guide points back. Resolved from
@@ -192,9 +196,9 @@ export default function ToolLayout({
       )}
       {article && <ToolArticle content={article} toolName={title} />}
 
-      {mayServeAds && adSlots?.inArticle && (
+      {mayServeAds && inArticleSlot && (
         <div className="container mx-auto px-4 lg:px-6">
-          <AdSlot slot={adSlots.inArticle} variant="in-article" />
+          <AdSlot slot={inArticleSlot} variant="in-article" />
         </div>
       )}
 
@@ -244,9 +248,9 @@ export default function ToolLayout({
         </section>
       )}
 
-      {mayServeAds && adSlots?.footer && (
+      {mayServeAds && footerSlot && (
         <div className="container mx-auto px-4 lg:px-6">
-          <AdSlot slot={adSlots.footer} variant="footer" />
+          <AdSlot slot={footerSlot} variant="footer" />
         </div>
       )}
 

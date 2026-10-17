@@ -4,7 +4,7 @@ export const localProxyArticle: ToolArticleContent = {
   intro: [
     "You are building a webhook handler. It runs on your laptop at localhost:3000. The provider that needs to call it lives on the internet and cannot see your laptop.",
     "That gap is the single most tedious part of integration work, and it is what tunnelling solves: a public URL that forwards to a port on your machine.",
-    "This page manages the receiving end - a public endpoint you can point a provider at, with forwarding to a URL you nominate. The actual tunnel from the internet to your laptop needs a tunnelling client such as ngrok, cloudflared or localtunnel running locally, because a web page cannot reach your loopback interface.",
+    "This page manages the receiving end - a public endpoint you can point a provider at, with forwarding to an operator-approved HTTPS URL. Changing forwarding requires an operator access token. The actual tunnel from the internet to your laptop needs a tunnelling client such as ngrok, cloudflared or localtunnel running locally, because a web page cannot reach your loopback interface.",
   ],
   sections: [
     {
@@ -30,11 +30,11 @@ export const localProxyArticle: ToolArticleContent = {
       ],
     },
     {
-      heading: "A tunnel is a hole in your machine",
+      heading: "Securing a local webhook endpoint",
       body: [
-        "For the duration, anything on the internet that knows the URL can reach the service on that port. Not just the provider you set it up for.",
-        "Tunnel URLs get scanned. Random subdomains are discovered by crawlers and by certificate transparency logs faster than people expect, and a development server is exactly the sort of thing that has debug endpoints, verbose error pages, seeded credentials and no rate limiting.",
-        "So: tunnel the specific port you need and nothing else, never point one at a database or an admin interface, use whatever authentication your tunnelling client offers, and shut it down when you stop working. Leaving one running overnight because you might need it tomorrow is how development databases end up on the internet.",
+        "For the duration of a test session, anything on the internet that knows the public URL can reach the service on that port - not just the webhook provider you set it up for.",
+        "Public development URLs can be discovered through certificate transparency logs faster than people expect, and a development server often has debug endpoints, verbose error pages, seeded test credentials and no rate limiting.",
+        "So: expose only the specific port you need, never point a forwarding URL at a database or an admin interface, use whatever authentication your tunnelling client offers, and close the session when you finish testing.",
       ],
     },
     {
@@ -54,7 +54,8 @@ export const localProxyArticle: ToolArticleContent = {
   },
   limitations: [
     "This does not create the tunnel. Reaching a port on your own machine requires a tunnelling client running locally - ngrok, cloudflared, localtunnel or similar.",
-    "The endpoint, received requests and forwarding state live on a hosted server. Anyone with a bin ID can inspect requests or change forwarding settings; no owner authentication or automatic retention cleanup is implemented.",
+    "The endpoint, received requests and forwarding state live on a hosted server. Anyone with a bin ID can inspect or clear captured requests. Changing forwarding settings requires an operator access token, and approved-origin checks apply to every forwarded request. No automatic retention cleanup is implemented.",
+    "Only method, path, query, body and Content-Type are forwarded. Credentials and signature headers are removed, so test handlers requiring original webhook signatures will need a direct tunnel instead.",
     "Only configure a public test destination that you control. This service is not an access-control boundary; do not rely on it to protect private services.",
     "A tunnel exposes your local service to anyone who finds the URL. Point it at one port, authenticate it if you can, and close it when you finish.",
     "Free tunnel subdomains typically change on every restart, which means re-registering the URL with the provider each session.",

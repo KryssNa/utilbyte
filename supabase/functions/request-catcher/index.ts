@@ -1,82 +1,68 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { approvedDestination, hasProxyAccess, MAX_REQUEST_BYTES, MAX_RESPONSE_BYTES, ProxyError, readLimitedText } from "../_shared/proxy-policy.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD",
   "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey, X-Bin-Id",
+    "Content-Type, Authorization, X-Client-Info, Apikey, X-Bin-Id, X-Utilbyte-Proxy-Token",
 };
 
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" },
   });
 }
 
 async function forwardRequest(
-  targetBase: string,
-  method: string,
-  subPath: string,
-  queryParams: Record<string, string>,
-  headers: Record<string, string>,
-  body: string
+  targetBase: string, method: string, subPath: string,
+  queryParams: Record<string, string>, headers: Record<string, string>, body: string
 ): Promise<{ status: number; response: string; error: string | null }> {
   try {
-    const forwardUrl = new URL(targetBase.replace(/\/$/, "") + (subPath || "/"));
-    Object.entries(queryParams).forEach(([k, v]) => forwardUrl.searchParams.set(k, v));
-
-    const forwardHeaders: Record<string, string> = {};
-    const skipHeaders = new Set([
-      "host", "connection", "transfer-encoding", "content-length",
-      "authorization", "x-forwarded-for", "cf-connecting-ip",
-      "x-real-ip", "cf-ray", "cf-ipcountry",
-    ]);
-    Object.entries(headers).forEach(([k, v]) => {
-      if (!skipHeaders.has(k.toLowerCase())) forwardHeaders[k] = v;
+    const target = new URL(targetBase);
+    target.pathname = target.pathname.replace(/\/$/, "") + (subPath || "/");
+    Object.entries(queryParams).forEach(([key, value]) => target.searchParams.set(key, value));
+    approvedDestination(target.href, Deno.env.get("PROXY_ALLOWED_ORIGINS"));
+    const secret = Deno.env.get("PROXY_ACCESS_TOKEN");
+    if (!secret || secret.length < 32) throw new Error("Forwarding is not configured");
+    // All user-controlled egress is delegated to the DNS-pinned Next.js relay.
+    // This bridge URL is deployment configuration, never taken from a request.
+    const bridge = new URL(Deno.env.get("UTILBYTE_PROXY_URL") || "https://utilbyte.app/api/proxy");
+    if (bridge.protocol !== "https:" || bridge.username || bridge.password) throw new Error("Invalid relay configuration");
+    const result = await fetch(bridge, {
+      method: "POST", redirect: "error", signal: AbortSignal.timeout(12000),
+      headers: { "Content-Type": "application/json", "Origin": bridge.origin, "x-utilbyte-proxy-token": secret },
+      body: JSON.stringify({ url: target.href, method, headers: { "Content-Type": headers["content-type"] || "text/plain", "X-Request-Id": crypto.randomUUID() }, body }),
     });
-    forwardHeaders["X-Forwarded-By"] = "UtilByte-RequestCatcher";
-
-    const init: RequestInit = {
-      method,
-      headers: forwardHeaders,
-      signal: AbortSignal.timeout(15000),
-    };
-
-    if (method !== "GET" && method !== "HEAD" && body) {
-      init.body = body;
-    }
-
-    const res = await fetch(forwardUrl.toString(), init);
-    let responseText = "";
-    try {
-      responseText = await res.text();
-      if (responseText.length > 10000) responseText = responseText.slice(0, 10000) + "...[truncated]";
-    } catch {
-      responseText = "";
-    }
-
-    return { status: res.status, response: responseText, error: null };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return { status: 0, response: "", error: msg };
+    const data = JSON.parse(await readLimitedText(result.body, MAX_RESPONSE_BYTES + 65536));
+    if (!result.ok) return { status: 0, response: "", error: data.error || "Forwarding refused" };
+    return { status: data.status, response: String(data.body || "").slice(0, 10000), error: null };
+  } catch (error) {
+    return { status: 0, response: "", error: error instanceof Error ? error.message : "Forwarding failed" };
   }
 }
 
+// ponytail: per-instance backstop; configure edge/platform limits for distributed traffic.
+let requests = 0, rateExpires = 0;
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
   try {
+    const now = Date.now();
+    if (now >= rateExpires) { requests = 0; rateExpires = now + 60000; }
+    if (++requests > 120) return jsonResponse({ error: "Request catcher rate limit exceeded" }, 429);
+    const rawBody = await readLimitedText(req.body, MAX_REQUEST_BYTES);
     const url = new URL(req.url);
     const pathParts = url.pathname.split("/").filter(Boolean);
 
     const fnIndex = pathParts.findIndex((p) => p === "request-catcher");
     const binId = fnIndex >= 0 ? pathParts[fnIndex + 1] : (url.searchParams.get("bin") || "");
 
-    if (!binId) {
+    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(binId)) {
       return jsonResponse({ error: "Missing bin_id. Use /request-catcher/{bin_id}" }, 400);
     }
 
@@ -88,7 +74,8 @@ Deno.serve(async (req: Request) => {
     const action = url.searchParams.get("action");
 
     if (action === "list") {
-      const limit = Math.min(parseInt(url.searchParams.get("limit") || "100", 10), 200);
+      const parsedLimit = Number(url.searchParams.get("limit") || "100");
+      const limit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(Math.trunc(parsedLimit), 200)) : 100;
       const [reqResult, binResult] = await Promise.all([
         supabase
           .from("caught_requests")
@@ -133,11 +120,13 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === "set-config" && req.method === "POST") {
-      let payload: { forward_url?: string; forward_enabled?: boolean } = {};
-      try { payload = await req.json(); } catch { /* empty */ }
-
-      const forwardUrl = (payload.forward_url ?? "").trim();
-      const forwardEnabled = payload.forward_enabled ?? (forwardUrl.length > 0);
+      if (!await hasProxyAccess(req.headers.get("x-utilbyte-proxy-token"), Deno.env.get("PROXY_ACCESS_TOKEN"))) return jsonResponse({ error: "Changing forwarding settings requires an operator access token" }, 403);
+      let payload: { forward_url?: unknown; forward_enabled?: unknown };
+      try { payload = JSON.parse(rawBody); } catch { return jsonResponse({ error: "Invalid JSON" }, 400); }
+      if (!payload || typeof payload !== "object" || typeof payload.forward_url !== "string" || typeof payload.forward_enabled !== "boolean") return jsonResponse({ error: "Invalid forwarding settings" }, 400);
+      const forwardUrl = payload.forward_url.trim();
+      if (forwardUrl) approvedDestination(forwardUrl, Deno.env.get("PROXY_ALLOWED_ORIGINS"));
+      const forwardEnabled = payload.forward_enabled && Boolean(forwardUrl);
 
       const { data: existing } = await supabase
         .from("request_catcher_bins")
@@ -164,7 +153,7 @@ Deno.serve(async (req: Request) => {
     const headers: Record<string, string> = {};
     req.headers.forEach((value, key) => {
       const lower = key.toLowerCase();
-      if (lower !== "authorization") headers[lower] = value;
+      if (!["authorization", "cookie", "apikey", "x-utilbyte-proxy-token"].includes(lower)) headers[lower] = value;
     });
 
     const queryParams: Record<string, string> = {};
@@ -172,14 +161,7 @@ Deno.serve(async (req: Request) => {
       if (key !== "bin" && key !== "action") queryParams[key] = value;
     });
 
-    let body = "";
-    try {
-      if (req.method !== "GET" && req.method !== "HEAD") {
-        body = await req.text();
-      }
-    } catch {
-      body = "";
-    }
+    const body = rawBody;
 
     const subPathIndex = fnIndex >= 0 ? fnIndex + 2 : 2;
     const subPath = pathParts.slice(subPathIndex).join("/");
@@ -242,6 +224,6 @@ Deno.serve(async (req: Request) => {
 
     return jsonResponse(resp);
   } catch (err) {
-    return jsonResponse({ error: err instanceof Error ? err.message : "Unknown error" }, 500);
+    return jsonResponse({ error: err instanceof ProxyError ? err.message : "Request catcher failed" }, err instanceof ProxyError ? err.status : 500);
   }
 });

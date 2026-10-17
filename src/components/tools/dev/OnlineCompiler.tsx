@@ -1,5 +1,6 @@
 "use client";
 
+import { COMPILER_WORKER_SOURCE } from "@/lib/compiler-worker";
 import ToolLayout from "@/components/shared/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -70,7 +71,7 @@ fetchData().then(result => console.log("Result:", JSON.stringify(result)));`,
     extension: "ts",
     runner: "js",
     color: "text-sky-400",
-    template: `// TypeScript - Runs as JavaScript (types stripped at runtime)
+    template: `// TypeScript editor - type syntax is not transpiled; use JavaScript-compatible code to run
 
 interface User {
   name: string;
@@ -191,8 +192,9 @@ print("Squares:", squares)`,
 <body>
   <div class="card">
     <h1>Hello World</h1>
-    <p>Edit this HTML and click Run to see your changes live!</p>
-    <button onclick="alert('It works!')">Click Me</button>
+    <p id="status">Edit this HTML and click Run to see your changes live!</p>
+    <button id="demo-button">Click Me</button>
+    <script>document.getElementById("demo-button").addEventListener("click", () => { document.getElementById("status").textContent = "Button clicked!"; });</script>
   </div>
 </body>
 </html>`,
@@ -282,7 +284,6 @@ console.log(JSON.stringify(data, null, 2));`,
   },
 ];
 
-const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.27.5/full/";
 
 const faqs = [
   {
@@ -299,7 +300,7 @@ const faqs = [
   },
   {
     question: "What are the limitations?",
-    answer: "JavaScript uses the page context and can access the DOM and network. Python runs in the page through Pyodide, including its virtual filesystem and browser bridge. Neither is an isolation boundary for untrusted code. TypeScript type syntax is not transpiled; long-running code can freeze the tab.",
+    answer: "JavaScript and Python run in workers without access to the page DOM. Execution is stopped after five seconds, with a separate 30-second Python runtime loading limit. Workers can still access network and some origin storage APIs: run only code you trust. TypeScript syntax is not transpiled.",
   },
   {
     question: "Can I use keyboard shortcuts?",
@@ -317,9 +318,16 @@ const relatedTools = [
   { title: "Hash Generator", description: "MD5, SHA hashes", href: "/dev-tools/hash-generator", icon: Hash, category: "dev" as const },
 ];
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-let pyodideInstance: any = null;
-let pyodideLoading = false;
+function previewHtml(source: string): string {
+  const documentCopy = new DOMParser().parseFromString(source, "text/html");
+  const nonce = document.querySelector<HTMLScriptElement>("script[nonce]")?.nonce || "";
+  documentCopy.querySelectorAll("script").forEach(script => { script.setAttribute("nonce", nonce); });
+  const policy = documentCopy.createElement("meta");
+  policy.httpEquiv = "Content-Security-Policy";
+  policy.content = `default-src 'none'; script-src 'nonce-${nonce}' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data: blob: https:; font-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'`;
+  documentCopy.head.prepend(policy);
+  return "<!doctype html>" + documentCopy.documentElement.outerHTML;
+}
 
 export default function OnlineCompiler() {
   const [selectedLang, setSelectedLang] = useState<Language>(languages[0]);
@@ -334,6 +342,8 @@ export default function OnlineCompiler() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const workerCleanupRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -342,47 +352,16 @@ export default function OnlineCompiler() {
       }
     };
     document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const loadPyodide = useCallback(async () => {
-    if (pyodideInstance) return pyodideInstance;
-    if (pyodideLoading) {
-      while (pyodideLoading) {
-        await new Promise((r) => setTimeout(r, 100));
-      }
-      return pyodideInstance;
-    }
-
-    pyodideLoading = true;
-    setIsPyodideLoading(true);
-
-    try {
-      const script = document.createElement("script");
-      script.src = `${PYODIDE_CDN}pyodide.js`;
-      document.head.appendChild(script);
-
-      await new Promise<void>((resolve, reject) => {
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error("Failed to load Pyodide script"));
-      });
-
-      const pyodide = await (window as any).loadPyodide({
-        indexURL: PYODIDE_CDN,
-      });
-
-      pyodideInstance = pyodide;
-      return pyodide;
-    } catch (err) {
-      console.error("Pyodide load error:", err);
-      throw err;
-    } finally {
-      pyodideLoading = false;
-      setIsPyodideLoading(false);
-    }
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      workerCleanupRef.current();
+    };
   }, []);
 
   const handleLanguageChange = (lang: Language) => {
+    workerCleanupRef.current();
+    setIsRunning(false);
+    setIsPyodideLoading(false);
     setSelectedLang(lang);
     setCode(lang.template);
     setOutput("");
@@ -391,40 +370,15 @@ export default function OnlineCompiler() {
     setLangMenuOpen(false);
   };
 
-  const runPython = useCallback(async (pythonCode: string): Promise<string> => {
-    const pyodide = await loadPyodide();
-
-    pyodide.runPython(`
-import sys
-import io
-sys.stdout = io.StringIO()
-sys.stderr = io.StringIO()
-`);
-
-    try {
-      await pyodide.runPythonAsync(pythonCode);
-    } catch (err: any) {
-      const stderr = pyodide.runPython("sys.stderr.getvalue()");
-      if (stderr) return `Error:\n${stderr}`;
-      return `Error: ${err.message || String(err)}`;
-    }
-
-    const stdout = pyodide.runPython("sys.stdout.getvalue()");
-    const stderr = pyodide.runPython("sys.stderr.getvalue()");
-
-    let result = stdout || "";
-    if (stderr) result += (result ? "\n" : "") + `[stderr] ${stderr}`;
-    return result || "(No output)";
-  }, [loadPyodide]);
-
   const runCode = useCallback(async () => {
+    if (workerRef.current) return;
     setIsRunning(true);
     setOutput("");
     setHtmlPreview(null);
     const start = performance.now();
 
     if (selectedLang.runner === "html" || selectedLang.id === "markdown") {
-      setHtmlPreview(code);
+      setHtmlPreview(previewHtml(code));
       setExecutionTime(performance.now() - start);
       setIsRunning(false);
       return;
@@ -436,81 +390,51 @@ sys.stderr = io.StringIO()
   body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f8fafc; font-family: sans-serif; }
   ${code}
 </style></head><body><div class="demo"></div></body></html>`;
-      setHtmlPreview(cssHtml);
+      setHtmlPreview(previewHtml(cssHtml));
       setExecutionTime(performance.now() - start);
       setIsRunning(false);
       return;
     }
 
-    if (selectedLang.runner === "python") {
-      try {
-        const result = await runPython(code);
-        setOutput(result);
-      } catch (err: any) {
-        setOutput(`Failed to run Python: ${err.message || String(err)}\n\nMake sure you have an internet connection for the first load.`);
-      }
-      setExecutionTime(performance.now() - start);
-      setIsRunning(false);
-      return;
-    }
-
+    const python = selectedLang.runner === "python";
+    setIsPyodideLoading(python);
+    const workerUrl = URL.createObjectURL(new Blob([COMPILER_WORKER_SOURCE], { type: "application/javascript" }));
     try {
-      const logs: string[] = [];
-      const errors: string[] = [];
-      const mockConsole = {
-        log: (...args: unknown[]) => {
-          logs.push(args.map(formatArg).join(" "));
-        },
-        error: (...args: unknown[]) => {
-          errors.push("[ERROR] " + args.map(formatArg).join(" "));
-        },
-        warn: (...args: unknown[]) => {
-          logs.push("[WARN] " + args.map(formatArg).join(" "));
-        },
-        info: (...args: unknown[]) => {
-          logs.push("[INFO] " + args.map(formatArg).join(" "));
-        },
-        table: (data: unknown) => {
-          logs.push(JSON.stringify(data, null, 2));
-        },
-        clear: () => {
-          logs.length = 0;
-        },
-        time: () => {},
-        timeEnd: () => {},
-        group: () => {},
-        groupEnd: () => {},
+      const worker = new Worker(workerUrl);
+      workerRef.current = worker;
+      let timer: ReturnType<typeof setTimeout>;
+      let runtimeReady = false;
+      const cleanup = () => {
+        clearTimeout(timer);
+        worker.onmessage = null;
+        worker.onerror = null;
+        worker.terminate();
+        if (workerRef.current === worker) workerRef.current = null;
+        URL.revokeObjectURL(workerUrl);
       };
-
-      const fn = new Function("console", code);
-      fn(mockConsole);
-
-      setTimeout(() => {
-        const allOutput = [...logs, ...errors].join("\n");
-        setOutput(allOutput || "(No output)");
-        setExecutionTime(performance.now() - start);
-        setIsRunning(false);
-      }, 50);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setOutput(`Error: ${message}`);
-      setExecutionTime(performance.now() - start);
-      setIsRunning(false);
+      workerCleanupRef.current = cleanup;
+      const finish = (result: string) => {
+        cleanup(); setOutput(result); setExecutionTime(performance.now() - start);
+        setIsRunning(false); setIsPyodideLoading(false);
+      };
+      timer = setTimeout(() => finish(python ? "Error: Python runtime did not load within 30 seconds." : "Error: Execution timed out after 5 seconds."), python ? 30000 : 5000);
+      worker.onmessage = ({ data }) => {
+        if (data?.type === "ready") {
+          if (runtimeReady) return;
+          runtimeReady = true;
+          setIsPyodideLoading(false);
+          clearTimeout(timer);
+          timer = setTimeout(() => finish("Error: Execution timed out after 5 seconds."), 5000);
+        } else if (data?.type === "result") finish(data.error || data.output || "(No output)");
+      };
+      worker.onerror = () => finish("Error: Worker execution failed.");
+      worker.postMessage({ code, language: python ? "python" : "javascript" });
+    } catch (error) {
+      URL.revokeObjectURL(workerUrl);
+      setOutput(error instanceof Error ? error.message : "Unable to start worker");
+      setIsRunning(false); setIsPyodideLoading(false);
     }
-  }, [code, selectedLang, runPython]);
-
-  const formatArg = (arg: unknown): string => {
-    if (arg === null) return "null";
-    if (arg === undefined) return "undefined";
-    if (typeof arg === "object") {
-      try {
-        return JSON.stringify(arg, null, 2);
-      } catch {
-        return String(arg);
-      }
-    }
-    return String(arg);
-  };
+  }, [code, selectedLang]);
 
   const copyOutput = () => {
     navigator.clipboard.writeText(output);
@@ -615,7 +539,7 @@ sys.stderr = io.StringIO()
               <>
                 <div className="w-px h-5 bg-border" />
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">
-                  {isPyodideLoading ? "Loading Python..." : pyodideInstance ? "Python Ready" : "Pyodide"}
+                  {isPyodideLoading ? "Loading Python..." : "Pyodide worker"}
                 </span>
               </>
             )}
@@ -642,6 +566,7 @@ sys.stderr = io.StringIO()
               {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
             </Button>
 
+            {isRunning && <Button size="sm" variant="outline" onClick={() => { workerCleanupRef.current(); setIsRunning(false); setIsPyodideLoading(false); setOutput("Stopped."); }}>Stop</Button>}
             <Button
               size="sm"
               onClick={runCode}
@@ -731,7 +656,7 @@ sys.stderr = io.StringIO()
                   {htmlPreview !== null ? "Preview" : "Output"}
                 </span>
                 {selectedLang.runner === "python" && !htmlPreview && (
-                  <span className="text-[10px] text-muted-foreground/50">Python {pyodideInstance ? "3.12" : ""}</span>
+                  <span className="text-[10px] text-muted-foreground/50">Python</span>
                 )}
               </div>
               <div className="flex items-center gap-1">
@@ -756,7 +681,7 @@ sys.stderr = io.StringIO()
                 <iframe
                   ref={iframeRef}
                   srcDoc={htmlPreview}
-                  sandbox="allow-scripts allow-modals"
+                  sandbox="allow-scripts"
                   className="absolute inset-0 w-full h-full bg-white"
                   title="Preview"
                 />
@@ -765,7 +690,7 @@ sys.stderr = io.StringIO()
                   {isRunning ? (
                     <span className="flex items-center gap-2 text-muted-foreground">
                       <span className="h-3 w-3 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
-                      {selectedLang.runner === "python" && !pyodideInstance ? "Loading Python interpreter..." : "Executing..."}
+                      {selectedLang.runner === "python" && isPyodideLoading ? "Loading Python interpreter..." : "Executing..."}
                     </span>
                   ) : output ? (
                     output

@@ -12,7 +12,7 @@ export const dvLotteryPhotoRequirementsGuide: Guide = {
   summary: "The Diversity Visa entry instructions specify a 600 by 600 pixel image. The general US visa digital-image page gives a wider range. Use the requirements for your actual application, then check composition as well as the file.",
   intro: [
     "A photo can have the right number of pixels and still be unsuitable for an application. File dimensions, format and size are only part of the task; how the photograph was taken and whether it reflects your appearance also matter.",
-    "This guide is a photo-preparation reference, not an eligibility assessment or a submission service. UtilByte can help with image dimensions and file size. It cannot certify that an authority will accept a photograph.",
+    "Independent reference — not affiliated with any government agency: UtilByte is an independent image-preparation utility and is not affiliated with, endorsed by, or connected to the U.S. Department of State or any government authority. This guide is a technical reference, not an eligibility assessment or an official submission service.",
   ],
   sections: [
     {

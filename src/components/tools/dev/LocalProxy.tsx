@@ -24,10 +24,7 @@ import { localProxyArticle } from "@/content/tools/local-proxy";
 const STORAGE_KEY = "rc_bin_id";
 
 function generateBinId() {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < 6; i++) result += chars[Math.floor(Math.random() * chars.length)];
-  return result;
+  return crypto.randomUUID().replace(/-/g, "");
 }
 
 function sanitizeBinId(raw: string) {
@@ -63,6 +60,7 @@ export default function LocalProxy() {
   const [editValue, setEditValue] = useState("");
   const [forwardUrlInput, setForwardUrlInput] = useState("");
   const [forwardEnabled, setForwardEnabled] = useState(false);
+  const [proxyToken, setProxyToken] = useState("");
   const [savingConfig, setSavingConfig] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [selectedProxyTool, setSelectedProxyTool] = useState(0);
@@ -130,6 +128,7 @@ export default function LocalProxy() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-utilbyte-proxy-token": proxyToken,
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({ forward_url: forwardUrlInput.trim(), forward_enabled: forwardEnabled }),
@@ -287,10 +286,13 @@ export default function LocalProxy() {
               </div>
               <div className="p-4 space-y-4">
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Every request received at your catcher URL will be forwarded to the target below in real-time — headers, body, method, and path all preserved.
-                  Use a tunnel URL to reach your localhost, or any public HTTPS URL.
+                  Forwarding requires an operator access token and an HTTPS origin approved by the deployment. Method, path, query, body and Content-Type are forwarded; credentials and other incoming headers are removed.
                 </p>
 
+                <label className="grid gap-2 text-xs font-medium">Operator proxy access token
+                  <input type="password" autoComplete="off" value={proxyToken} onChange={event => setProxyToken(event.target.value)} className="min-h-11 rounded border bg-background px-3" />
+                  <span className="text-muted-foreground">Kept only in this page's memory. Required to change forwarding settings.</span>
+                </label>
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-foreground">Forward to URL</label>
                   <input
@@ -301,7 +303,7 @@ export default function LocalProxy() {
                     className="w-full h-9 px-3 rounded-lg border border-border bg-background text-xs font-mono outline-none focus:border-primary/60 transition-colors"
                   />
                   <p className="text-[11px] text-muted-foreground">
-                    For localhost: paste the ngrok/tunnel public URL. For production: paste any HTTPS URL.
+                    Ask the operator to approve your tunnel or API origin before enabling forwarding.
                   </p>
                 </div>
 

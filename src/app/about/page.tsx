@@ -127,7 +127,7 @@ export default function AboutPage() {
                 offline availability depends on what has loaded and on browser support.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                API Client sends requests through a proxy. Request Catcher and Local Proxy use hosted
+                API Client sends requests directly from your browser by default, with an optional restricted operator proxy. Request Catcher and Local Proxy use hosted
                 request storage, while WebSocket Client connects directly to your chosen server.
                 MCP text operations run on our server. Each tool explains its data handling; see our{" "}
                 <Link href="/privacy" className="underline underline-offset-4">privacy policy</Link>{" "}

@@ -43,7 +43,7 @@ export default function ToolArticle({ content, toolName }: ToolArticleProps) {
   const { intro, sections = [], example, limitations = [] } = content;
 
   return (
-    <section className="border-t border-border">
+    <section data-ad-content className="border-t border-border">
       <div className="container mx-auto px-4 py-8 lg:px-6 lg:py-10">
         <article className="mx-auto max-w-3xl">
           <h2 className="font-[family-name:var(--font-display)] mb-5 text-xl font-semibold tracking-tight">

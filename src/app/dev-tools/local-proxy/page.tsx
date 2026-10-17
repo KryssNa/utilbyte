@@ -4,7 +4,7 @@ import LocalProxy from "@/components/tools/dev/LocalProxy";
 
 export const metadata = createToolMetadata("/dev-tools/local-proxy", {
   title: "Local Proxy - Forward Requests to Localhost",
-  description: "Configure forwarding for hosted Request Catcher bins to a reachable destination, including a local development tunnel. Use synthetic requests; bins have no owner authentication.",
+  description: "Configure hosted webhook forwarding to an operator-approved HTTPS destination using an operator access token. Use synthetic requests and test endpoints.",
   keywords: [
     "local proxy",
     "ngrok alternative",

@@ -9,7 +9,7 @@ Evidence is local source, not a production network capture. The authoritative pe
 | Text and general utility tools | Browser | Formatting, counting, generation and conversion. Some controls store settings; user input is not added to the new preferences store. |
 | SQL and JSON tools | Browser | sql-formatter and bounded strict JSON checks. Input remains ephemeral. Explicit JSON handoffs use one in-memory message with a 60-second expiry, consumed once by the destination. |
 | New JSON workflows | Browser worker | Papa Parse and Ajv draft-07; remote schema retrieval disabled. Worker terminated after completion/cancel/timeout/unmount. |
-| API Client | UtilByte `/api/proxy`, then entered endpoint | URL, allowed headers (including Authorization/API keys), and body pass through the proxy. Response is returned through it. No database write is implemented in this route; platform logs/retention are not verified. |
+| API Client | Browser directly to CORS-enabled destination; optional restricted `/api/proxy` | In proxy mode, URL, allowed headers (including target Authorization/API keys), and body pass through the proxy. Operator token and exact approved HTTPS origin are required. Response is returned through it. No database write is implemented in this route; platform logs/retention are not verified. |
 | Request Catcher | Supabase edge function and database | Captures request headers except Authorization, query parameters, body, IP and forwarding response. `action=list` and `action=clear` use bin ID without owner authentication. Clear deletes request rows for that ID, not provider backups/logs or forwarding configuration. No automatic expiry job exists in supplied migrations/functions. |
 | Local Proxy | Same Request Catcher plus configured forwarding destination | Stores bin forwarding URL/config; forwards only when enabled. Shares browser bin ID with catcher. Receivers and tunnel providers have their own handling policies. |
 | WebSocket Client | Entered WebSocket endpoint directly | Server receives messages. No UtilByte relay. Destination retention is unknown. |
@@ -26,7 +26,7 @@ Evidence is local source, not a production network capture. The authoritative pe
 
 ## Request Catcher deployment concern
 
-The supplied migrations grant anonymous table-wide read/delete access to caught requests and broad anonymous access to bin configuration. Knowledge of a bin ID is the edge-function access model, not authenticated ownership. A frontend privacy label cannot fix this. The UI warns that synthetic data should be used, and production policy/retention verification remains a release requirement. No database migration has been applied from this workspace.
+The historical migrations grant anonymous table-wide read/delete access to caught requests and broad anonymous access to bin configuration. The new `20261017000000_close_anonymous_request_tables.sql` migration revokes that direct access and disables old forwarding configurations; it must be applied before treating a deployment as secured. Knowledge of a bin ID is the edge-function access model, not authenticated ownership. A frontend privacy label cannot fix this. The UI warns that synthetic data should be used, and production policy/retention verification remains a release requirement. No database migration has been applied from this workspace.
 
 ## Synthetic network verification procedure
 
@@ -36,3 +36,5 @@ The supplied migrations grant anonymous table-wide read/delete access to caught 
 4. Expect no tool marker in local-tool network requests. Runtime/CDN downloads alone do not imply upload. For hosted tools, expect the synthetic payload only in the disclosed service path; verify list, clear, forwarding and database policies using a dedicated test bin.
 5. Inspect browser storage after explicit handoff and normal navigation. Only preferences/tool IDs and existing documented bin IDs should persist; the transfer disappears after consumption/expiry. Test errors and cancellation too.
 6. Record unexpected requests, file/route, fixed failure code and remediation. No trace was available in this session, so none is recorded as passed.
+
+Current ad and relay behavior, security changes, verification and deployment prerequisites are recorded in [the monetization review](ads-monetization-review.md).

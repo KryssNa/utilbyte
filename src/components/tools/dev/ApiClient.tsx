@@ -1,5 +1,6 @@
 "use client";
 
+import { readLimitedText, MAX_RESPONSE_BYTES } from "../../../../supabase/functions/_shared/proxy-policy";
 import ToolLayout from "@/components/shared/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,8 @@ import {
 } from "./api-client/types";
 
 export default function ApiClient() {
+  const [requestMode, setRequestMode] = useState<"direct" | "proxy">("direct");
+  const [proxyToken, setProxyToken] = useState("");
   const [url, setUrl] = useState("");
   const [method, setMethod] = useState<HttpMethod>("GET");
   const [requestTab, setRequestTab] = useState<RequestTab>("params");
@@ -72,18 +75,22 @@ export default function ApiClient() {
         reqHeaders["Authorization"] = `Basic ${btoa(`${authUser}:${authPass}`)}`;
       }
 
-      const res = await fetch("/api/proxy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: targetUrl,
-          method,
-          headers: reqHeaders,
-          body: !["GET", "HEAD"].includes(method) ? body : "",
-        }),
+      const target = new URL(targetUrl);
+      if (!["https:", "http:"].includes(target.protocol) || target.username || target.password) throw new Error("Use an HTTP or HTTPS URL without embedded credentials");
+      const started = performance.now();
+      const res = requestMode === "proxy" ? await fetch("/api/proxy", {
+        method: "POST", headers: { "Content-Type": "application/json", "x-utilbyte-proxy-token": proxyToken },
+        body: JSON.stringify({ url: targetUrl, method, headers: reqHeaders, body: !["GET", "HEAD"].includes(method) ? body : "" }),
+        signal: AbortSignal.timeout(15000),
+      }) : await fetch(targetUrl, {
+        method, headers: reqHeaders, body: !["GET", "HEAD"].includes(method) ? body : undefined,
+        mode: "cors", credentials: "omit", redirect: "error", signal: AbortSignal.timeout(10000),
       });
-
-      const data = await res.json();
+      const responseText = await readLimitedText(res.body, MAX_RESPONSE_BYTES);
+      const data = requestMode === "proxy" ? JSON.parse(responseText) : {
+        status: res.status, statusText: res.statusText, headers: Object.fromEntries(res.headers.entries()),
+        body: responseText, size: new TextEncoder().encode(responseText).byteLength, time: performance.now() - started,
+      };
 
       if (data.error) {
         setError(data.error);
@@ -91,13 +98,14 @@ export default function ApiClient() {
         setResponse(data);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      setError(err instanceof TypeError ? "Request failed. The destination must permit browser CORS, or use an operator-enabled proxy." : err instanceof Error ? err.message : "Request failed");
     } finally {
       setLoading(false);
     }
-  }, [buildUrl, method, headers, body, authType, authToken, authUser, authPass]);
+  }, [buildUrl, method, headers, body, authType, authToken, authUser, authPass, requestMode, proxyToken]);
 
   const handleReset = useCallback(() => {
+    setProxyToken("");
     setUrl("");
     setMethod("GET");
     setParams([createPair()]);
@@ -120,12 +128,12 @@ export default function ApiClient() {
     {
       question: "What is an API client?",
       answer:
-        "An API client lets you construct HTTP requests and inspect responses. This interface runs in your browser, while requests pass through the UtilByte server proxy to supported public HTTP or HTTPS destinations.",
+        "An API client lets you construct HTTP requests and inspect responses. By default, requests go directly from your browser to destinations that permit CORS. An optional operator proxy requires an access token and an approved HTTPS destination.",
     },
     {
       question: "Why does this use a proxy?",
       answer:
-        "Browsers restrict reading cross-origin responses unless a destination allows it. This tool forwards the URL, allowed headers and body through the UtilByte server proxy, so both the proxy and destination receive that data.",
+        "Direct mode follows browser CORS rules. Server proxy mode is restricted to operator-approved HTTPS origins and requires a separate proxy access token. Both the relay and destination receive your request in proxy mode.",
     },
     {
       question: "What authentication methods are supported?",
@@ -135,7 +143,7 @@ export default function ApiClient() {
     {
       question: "Is my data secure?",
       answer:
-        "Your request, including any credentials or body you enter, passes through the UtilByte proxy and destination server. The proxy handler does not explicitly save requests, but that does not establish a no-logging policy for hosting providers or destinations. Use synthetic data and test credentials.",
+        "Direct requests go to the destination. Proxy-mode requests, including target credentials or body you enter, pass through the UtilByte relay and destination. The separate proxy access token is not forwarded to the destination. The proxy handler does not explicitly save requests, but that does not establish a no-logging policy for hosting providers or destinations. Use synthetic data and test credentials.",
     },
   ];
 
@@ -143,7 +151,7 @@ export default function ApiClient() {
     <ToolLayout
       article={apiClientArticle}
       title="API Client"
-      description="Send requests through the UtilByte server proxy to public HTTP or HTTPS endpoints and inspect responses. Use test credentials and synthetic data."
+      description="Send browser requests to CORS-enabled endpoints, or use a restricted operator proxy. Inspect responses using test credentials and synthetic data."
       category="dev"
       categoryLabel="Developer Tools"
       icon={Send}
@@ -155,6 +163,15 @@ export default function ApiClient() {
       ]}
     >
       <div className="space-y-4">
+        <label className="grid gap-2 text-sm">Connection
+          <select aria-label="Request connection" value={requestMode} onChange={event => setRequestMode(event.target.value as "direct" | "proxy")} className="min-h-11 rounded border bg-background px-3">
+            <option value="direct">Direct from browser (CORS required)</option><option value="proxy">Operator server proxy</option>
+          </select>
+        </label>
+        {requestMode === "proxy" && <label className="grid gap-2 text-sm">Proxy access token
+          <input type="password" value={proxyToken} onChange={event => setProxyToken(event.target.value)} autoComplete="off" className="min-h-11 rounded border bg-background px-3" />
+          <span className="text-xs text-muted-foreground">Available only when the operator has enabled your destination. This token stays in this page's memory until cleared or closed.</span>
+        </label>}
         {/* URL Bar */}
         <div className="flex items-center gap-2">
           <div className="relative">
