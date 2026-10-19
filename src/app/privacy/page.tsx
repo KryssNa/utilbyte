@@ -42,7 +42,7 @@ export default function PrivacyPage() {
               Your privacy is our top priority. This policy explains how we collect, use, and protect your information.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
-              Last updated: September 12, 2026
+              Last updated: October 19, 2026
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function PrivacyPage() {
               <h2 className="mb-3 text-xl font-semibold">Tool processing and optional measurements</h2>
               <p className="mb-3 text-muted-foreground">Each tool explains whether it processes locally, connects directly to an endpoint, or uses a hosted service. Request Catcher stores requests and Local Proxy can forward them; clearing a bin removes its request rows but does not control provider logs or backups. No automatic expiry is implemented in the supplied service code.</p>
               <p className="mb-3 text-muted-foreground">Pins, recent tool IDs, and layout preferences are stored in your browser. Tool inputs are not saved in those preferences. Explicit transfers between local JSON tools are held briefly in memory and are not placed in URLs.</p>
-              <p className="text-muted-foreground">Optional tool-outcome metrics use tool IDs, fixed event and error names, and coarse size/duration buckets. They do not include input, filenames, tokens, free-text searches, or copied results. Runtime session replay, console capture, and error-event delivery are disabled. Site analytics and advertising are described below.</p>
+              <p className="text-muted-foreground">Optional tool-outcome metrics use tool IDs, fixed event and error names, and coarse size/duration buckets. They do not include input, filenames, tokens, free-text searches, or copied results. Sentry session replay, console capture, and error-event delivery are disabled. Microsoft Clarity behavior analytics and other site integrations are described below.</p>
             </section>
 
             <section className="mb-12 rounded-xl border p-5">
@@ -203,6 +203,15 @@ export default function PrivacyPage() {
                   <h3 className="font-semibold text-lg text-foreground mb-4">Analytics Services</h3>
                   <p className="text-muted-foreground mb-4">
                     Vercel Analytics is integrated for page analytics. Google Analytics and Tag Manager load when configured, with advertising and analytics storage denied by default until the configured consent system updates those signals. These services may collect technical information about your visit.
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    Microsoft Clarity is integrated for interaction analytics, heatmaps and session recordings. The page body, including tool inputs and results, is marked for Clarity content masking. Clarity receives technical visit and interaction data. Its analytics and advertising cookie storage defaults to denied, so it operates in a limited, cookieless mode unless a consent platform explicitly grants the corresponding Clarity permissions. Google consent signals alone do not grant Clarity storage permission.
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Learn more in the{" "}
+                    <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:text-violet-700">
+                      Microsoft Privacy Statement
+                    </a>.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     For more information about how Google Analytics collects and processes data, please visit

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { CLARITY_BOOTSTRAP } from "@/lib/clarity";
 import { catalog } from "@/lib/tool-catalog";
 import { getGuideSlugs } from "@/content/guides";
 import { SOCIAL_CARD } from "@/lib/social-card";
@@ -141,9 +142,10 @@ export default async function RootLayout({
         <meta name="theme-color" content="#000000" />
         <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: "window.dataLayer = window.dataLayer || []; window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); }; window.gtag('consent', 'default', { ad_storage: 'denied', analytics_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });" }} />
         <script nonce={nonce} suppressHydrationWarning src="/tool-preferences.js" />
+        <script id="microsoft-clarity" nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: CLARITY_BOOTSTRAP }} />
         <meta name="google-adsense-account" content={process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-4931770581801597"} />
       </head>
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
+      <body data-clarity-mask="true" className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <script nonce={nonce} suppressHydrationWarning type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org", "@graph": [
             { "@type": "WebSite", "@id": "https://utilbyte.app/#website", url: "https://utilbyte.app", name: "UtilByte", inLanguage: "en", publisher: { "@id": "https://utilbyte.app/#organization" } },
