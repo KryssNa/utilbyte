@@ -1,64 +1,30 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
+type ConsentData = { gdprApplies?: boolean; listenerId?: number };
 declare global {
   interface Window {
-    googlefc?: {
-      showRevocationMessage?: () => void;
-      callbackQueue?: unknown[];
-    };
+    googlefc?: { showRevocationMessage?: () => void; callbackQueue?: { push: (entry: Record<string, () => void>) => unknown } };
+    __tcfapi?: (command: string, version: number, callback: (data: ConsentData, success: boolean) => void, parameter?: number) => void;
   }
 }
-
-/**
- * Reopens the consent form so a visitor can change or withdraw the choice they
- * made in the CMP.
- *
- * Required in the EEA, the UK and Switzerland: consent has to be as easy to
- * withdraw as it was to give. The link is rendered only once Google's CMP has
- * actually loaded, so visitors outside those regions — who never saw a banner —
- * do not get a control that would do nothing.
- */
+/** Use the supported CMP callback queue; a delayed banner must not miss a polling deadline. */
 export default function ConsentSettingsLink({ className }: { className?: string }) {
   const [available, setAvailable] = useState(false);
-
   useEffect(() => {
     let cancelled = false;
-
-    const check = () => {
+    let listenerId: number | undefined;
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || ([] as Record<string, () => void>[]);
+    window.googlefc.callbackQueue.push({ CONSENT_API_READY: () => {
       if (cancelled) return;
-      if (typeof window.googlefc?.showRevocationMessage === "function") {
-        setAvailable(true);
-        return true;
-      }
-      return false;
-    };
-
-    if (check()) return;
-
-    // The CMP script loads asynchronously; poll briefly rather than guess.
-    const interval = window.setInterval(() => {
-      if (check()) window.clearInterval(interval);
-    }, 500);
-    const stop = window.setTimeout(() => window.clearInterval(interval), 10000);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-      window.clearTimeout(stop);
-    };
+      window.__tcfapi?.("addEventListener", 2, (data, success) => {
+        listenerId = data?.listenerId;
+        if (!cancelled) setAvailable(success && data?.gdprApplies === true && typeof window.googlefc?.showRevocationMessage === "function");
+      });
+    } });
+    return () => { cancelled = true; if (listenerId !== undefined) window.__tcfapi?.("removeEventListener", 2, () => {}, listenerId); };
   }, []);
-
   if (!available) return null;
-
-  return (
-    <button
-      type="button"
-      onClick={() => window.googlefc?.showRevocationMessage?.()}
-      className={className}
-    >
-      Privacy settings
-    </button>
-  );
+  return <button type="button" className={className} onClick={() => window.googlefc?.callbackQueue?.push({ CONSENT_API_READY: () => window.googlefc?.showRevocationMessage?.() })}>Privacy settings</button>;
 }

@@ -57,7 +57,7 @@ export const requestCatcherArticle: ToolArticleContent = {
     note: "The documentation was wrong, or described a different API version. The JSON is there, but URL-encoded inside a form field rather than sent as the body - so a handler calling json() on the request gets nothing and reports a malformed payload. You would not find this from your own logs, because the handler failed before logging anything useful. Note also the signature format: comma-separated timestamp and version, which tells you exactly how to build the string to verify.",
   },
   limitations: [
-    "Requests are stored in a hosted Supabase database. Bin IDs are not authenticated ownership: anyone with an ID can read or clear its requests, and the supplied database policies permit broad anonymous access. Use synthetic data only.",
+    "Requests are stored in a hosted Supabase database. Bin IDs are not authenticated ownership: anyone with an ID can read or clear its requests, and direct database access must be closed by applying the supplied security migration. Use synthetic data only.",
     "The endpoint returns a generic success response. You cannot test behaviour that depends on your own reply, including retry and idempotency logic.",
     "No automatic expiry or storage-count cleanup is implemented. Listing recent requests has a count limit; that is not a retention policy.",
     "Bodies are captured as text rather than a binary archive. Hosting limits apply, and the tool is not suitable for verifying the original bytes of a binary payload.",

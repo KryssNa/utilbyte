@@ -3,7 +3,7 @@ import type { ToolArticleContent } from "@/components/shared/ToolArticle";
 export const onlineCompilerArticle: ToolArticleContent = {
   intro: [
     "Use this browser scratchpad to try a short JavaScript or Python snippet, inspect console output, or preview HTML and CSS. It is useful for checking a calculation or isolating a small example before moving it into your project.",
-    "JavaScript executes in this page. Python runs through Pyodide, which downloads a browser runtime on first use. The runner does not upload your source to an execution server, but the code you run can itself access browser capabilities and make network requests.",
+    "JavaScript and Python execute in dedicated workers without access to the page DOM. Python runs through Pyodide, which downloads a browser runtime on first use. The runner does not upload your source to an execution server, but the code you run can itself access browser capabilities and make network requests.",
   ],
   sections: [
     {
@@ -17,9 +17,9 @@ export const onlineCompilerArticle: ToolArticleContent = {
     {
       heading: "Local execution does not mean isolated execution",
       body: [
-        "JavaScript uses the page's execution context. It can access the DOM and browser APIs, including network requests. Python's browser runtime also has a virtual filesystem and a bridge to the browser environment. This is not a security sandbox for untrusted code.",
-        "Run only code you understand, using synthetic data. Do not include passwords, production credentials or sensitive documents. Remote resources referenced by HTML or CSS can also contact their source servers.",
-        "Long-running loops and large allocations can make the tab unresponsive. There is no enforced execution timeout for JavaScript or Python in this implementation. Keep examples small and save work elsewhere before experimenting.",
+        "Workers cannot access the page DOM or localStorage, but can use network and some origin storage APIs. Python also has a virtual filesystem and browser bridge. Worker execution is not a security sandbox for untrusted code.",
+        "Run only code you understand, using synthetic data. Do not include passwords, production credentials or sensitive documents. HTML and CSS previews run in a sandboxed iframe. Remote images can contact their hosts. Inline event attributes are blocked by CSP; attach listeners from a script element. Network requests, forms and nested frames are blocked in the preview.",
+        "A worker is terminated after five seconds of execution. Python has a separate 30-second runtime loading limit. Stop cancels a pending run, and switching languages discards its results. Large allocations can still strain the browser; keep examples small.",
       ],
     },
     {
@@ -47,9 +47,9 @@ export const onlineCompilerArticle: ToolArticleContent = {
   },
   limitations: [
     "TypeScript type syntax is not transpiled. The TypeScript mode currently has the same evaluator as JavaScript.",
-    "Code runs in the page environment. It is not isolated from browser capabilities and can make network requests.",
+    "Code runs in workers, separate from the page DOM. Workers can still make network requests and use some origin storage APIs. Run only trusted code.",
     "Python needs the Pyodide download on first use. A cold cache or failed download prevents execution until the runtime loads.",
-    "No enforced execution timeout protects the tab from infinite loops or excessive memory use.",
+    "Execution is limited to five seconds after runtime initialization. Python loading is limited to 30 seconds; these limits do not cap memory use.",
     "Late asynchronous JavaScript console output may not be displayed.",
     "Code is not saved by this tool. Keep a separate copy before refreshing, switching modes or closing the tab.",
   ],

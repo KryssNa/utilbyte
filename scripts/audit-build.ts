@@ -1,3 +1,5 @@
+import { spawn } from "node:child_process";
+import { createServer } from "node:net";
 import { SOCIAL_CARD } from "../src/lib/social-card";
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
@@ -6,6 +8,24 @@ import assert from "node:assert/strict";
 import { catalog, catalogCategories } from "../src/lib/tool-catalog";
 import { GUIDES } from "../src/content/guides";
 
+async function main() {
+  const port = await new Promise<number>(resolve => {
+    const socket = createServer();
+    socket.listen(0, "127.0.0.1", () => { const address = socket.address(); socket.close(() => resolve(typeof address === "object" && address ? address.port : 0)); });
+  });
+  const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1", "-p", String(port)], { stdio: "pipe" });
+  let serverOutput = "";
+  server.stdout.on("data", data => { serverOutput += data; });
+  server.stderr.on("data", data => { serverOutput += data; });
+  const base = `http://127.0.0.1:${port}`;
+  try {
+    let ready = false;
+    for (let attempt = 0; attempt < 80; attempt++) {
+      try { if ((await fetch(base)).ok) { ready = true; break; } } catch { /* starting */ }
+      if (server.exitCode !== null) throw new Error(serverOutput);
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    assert.ok(ready, `Audit server did not start: ${serverOutput}`);
 // The site currently has no verified rating collection or review dataset.
 // Keep these out of generated metadata until a real, visible source is added.
 function auditStructuredData(value: unknown, route: string): void {
@@ -35,15 +55,18 @@ function auditStructuredData(value: unknown, route: string): void {
 }
 const routes = ["/", "/ai", "/about", "/contact", "/privacy", "/terms", ...catalogCategories.map(item => item.href), ...catalog.map(item => item.href), "/guides", ...GUIDES.map(guide => `/guides/${guide.slug}`)];
 const documents = new Map<string, Document>();
+const renderedHtml = new Map<string, string>();
 const titles = new Map<string, string>();
 const descriptions = new Map<string, string>();
 const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
 let checkedLinks = 0, checkedFaqs = 0;
 const results: {route:string; htmlBytes:number; initialJsBytes:number; initialJsGzipBytes:number; scripts:string[]}[] = [];
 for (const route of routes) {
-  const path = `.next/server/app/${route === "/" ? "index" : route.slice(1)}.html`;
-  assert.ok(existsSync(path), `Missing static HTML: ${route}`);
-  const html = readFileSync(path,"utf8");
+  const response = await fetch(base + route);
+  assert.equal(response.status, 200, `Rendered route status: ${route}`);
+  const html = await response.text();
+  renderedHtml.set(route, html);
+  assert.match(response.headers.get("content-security-policy") || "", /'nonce-[^']+' 'strict-dynamic'/, `Nonce CSP: ${route}`);
   const document: Document = new JSDOM(html).window.document;
   documents.set(route, document);
   const meta = (name: string) => document.querySelector<HTMLMetaElement>(`meta[name="${name}"], meta[property="${name}"]`)?.content;
@@ -73,7 +96,7 @@ for (const route of routes) {
   assert.equal(new URL(canonical[1]).pathname.replace(/\/$/, "") || "/", route);
   assert.equal((html.match(/<h1(?:\s|>)/g) ?? []).length, 1, `One H1: ${route}`);
   assert.ok(!/<meta[^>]*name="robots"[^>]*content="[^"]*noindex/.test(html), `Noindex: ${route}`);
-  const jsonLd = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(match => { const value = JSON.parse(match[1]); return Array.isArray(value) ? value : [value]; });
+  const jsonLd = [...document.querySelectorAll('script[type="application/ld+json"]')].flatMap(node => { const value = JSON.parse(node.textContent || "null"); return Array.isArray(value) ? value : [value]; });
   assert.ok(jsonLd.length, `Missing structured data: ${route}`);
   auditStructuredData(jsonLd, route);
   const visibleDocument = document.body.cloneNode(true) as HTMLElement;
@@ -125,7 +148,7 @@ for (const [route, document] of documents) {
     checkedLinks++;
   }
 }
-const home = readFileSync('.next/server/app/index.html','utf8');
+const home = renderedHtml.get("/")!;
 for (const tool of catalog) assert.ok(home.includes(`href="${tool.href}"`), `Home link: ${tool.href}`);
 const sitemap = readFileSync('.next/server/app/sitemap.xml.body','utf8');
 assert.equal((sitemap.match(/<loc>/g) ?? []).length, routes.length, "Sitemap public route count");
@@ -148,8 +171,12 @@ for (const path of catalog.map(tool => `og/${tool.id}`)) {
   assert.equal(image.readUInt32BE(20), 630, `Social image height: ${path}`);
 }
 const selected = results.filter(row => ['/text-tools/word-counter','/dev-tools/json-formatter','/dev-tools/sql-formatter','/image-tools/compress-image','/dev-tools/json-schema'].includes(row.route));
-const report = ['# Local build audit', '', `Checked ${results.length} prerendered pages and ${catalog.length} tool destinations. Unique titles and descriptions, canonical and social URLs, social images, H1s, image alt attributes, structured data, visible FAQ parity, tool disclosures, navigation, internal links/fragments and sitemap inclusion passed. Checked ${checkedLinks} internal links and ${checkedFaqs} visible FAQ question/answer pairs. No duplicated title branding, unsupported aggregate ratings, or missing local /images/ screenshot references were found.`, '', 'These are build artifacts and transfer-size estimates, not browser or field performance measurements. Gzip is a reproducible local estimate; CDN compression/caching may differ.', '', '| Route | HTML bytes | Initial JS bytes | Initial JS gzip estimate |', '|---|---:|---:|---:|', ...selected.map(row => `| ${row.route} | ${row.htmlBytes} | ${row.initialJsBytes} | ${row.initialJsGzipBytes} |`), '', 'Client source maps are removed during this build. Initial-runtime module membership and subsequent runtime/network loading remain unverified; transfer-size estimates alone do not prove isolation.', '', 'No LCP/INP/CLS or network-payload outcome is inferred from these artifact sizes.', ''].join('\n');
+const report = ['# Local build audit', '', `Checked ${results.length} server-rendered pages and ${catalog.length} tool destinations. Unique titles and descriptions, canonical and social URLs, social images, H1s, image alt attributes, structured data, visible FAQ parity, tool disclosures, navigation, internal links/fragments and sitemap inclusion passed. Checked ${checkedLinks} internal links and ${checkedFaqs} visible FAQ question/answer pairs. No duplicated title branding, unsupported aggregate ratings, or missing local /images/ screenshot references were found.`, '', 'These are local production-server responses and transfer-size estimates, not browser or field performance measurements. Gzip is a reproducible local estimate; CDN compression/caching may differ.', '', '| Route | HTML bytes | Initial JS bytes | Initial JS gzip estimate |', '|---|---:|---:|---:|', ...selected.map(row => `| ${row.route} | ${row.htmlBytes} | ${row.initialJsBytes} | ${row.initialJsGzipBytes} |`), '', 'Client source maps are removed during this build. Initial-runtime module membership and subsequent runtime/network loading remain unverified; transfer-size estimates alone do not prove isolation.', '', 'No LCP/INP/CLS or network-payload outcome is inferred from these artifact sizes.', ''].join('\n');
 writeFileSync('docs/build-audit.md', report);
 for (const document of documents.values()) document.defaultView?.close();
 writeFileSync('/tmp/utilbyte-build-audit.json', JSON.stringify(results,null,2));
 console.log(`Verified ${results.length} rendered pages, ${catalog.length} tools, and sitemap. Wrote docs/build-audit.md.`);
+
+  } finally { server.kill("SIGTERM"); }
+}
+main().catch(error => { console.error(error); process.exitCode = 1; });

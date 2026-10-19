@@ -1,26 +1,6 @@
 import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 
-// Allow only the configured hosted-tool origin, never arbitrary HTTPS endpoints.
-// Keep it on all documents because Next.js client navigation retains their CSP.
-const hostedToolOrigin = (() => {
-  try {
-    const url = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "");
-    return url.protocol === "https:" && !url.username && !url.password ? ` ${url.origin}` : "";
-  } catch { return ""; }
-})();
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://www.googletagmanager.com https://pagead2.googlesyndication.com",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  `connect-src 'self' blob: data: https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.ingest.sentry.io${hostedToolOrigin}`,
-  "media-src 'self' blob: data:",
-  "frame-src 'self' https://googleads.g.doubleclick.net https://www.googletagmanager.com",
-  "worker-src 'self' blob:",
-].join("; ");
-
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
@@ -122,14 +102,6 @@ const nextConfig: NextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains',
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: contentSecurityPolicy,
-          },
-          {
-            key: 'Feature-Policy',
-            value: "camera 'none'; microphone 'none'; geolocation 'none'; gyroscope 'none'; accelerometer 'none'",
           },
         ],
       },

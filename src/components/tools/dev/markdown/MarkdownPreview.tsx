@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
+import rehypeSanitize from "rehype-sanitize";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { FileText } from "lucide-react";
@@ -10,6 +11,29 @@ import { FileText } from "lucide-react";
 interface MarkdownPreviewProps {
   content: string;
   className?: string;
+}
+
+const DISALLOWED_ELEMENTS = [
+  "script",
+  "iframe",
+  "object",
+  "embed",
+  "form",
+  "style",
+  "link",
+  "meta",
+  "base",
+  "applet",
+];
+
+function sanitizeUrl(raw?: string): string | undefined {
+  if (!raw) return undefined;
+  const trimmed = raw.trim();
+  if (/^(javascript|vbscript|file):/i.test(trimmed)) return undefined;
+  if (/^data:/i.test(trimmed) && !/^data:image\/(png|jpe?g|gif|webp);base64,/i.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
 }
 
 export default function MarkdownPreview({ content, className }: MarkdownPreviewProps) {
@@ -79,24 +103,34 @@ export default function MarkdownPreview({ content, className }: MarkdownPreviewP
       td: ({ children }: { children?: React.ReactNode }) => (
         <td className="border-b border-border/50 px-4 py-2.5 text-sm">{children}</td>
       ),
-      a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
-        >
-          {children}
-        </a>
-      ),
-      img: ({ src, alt }: { src?: string; alt?: string }) => (
-        <img
-          src={src}
-          alt={alt || ""}
-          className="rounded-lg max-w-full h-auto my-4 border border-border"
-          loading="lazy"
-        />
-      ),
+      a: ({ href, children }: { href?: string; children?: React.ReactNode }) => {
+        const safeHref = sanitizeUrl(href);
+        if (!safeHref) {
+          return <span className="text-muted-foreground">{children}</span>;
+        }
+        return (
+          <a
+            href={safeHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+          >
+            {children}
+          </a>
+        );
+      },
+      img: ({ src, alt }: { src?: string; alt?: string }) => {
+        const safeSrc = sanitizeUrl(src);
+        if (!safeSrc) return null;
+        return (
+          <img
+            src={safeSrc}
+            alt={alt || ""}
+            className="rounded-lg max-w-full h-auto my-4 border border-border"
+            loading="lazy"
+          />
+        );
+      },
       hr: () => <hr className="my-6 border-border" />,
       input: ({ type, checked, ...rest }: { type?: string; checked?: boolean }) => {
         if (type === "checkbox") {
@@ -110,7 +144,7 @@ export default function MarkdownPreview({ content, className }: MarkdownPreviewP
             />
           );
         }
-        return <input type={type} {...rest} />;
+        return <input type={type} readOnly {...rest} />;
       },
     }),
     []
@@ -131,7 +165,9 @@ export default function MarkdownPreview({ content, className }: MarkdownPreviewP
     <div className={className}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight, rehypeRaw]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
+        disallowedElements={DISALLOWED_ELEMENTS}
+        unwrapDisallowed={false}
         components={components as Record<string, React.ComponentType>}
       >
         {content}

@@ -305,7 +305,8 @@ export default function DocumentPhoto() {
         <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
           <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
           <p className="text-sm text-muted-foreground">
-            This tool handles dimensions and file size. It does not check head position,
+            <strong className="font-semibold text-foreground">Independent utility — not affiliated with any government agency:</strong>{" "}
+            UtilByte is an independent image preparation tool and is not affiliated with, endorsed by, or connected to the U.S. Department of State, GOV.UK, or any government authority or visa service. This tool handles dimensions and file size only; it does not check head position,
             background, expression or lighting, and specifications change. Always read the
             current requirements from the authority you are applying to before you submit. For UK digital
             passport applications, follow the{" "}

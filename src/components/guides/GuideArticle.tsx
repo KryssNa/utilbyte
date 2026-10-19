@@ -1,8 +1,12 @@
+import AdSlot from "@/components/shared/AdSlot";
 import CopyBlock from "@/components/shared/CopyBlock";
 import type { Guide } from "@/content/guides/types";
 import { getGuide } from "@/content/guides";
 import { AlertTriangle, ArrowRight, Clock, Info } from "lucide-react";
 import Link from "next/link";
+
+const DEFAULT_IN_ARTICLE_SLOT = process.env.NEXT_PUBLIC_ADSENSE_IN_ARTICLE_SLOT;
+const DEFAULT_FOOTER_SLOT = process.env.NEXT_PUBLIC_ADSENSE_FOOTER_SLOT;
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -56,7 +60,7 @@ export default function GuideArticle({ guide }: { guide: Guide }) {
         </div>
       </header>
 
-      <article className="container mx-auto px-4 py-10 lg:px-8 lg:py-14">
+      <article data-ad-content className="container mx-auto px-4 py-10 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-3xl">
           <div className="space-y-4">
             {guide.intro.map((paragraph, i) => (
@@ -149,6 +153,10 @@ export default function GuideArticle({ guide }: { guide: Guide }) {
             </section>
           ))}
 
+          {DEFAULT_IN_ARTICLE_SLOT && (
+            <AdSlot slot={DEFAULT_IN_ARTICLE_SLOT} variant="in-article" />
+          )}
+
           {guide.faqs && guide.faqs.length > 0 && (
             <section className="mt-14">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight sm:text-2xl mb-5">
@@ -207,6 +215,10 @@ export default function GuideArticle({ guide }: { guide: Guide }) {
                 ))}
               </div>
             </section>
+          )}
+
+          {DEFAULT_FOOTER_SLOT && (
+            <AdSlot slot={DEFAULT_FOOTER_SLOT} variant="footer" />
           )}
         </div>
       </article>

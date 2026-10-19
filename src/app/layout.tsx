@@ -1,6 +1,10 @@
+import { headers } from "next/headers";
+import { catalog } from "@/lib/tool-catalog";
+import { getGuideSlugs } from "@/content/guides";
 import { SOCIAL_CARD } from "@/lib/social-card";
 import WorkspaceLayout from "@/components/layout/WorkspaceLayout";
 import { NavigationSafety } from "@/components/shared/NavigationSafety";
+import AdSenseScript from "@/components/shared/AdSenseScript";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -10,7 +14,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -118,11 +121,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = (await headers()).get("x-nonce") || "";
   return (
     <html
       lang="en"
@@ -135,25 +139,22 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo_small.png" />
         <meta name="msapplication-TileColor" content="#000000" />
         <meta name="theme-color" content="#000000" />
-        <meta name="google-adsense-account" content="ca-pub-4931770581801597" />
+        <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: "window.dataLayer = window.dataLayer || []; window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); }; window.gtag('consent', 'default', { ad_storage: 'denied', analytics_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });" }} />
+        <script nonce={nonce} suppressHydrationWarning src="/tool-preferences.js" />
+        <meta name="google-adsense-account" content={process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-4931770581801597"} />
       </head>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        <script nonce={nonce} suppressHydrationWarning type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org", "@graph": [
             { "@type": "WebSite", "@id": "https://utilbyte.app/#website", url: "https://utilbyte.app", name: "UtilByte", inLanguage: "en", publisher: { "@id": "https://utilbyte.app/#organization" } },
             { "@type": "Organization", "@id": "https://utilbyte.app/#organization", name: "UtilByte", url: "https://utilbyte.app", logo: "https://utilbyte.app/logo.svg", sameAs: ["https://github.com/KryssNa/utilbyte"] },
           ],
         }) }} />
-        <Script src="/tool-preferences.js" strategy="beforeInteractive" />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4931770581801597"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-        {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
-        {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
+        <AdSenseScript nonce={nonce} toolPaths={catalog.map(tool => tool.href)} guidePaths={getGuideSlugs().map(slug => `/guides/${slug}`)}>
+        {/^GTM-[A-Z0-9]+$/.test(process.env.NEXT_PUBLIC_GTM_ID || "") && process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager nonce={nonce} gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
+        {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics nonce={nonce} gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         <ThemeProvider
+          nonce={nonce}
           attribute="class"
           defaultTheme="dark"
           enableSystem
@@ -171,6 +172,7 @@ export default function RootLayout({
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
+        </AdSenseScript>
       </body>
     </html>
   );

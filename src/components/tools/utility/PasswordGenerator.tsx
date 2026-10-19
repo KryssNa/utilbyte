@@ -154,7 +154,7 @@ export default function PasswordGenerator() {
     <ToolLayout
       article={passwordGeneratorArticle}
       title="Password Generator"
-      description="Generate strong, secure passwords with customizable options. Create passwords that are hard to crack and easy to remember."
+      description="Generate strong, secure passwords with customizable options. Create high-entropy passwords with configurable length and character sets."
       category="utility"
       categoryLabel="Utility Tools"
       icon={Key}

@@ -202,7 +202,7 @@ export default function PrivacyPage() {
                 <div>
                   <h3 className="font-semibold text-lg text-foreground mb-4">Analytics Services</h3>
                   <p className="text-muted-foreground mb-4">
-                    Vercel Analytics is integrated for page analytics. Google Analytics and Tag Manager load when configured. These services may collect technical information about your visit.
+                    Vercel Analytics is integrated for page analytics. Google Analytics and Tag Manager load when configured, with advertising and analytics storage denied by default until the configured consent system updates those signals. These services may collect technical information about your visit.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     For more information about how Google Analytics collects and processes data, please visit
@@ -264,11 +264,12 @@ export default function PrivacyPage() {
                   <h4 className="font-semibold text-foreground mb-2">Consent in the EEA, UK and Switzerland</h4>
                   <p className="text-muted-foreground">
                     If you are visiting from the European Economic Area, the United Kingdom or
-                    Switzerland, we ask for your consent before any advertising or analytics
-                    cookies are set, through a Google-certified consent management platform
-                    integrated with the IAB Transparency and Consent Framework. You can change
-                    or withdraw that choice at any time using the privacy settings link in the
-                    site footer.
+                    Switzerland, advertising requires a published Google-certified consent message
+                    integrated with the IAB Transparency and Consent Framework. Advertising is
+                    disabled by default until the operator completes that configuration. Google
+                    analytics and advertising storage signals default to denied. On pages where
+                    the consent message is available, use Privacy settings in the footer to
+                    change or withdraw your choice. Contact us if you cannot access those controls.
                   </p>
                 </div>
               </div>
