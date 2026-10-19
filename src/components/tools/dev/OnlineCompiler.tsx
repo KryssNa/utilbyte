@@ -338,6 +338,8 @@ export default function OnlineCompiler() {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [htmlPreview, setHtmlPreview] = useState<string | null>(null);
+  const [htmlPreviewUrl, setHtmlPreviewUrl] = useState<string | null>(null);
+  const [htmlPreviewUrl, setHtmlPreviewUrl] = useState<string | null>(null);
   const [isPyodideLoading, setIsPyodideLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -358,6 +360,12 @@ export default function OnlineCompiler() {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (htmlPreviewUrl) URL.revokeObjectURL(htmlPreviewUrl);
+    };
+  }, [htmlPreviewUrl]);
+
   const handleLanguageChange = (lang: Language) => {
     workerCleanupRef.current();
     setIsRunning(false);
@@ -366,6 +374,10 @@ export default function OnlineCompiler() {
     setCode(lang.template);
     setOutput("");
     setHtmlPreview(null);
+    if (htmlPreviewUrl) {
+      URL.revokeObjectURL(htmlPreviewUrl);
+      setHtmlPreviewUrl(null);
+    }
     setExecutionTime(null);
     setLangMenuOpen(false);
   };
@@ -375,10 +387,18 @@ export default function OnlineCompiler() {
     setIsRunning(true);
     setOutput("");
     setHtmlPreview(null);
+    if (htmlPreviewUrl) {
+      URL.revokeObjectURL(htmlPreviewUrl);
+      setHtmlPreviewUrl(null);
+    }
     const start = performance.now();
 
     if (selectedLang.runner === "html" || selectedLang.id === "markdown") {
-      setHtmlPreview(previewHtml(code));
+      const rendered = previewHtml(code);
+      setHtmlPreview(rendered);
+      const blob = new Blob([rendered], { type: "text/html" });
+      const nextUrl = URL.createObjectURL(blob);
+      setHtmlPreviewUrl(nextUrl);
       setExecutionTime(performance.now() - start);
       setIsRunning(false);
       return;
