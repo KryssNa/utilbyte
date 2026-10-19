@@ -339,7 +339,6 @@ export default function OnlineCompiler() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [htmlPreview, setHtmlPreview] = useState<string | null>(null);
   const [htmlPreviewUrl, setHtmlPreviewUrl] = useState<string | null>(null);
-  const [htmlPreviewUrl, setHtmlPreviewUrl] = useState<string | null>(null);
   const [isPyodideLoading, setIsPyodideLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
